@@ -1,0 +1,30 @@
+{
+  "name": "Descomplicando Receitas",
+  "short_name": "D. Receitas",
+  "description": "Receitas fáceis, rápidas e descomplicadas para o seu dia a dia.",
+  "start_url": "/?utm_source=pwa",
+  "display": "standalone",
+  "background_color": "#f8f6f6",
+  "theme_color": "#ec5b13",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "assets/images/logotipo-descomplicando_receitas300x300.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/images/logotipo-descomplicando_receitas300x300.png",
+      "sizes": "300x300",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/images/logotipo-descomplicando_receitas300x300.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["food", "lifestyle"],
+  "lang": "pt-BR"
+}

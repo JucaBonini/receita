@@ -1,0 +1,83 @@
+/* Critical CSS for sts-recipe-2 - Optimized for FCP/LCP */
+
+:root {
+  --primary: #ec5b13;
+  --bg-light: #f8f6f6;
+  --bg-dark: #221610;
+  --text-dark: #0f172a;
+}
+
+/* Base styles to prevent FOUC */
+html {
+  font-family: 'Public Sans', system-ui, sans-serif;
+  background-color: var(--bg-light);
+  color: var(--text-dark);
+}
+
+.dark html {
+  background-color: var(--bg-dark);
+  color: #f1f5f9;
+}
+
+/* Header critical layout */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  width: 100%;
+  backdrop-filter: blur(12px);
+  background-color: rgba(248, 246, 246, 0.82);
+  border-bottom: 1px solid rgba(236, 91, 19, 0.1);
+  height: 64px;
+}
+
+.dark header {
+  background-color: rgba(34, 22, 16, 0.82);
+}
+
+/* Contêiner do Logo */
+.custom-logo-link img {
+  height: 40px !important;
+  width: auto !important;
+}
+
+/* Placeholder for Hero to avoid CLS */
+.hero-placeholder {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  border-radius: 1.5rem;
+  background-color: #e2e8f0;
+}
+
+.dark .hero-placeholder {
+  background-color: #1e293b;
+}
+
+/* Material Symbols sizing to avoid icon flash */
+.material-symbols-outlined {
+  display: inline-block;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Fix para ícones duplicados no theme-toggle */
+#theme-toggle span.material-symbols-outlined {
+  display: none !important;
+}
+
+html:not(.dark) #theme-toggle span.material-symbols-outlined:first-child {
+  display: inline-block !important;
+}
+
+html.dark #theme-toggle span.material-symbols-outlined:last-child {
+  display: inline-block !important;
+}
