@@ -55,26 +55,30 @@ if (have_posts()) : while (have_posts()) : the_post();
     <article>
         
         <!-- Top Meta (Breadcrumb & Title) -->
-        <div class="mb-8">
-            <?php echo custom_breadcrumb(); ?>
+        <div class="mb-10">
+            <div class="mb-4">
+                <?php echo custom_breadcrumb(); ?>
+            </div>
             
-            <div class="flex items-center justify-between gap-4 mb-4">
-                <h1 class="text-4xl md:text-5xl font-black text-slate-900 dark:text-slate-100 leading-tight">
+            <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-6 mb-6">
+                <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-slate-100 leading-tight">
                     <?php the_title(); ?>
                 </h1>
                 
-                <!-- Anúncio Dinâmico: Abaixo do Título -->
-                <?php sts_display_ad('after_title'); ?>
-                <button class="btn-favorite flex-shrink-0 size-14 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-center hover:scale-110 transition-all text-primary group" data-post-id="<?php the_ID(); ?>" aria-label="Favoritar esta receita">
-                    <span class="material-symbols-outlined text-2xl">favorite</span>
-                </button>
+                <div class="flex items-center gap-4 self-end sm:self-start">
+                    <!-- Anúncio Dinâmico: Abaixo do Título em Mobile, Lado em Desktop -->
+                    <?php sts_display_ad('after_title'); ?>
+                    <button class="btn-favorite flex-shrink-0 size-14 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-center hover:scale-110 transition-all text-primary group" data-post-id="<?php the_ID(); ?>" aria-label="Favoritar esta receita">
+                        <span class="material-symbols-outlined text-2xl">favorite</span>
+                    </button>
+                </div>
             </div>
 
-            <div class="flex flex-wrap items-center gap-6 text-sm text-slate-600 dark:text-slate-400">
-                <div class="flex items-center gap-1">
-                    <span class="material-symbols-outlined text-primary text-xl">star</span>
-                    <span class="font-bold text-slate-900 dark:text-slate-100"><?php echo $rating_avg; ?></span>
-                    <span>(<?php echo $rating_count ?: rand(50, 200); ?> avaliações)</span>
+            <div class="flex flex-wrap items-center gap-y-3 gap-x-6 text-sm text-slate-600 dark:text-slate-400">
+                <div class="flex items-center gap-1.5 px-3 py-1 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 rounded-full">
+                    <span class="material-symbols-outlined text-xl">star</span>
+                    <span class="font-bold"><?php echo $rating_avg; ?></span>
+                    <span class="text-xs opacity-75">(<?php echo $rating_count ?: rand(50, 200); ?>)</span>
                 </div>
                 <div class="flex items-center gap-1">
                     <span class="material-symbols-outlined text-slate-400 text-xl">schedule</span>
@@ -100,31 +104,31 @@ if (have_posts()) : while (have_posts()) : the_post();
         </div>
 
         <!-- Metadata Cards Grid -->
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-12">
-            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
+        <div class="grid grid-cols-2 min-[480px]:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4 mb-12">
+            <div class="bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
                 <span class="material-symbols-outlined text-primary mb-2">timer</span>
-                <span class="text-xs uppercase tracking-wider text-slate-500 font-bold">Preparo</span>
-                <span class="text-xl font-bold"><?php echo $tempo_preparo ?: '20'; ?>m</span>
+                <span class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Preparo</span>
+                <span class="text-base sm:text-xl font-bold"><?php echo $tempo_preparo ?: '20'; ?>m</span>
             </div>
-            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
+            <div class="bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
                 <span class="material-symbols-outlined text-primary mb-2">cooking</span>
-                <span class="text-xs uppercase tracking-wider text-slate-500 font-bold">Cozimento</span>
-                <span class="text-xl font-bold"><?php echo $tempo_cozimento ?: '30'; ?>m</span>
+                <span class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Cozimento</span>
+                <span class="text-base sm:text-xl font-bold"><?php echo $tempo_cozimento ?: '30'; ?>m</span>
             </div>
-            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
+            <div class="bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
                 <span class="material-symbols-outlined text-primary mb-2">restaurant</span>
-                <span class="text-xs uppercase tracking-wider text-slate-500 font-bold">Rendimento</span>
-                <span class="text-xl font-bold"><?php echo $porcoes_meta ?: '4'; ?></span>
+                <span class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Rendimento</span>
+                <span class="text-base sm:text-xl font-bold"><?php echo $porcoes_meta ?: '4'; ?></span>
             </div>
-            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
+            <div class="bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
                 <span class="material-symbols-outlined text-primary mb-2">bar_chart</span>
-                <span class="text-xs uppercase tracking-wider text-slate-500 font-bold">Dificuldade</span>
-                <span class="text-xl font-bold"><?php echo $dificuldade ?: 'Fácil'; ?></span>
+                <span class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Dificuldade</span>
+                <span class="text-base sm:text-xl font-bold"><?php echo $dificuldade ?: 'Fácil'; ?></span>
             </div>
-            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
+            <div class="bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center col-span-2 min-[480px]:col-span-1">
                 <span class="material-symbols-outlined text-primary mb-2">health_and_safety</span>
-                <span class="text-xs uppercase tracking-wider text-slate-500 font-bold">Dieta</span>
-                <span class="text-xl font-bold text-xs truncate w-full"><?php echo $diet_type ?: 'Padrão'; ?></span>
+                <span class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Dieta</span>
+                <span class="text-base sm:text-xl font-bold truncate w-full"><?php echo $diet_type ?: 'Padrão'; ?></span>
             </div>
         </div>
 
@@ -207,18 +211,18 @@ if (have_posts()) : while (have_posts()) : the_post();
 
                 <!-- Instructions Section -->
                 <section class="mb-12" id="instructions">
-                    <h2 class="text-2xl font-bold flex items-center gap-2 mb-6">
+                    <h2 class="text-2xl font-bold flex items-center gap-2 mb-8">
                         <span class="material-symbols-outlined text-primary">format_list_numbered</span>
                         Modo de Preparo
                     </h2>
-                    <div class="space-y-8 relative before:absolute before:left-5 before:top-2 before:bottom-2 before:w-0.5 before:bg-primary/10">
+                    <div class="space-y-10 relative before:absolute before:left-5 before:top-2 before:bottom-2 before:w-0.5 before:bg-primary/10">
                         <?php 
                         if (is_array($instrucoes_raw)) : foreach($instrucoes_raw as $i => $passo) : if(trim($passo)) :
                         ?>
                         <div class="relative pl-12 group">
-                            <div class="absolute left-0 top-0 w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform"><?php echo $i + 1; ?></div>
-                            <h3 class="text-lg font-bold mb-2">Passo <?php echo $i + 1; ?></h3>
-                            <div class="text-slate-600 dark:text-slate-400 leading-relaxed">
+                            <div class="absolute left-0 top-0 w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform z-10"><?php echo $i + 1; ?></div>
+                            <h3 class="text-lg font-bold mb-3 text-slate-800 dark:text-slate-200">Passo <?php echo $i + 1; ?></h3>
+                            <div class="text-slate-600 dark:text-slate-400 leading-relaxed text-lg">
                                 <?php echo nl2br(esc_html($passo)); ?>
                             </div>
                         </div>
@@ -379,7 +383,7 @@ if (have_posts()) : while (have_posts()) : the_post();
                 </a>
             </div>
 
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 text-left">
+            <div class="grid grid-cols-1 min-[420px]:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 text-left">
                 <?php
                 $achadinhos_single = new WP_Query(array(
                     'post_type' => 'achadinhos',
