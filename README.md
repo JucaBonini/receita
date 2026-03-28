@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # WordPress Theme: STS Recipe 2 (Premium 2026)
 
 Este é um tema de receitas de alta performance, construído com **Tailwind CSS**, focado em **SEO 2026 (EEAT)** e monetização estratégica.
@@ -36,3 +37,6 @@ Este é um tema de receitas de alta performance, construído com **Tailwind CSS*
 
 ---
 **Desenvolvido por STS Digital (2026)**
+=======
+# receita
+>>>>>>> 1e9a00bd2f2df4d1a406110e4bac920488f680a4
