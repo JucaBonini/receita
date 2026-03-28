@@ -18,7 +18,7 @@
             </p>
             
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a href="https://wa.me/5511999999999?text=Quero%20participar%20do%20canal%20de%20receitas!" 
+                <a href="https://whatsapp.com/channel/0029Va5fCv1FXUuaQxDdVg0H" 
                    class="inline-flex items-center gap-3 px-10 py-5 bg-[#25D366] hover:bg-[#128C7E] text-white font-black rounded-2xl transition-all shadow-xl shadow-[#25D366]/20 transform hover:scale-105 active:scale-95" 
                    target="_blank" 
                    rel="noopener noreferrer">
