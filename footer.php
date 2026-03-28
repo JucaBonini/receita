@@ -15,13 +15,19 @@
                     <?php bloginfo('description'); ?>. Transformamos ingredientes comuns em refeições extraordinárias para o seu dia a dia.
                 </p>
                 
-                <!-- Social Links Dinâmicos (ou estáticos do tema) -->
+                <!-- Social Links Dinâmicos -->
                 <div class="flex gap-4 mt-8">
-                    <a class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-primary hover:text-white transition-all" href="#">
-                        <span class="material-symbols-outlined">public</span>
+                    <a class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-primary hover:text-white transition-all" href="https://www.instagram.com/descomplicandoreceitasofic" target="_blank" rel="noopener">
+                        <i class="fab fa-instagram"></i>
                     </a>
-                    <a class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-primary hover:text-white transition-all" href="#">
-                        <span class="material-symbols-outlined">share</span>
+                    <a class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-primary hover:text-white transition-all" href="https://www.facebook.com/descomplicandoreceitasofic" target="_blank" rel="noopener">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-primary hover:text-white transition-all" href="https://www.youtube.com/@descomplicandoreceitas" target="_blank" rel="noopener">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                    <a class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-primary hover:text-white transition-all" href="https://www.tiktok.com/@desc_receitas_ofic" target="_blank" rel="noopener">
+                        <i class="fab fa-tiktok"></i>
                     </a>
                 </div>
             </div>

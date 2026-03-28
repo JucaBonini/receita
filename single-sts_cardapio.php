@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Name: Visualização do Cardápio Semanal (App Style)
+ * Template Name: Cardápio App (Fiel ao Modelo do Usuário)
  * Template Post Type: sts_cardapio
  */
 
@@ -8,209 +8,438 @@ get_header();
 
 $cardapio_data = get_post_meta(get_the_ID(), '_sts_cardapio_data', true) ?: array();
 $dias_labels = array(
-    'segunda' => 'Segunda',
-    'terca'   => 'Terça',
-    'quarta'  => 'Quarta',
-    'quinta'  => 'Quinta',
-    'sexta'   => 'Sexta',
-    'sabado'  => 'Sábado',
-    'domingo' => 'Domingo'
+    'domingo' => array('label' => 'Domingo', 'num' => '07'),
+    'segunda' => array('label' => 'Segunda', 'num' => '01'),
+    'terca'   => array('label' => 'Terça', 'num' => '02'),
+    'quarta'  => array('label' => 'Quarta', 'num' => '03'),
+    'quinta'  => array('label' => 'Quinta', 'num' => '04'),
+    'sexta'   => array('label' => 'Sexta', 'num' => '05'),
+    'sabado'  => array('label' => 'Sábado', 'num' => '06')
 );
 
-// Coletar IDs de todas as receitas para a lista de compras
-$all_recipe_ids = array();
-foreach ($cardapio_data as $dia) {
-    foreach ($dia as $recipe_id) {
-        if ($recipe_id) $all_recipe_ids[] = $recipe_id;
-    }
-}
-$all_recipe_ids = array_unique($all_recipe_ids);
+// Reordenar para começar na segunda se preferir, ou manter como está
+$all_ids = array();
+foreach($cardapio_data as $dia) if(is_array($dia)) foreach($dia as $id) if($id) $all_ids[] = $id;
 ?>
 
-<div class="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    /* CSS FIEL AO MODELO FORNECIDO */
+    :root {
+        --primary: #e74c3c;
+        --primary-dark: #c0392b;
+        --secondary: #2ecc71;
+        --dark: #2c3e50;
+        --light: #ecf0f1;
+        --gray: #95a5a6;
+        --transition: all 0.3s ease;
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --radius: 8px;
+    }
     
-    <!-- App Header -->
-    <header class="sticky top-[72px] z-40 w-full bg-primary text-white shadow-lg overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-r from-primary-dark/50 to-transparent pointer-events-none"></div>
-        <div class="max-w-4xl mx-auto px-6 py-8 relative">
-            <div class="flex items-center justify-between mb-2">
-                <span class="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Planejador Semanal 2026</span>
-                <div class="flex gap-2">
-                    <button onclick="window.print()" class="size-8 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-all text-sm">
-                        <span class="material-symbols-outlined text-base">print</span>
-                    </button>
-                    <button onclick="navigator.share({title: '<?php the_title(); ?>', url: window.location.href})" class="size-8 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-all text-sm">
-                        <span class="material-symbols-outlined text-base">share</span>
-                    </button>
-                </div>
-            </div>
-            <h1 class="text-3xl font-black leading-tight mb-2"><?php the_title(); ?></h1>
-            <p class="text-white/80 text-sm italic"><?php echo get_the_excerpt(); ?></p>
-        </div>
-    </header>
+    body {
+        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background-color: #f9f9f9;
+        padding-bottom: 80px;
+    }
+    
+    .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
 
-    <main class="max-w-4xl mx-auto px-4 py-8">
-        
-        <!-- Grid de Dias -->
-        <div class="space-y-6" id="meal-plan-content">
-            <?php foreach ($dias_labels as $key => $label) : 
-                $day_meals = isset($cardapio_data[$key]) ? $cardapio_data[$key] : array();
-                $is_today = (strtolower(date_i18n('l')) == $key);
-            ?>
-                <section class="day-card animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="size-12 rounded-2xl <?php echo $is_today ? 'bg-primary text-white' : 'bg-white dark:bg-slate-800 text-slate-400'; ?> shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center justify-center transition-all">
-                            <span class="text-[9px] font-black uppercase tracking-tighter"><?php echo substr($label, 0, 3); ?></span>
-                            <span class="text-lg font-black leading-none"><?php echo date_i18n('d'); // Placeholder para data real caso queira simular ?></span>
-                        </div>
-                        <div>
-                            <h3 class="font-black text-slate-900 dark:text-white uppercase tracking-widest text-xs"><?php echo $label; ?></h3>
-                            <div class="flex gap-1 mt-1">
-                                <span class="size-1.5 rounded-full bg-emerald-500"></span>
-                                <span class="size-1.5 rounded-full bg-emerald-500"></span>
-                                <span class="size-1.5 rounded-full bg-amber-400"></span>
-                            </div>
-                        </div>
-                    </div>
+    /* Week Selector */
+    .week-selector {
+        background: white;
+        padding: 15px 0;
+        margin-bottom: 15px;
+        border-bottom: 1px solid #eee;
+        position: sticky;
+        top: 72px; /* Ajuste para o header do seu site */
+        z-index: 900;
+    }
+    
+    .week-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+    }
+    
+    .week-btn {
+        background: var(--light);
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: var(--transition);
+        color: var(--dark);
+        text-decoration: none;
+    }
+    
+    .week-btn:hover {
+        background: var(--primary);
+        color: white;
+    }
+    
+    .current-week {
+        text-align: center;
+        flex: 1;
+    }
+    
+    .week-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--dark);
+    }
+    
+    .week-dates {
+        font-size: 0.9rem;
+        color: var(--gray);
+    }
+    
+    /* Day Card */
+    .day-card {
+        background: white;
+        border-radius: var(--radius);
+        margin-bottom: 15px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+    }
+    
+    .day-card.active {
+        border-left: 5px solid var(--primary);
+    }
+    
+    .day-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        background: #f8f9fa;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .day-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .day-number {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--primary);
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        border-radius: 50%;
+        box-shadow: var(--shadow);
+    }
+    
+    .day-name { font-weight: 700; color: var(--dark); }
+    .day-date { font-size: 0.85rem; color: var(--gray); }
+    
+    .status-dot {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--gray);
+        margin-left: 5px;
+    }
+    .status-dot.completed { background: var(--secondary); }
+    
+    /* Meal Section */
+    .meal-section {
+        padding: 15px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .meal-section:last-child { border-bottom: none; }
+    
+    .meal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+    
+    .meal-title { font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 0.95rem; }
+    .meal-icon { color: var(--primary); }
+    .meal-time { font-size: 0.8rem; color: var(--gray); }
+    
+    .meal-content { display: flex; gap: 15px; align-items: flex-start; text-decoration: none; color: inherit; }
+    
+    .meal-image {
+        width: 90px;
+        height: 90px;
+        border-radius: var(--radius);
+        overflow: hidden;
+        flex-shrink: 0;
+        background: #eee;
+    }
+    .meal-image img { width: 100%; height: 100%; object-fit: cover; }
+    
+    .meal-details { flex: 1; min-width: 0; }
+    .meal-name { font-weight: 700; color: var(--dark); margin-bottom: 4px; font-size: 1rem; line-height: 1.3; }
+    .meal-description { font-size: 0.85rem; color: var(--gray); margin-bottom: 8px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    
+    .meal-tag {
+        display: inline-block;
+        padding: 3px 10px;
+        background: #f0f2f5;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: var(--dark);
+        margin-right: 5px;
+    }
+    
+    /* Bottom Nav & Items */
+    .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        display: flex;
+        justify-content: space-around;
+        padding: 10px 0;
+        box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.08);
+        z-index: 1000;
+    }
+    
+    .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-decoration: none;
+        color: var(--gray);
+        flex: 1;
+        transition: var(--transition);
+        border: none;
+        background: none;
+        cursor: pointer;
+    }
+    
+    .nav-item.active { color: var(--primary); }
+    .nav-icon { font-size: 1.3rem; margin-bottom: 4px; }
+    .nav-label { font-size: 0.7rem; font-weight: 700; }
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <?php 
-                        $meals_meta = array(
-                            'cafe' => array('label' => 'Café da Manhã', 'icon' => 'coffee'),
-                            'almoco' => array('label' => 'Almoço', 'icon' => 'restaurant'),
-                            'jantar' => array('label' => 'Jantar', 'icon' => 'nights_stay')
-                        );
+    /* Stats Card */
+    .stats-card { background: white; border-radius: var(--radius); padding: 20px; margin-top: 20px; box-shadow: var(--shadow); }
+    .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+    .stat-item { text-align: center; padding: 15px; background: #f8f9fa; border-radius: var(--radius); }
+    .stat-value { font-size: 1.5rem; font-weight: 800; color: var(--primary); margin-bottom: 2px; }
+    .stat-label { font-size: 0.75rem; color: var(--gray); font-weight: 600; }
 
-                        foreach ($meals_meta as $m_key => $m_info) : 
-                            $recipe_id = isset($day_meals[$m_key]) ? $day_meals[$m_key] : null;
-                            if ($recipe_id) :
-                                $recipe = get_post($recipe_id);
-                                $thumb = get_the_post_thumbnail_url($recipe_id, 'medium');
-                                $tempo = get_post_meta($recipe_id, '_tempo_preparo', true) ?: '20 min';
-                        ?>
-                            <div class="bg-white dark:bg-slate-800 rounded-[32px] p-4 border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-xl transition-all group overflow-hidden">
-                                <div class="flex items-center gap-2 mb-3">
-                                    <span class="material-symbols-outlined text-primary text-base"><?php echo $m_info['icon']; ?></span>
-                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest"><?php echo $m_info['label']; ?></span>
-                                </div>
-                                <div class="relative size-full aspect-square rounded-2xl overflow-hidden mb-3">
-                                    <img src="<?php echo $thumb; ?>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                                </div>
-                                <h4 class="font-black text-slate-900 dark:text-white text-[11px] leading-tight mb-2 line-clamp-2 uppercase tracking-tight"><?php echo $recipe->post_title; ?></h4>
-                                <div class="flex items-center justify-between mt-auto">
-                                    <span class="text-[9px] font-medium text-slate-400"><?php echo $tempo; ?></span>
-                                    <a href="<?php echo get_permalink($recipe_id); ?>" class="bg-slate-100 dark:bg-slate-700 hover:bg-primary hover:text-white transition-all p-2 rounded-xl text-primary text-xs font-black">VER</a>
-                                </div>
-                            </div>
-                        <?php else : ?>
-                            <div class="bg-dashed border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-[32px] p-4 flex flex-col items-center justify-center text-center opacity-50 grayscale">
-                                <span class="material-symbols-outlined text-slate-300 text-3xl mb-2"><?php echo $m_info['icon']; ?></span>
-                                <span class="text-[9px] font-black text-slate-400 uppercase"><?php echo $m_info['label']; ?> - Livre</span>
-                            </div>
-                        <?php endif; endforeach; ?>
-                    </div>
-                </section>
-            <?php endforeach; ?>
-        </div>
+    /* Floating Action */
+    .quick-actions { position: fixed; bottom: 85px; right: 20px; z-index: 999; }
+    .action-btn {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: var(--primary);
+        color: white;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        cursor: pointer;
+        box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        transition: var(--transition);
+    }
+    .action-btn:hover { transform: scale(1.1); background: var(--primary-dark); }
 
-        <!-- Seção de Lista de Compras (Oculta por padrão) -->
-        <div id="shopping-list-section" class="hidden animate-in fade-in zoom-in-95 duration-500">
-            <div class="bg-white dark:bg-slate-800 rounded-[40px] p-8 border border-slate-100 dark:border-slate-700 shadow-2xl">
-                <div class="flex items-center justify-between mb-8">
-                    <h2 class="text-2xl font-black text-slate-900 dark:text-white">Lista de Compras Automática</h2>
-                    <span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Sugerida</span>
+    /* Shopping List Modal */
+    .modal-overlay {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.6);
+        display: flex; align-items: center; justify-content: center;
+        z-index: 2000; padding: 20px;
+        opacity: 0; visibility: hidden; transition: var(--transition);
+    }
+    .modal-overlay.active { opacity: 1; visibility: visible; }
+    .modal-content {
+        background: white; border-radius: 12px;
+        width: 100%; max-width: 500px; max-height: 80vh; overflow-y: auto;
+        padding: 30px; position: relative;
+    }
+    .modal-close { position: absolute; top: 15px; right: 15px; border: none; background: none; font-size: 1.5rem; cursor: pointer; color: var(--gray); }
+
+    /* Utilities */
+    .hidden { display: none !important; }
+</style>
+
+<div class="cardapio-app-wrapper">
+
+    <!-- Week Selector -->
+    <section class="week-selector">
+        <div class="container">
+            <div class="week-nav">
+                <?php 
+                $prev = get_previous_post();
+                $next = get_next_post();
+                ?>
+                <a href="<?php echo ($prev) ? get_permalink($prev->ID) : '#'; ?>" class="week-btn <?php echo !$prev ? 'opacity-30' : ''; ?>">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+                
+                <div class="current-week">
+                    <?php 
+                    $mes_ctrl = get_post_meta(get_the_ID(), '_sts_cardapio_mes', true) ?: date_i18n('F');
+                    $sem_ctrl = get_post_meta(get_the_ID(), '_sts_cardapio_semana', true) ?: 'Semana 1';
+                    ?>
+                    <h2 class="week-title"><?php echo esc_html($sem_ctrl); ?></h2>
+                    <p class="week-dates"><?php echo esc_html($mes_ctrl); ?> de <?php echo date('Y'); ?></p>
                 </div>
                 
-                <div id="ingredients-compiled-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Gerado via JS para não travar o carregamento inicial -->
-                    <div class="col-span-full py-10 text-center">
-                         <span class="animate-spin material-symbols-outlined text-primary text-4xl">autorenew</span>
-                         <p class="text-slate-400 text-xs mt-2 uppercase font-bold tracking-widest">Calculando ingredientes da semana...</p>
-                    </div>
-                </div>
+                <a href="<?php echo ($next) ? get_permalink($next->ID) : '#'; ?>" class="week-btn <?php echo !$next ? 'opacity-30' : ''; ?>">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
             </div>
         </div>
+    </section>
 
+    <!-- Main Content -->
+    <main class="container meal-plan-container" id="cardapio-view">
+        <div id="mealPlan">
+            <?php 
+            $i = 0;
+            $hoje = strtolower(date_i18n('l'));
+            foreach ($dias_labels as $day_key => $day_info) : 
+                $i++;
+                $is_active = ($day_key == $hoje);
+                $meals = isset($cardapio_data[$day_key]) ? $cardapio_data[$day_key] : array();
+                
+                $meals_config = array(
+                    'cafe' => array('label' => 'Café da Manhã', 'icon' => 'fas fa-coffee', 'time' => '07:30'),
+                    'almoco' => array('label' => 'Almoço', 'icon' => 'fas fa-utensils', 'time' => '12:30'),
+                    'jantar' => array('label' => 'Jantar', 'icon' => 'fas fa-moon', 'time' => '19:30')
+                );
+            ?>
+                <div class="day-card <?php echo $is_active ? 'active' : ''; ?>">
+                    <div class="day-header">
+                        <div class="day-info">
+                            <div class="day-number"><?php echo sprintf('%02d', $i); ?></div>
+                            <div>
+                                <div class="day-name"><?php echo $day_info['label']; ?></div>
+                                <div class="day-date"><?php echo ($is_active) ? 'Hoje' : ''; ?></div>
+                            </div>
+                        </div>
+                        <div class="day-status">
+                            <span class="status-dot completed"></span>
+                            <span class="status-dot completed"></span>
+                            <span class="status-dot"></span>
+                        </div>
+                    </div>
+
+                    <?php foreach ($meals_config as $m_key => $m_data) : 
+                        $recipe_id = isset($meals[$m_key]) ? $meals[$m_key] : null;
+                        if ($recipe_id) :
+                            $recipe = get_post($recipe_id);
+                            $thumb = get_the_post_thumbnail_url($recipe_id, 'medium');
+                            $tempo = get_post_meta($recipe_id, '_tempo_preparo', true) ?: '20 min';
+                    ?>
+                        <div class="meal-section">
+                            <div class="meal-header">
+                                <h4 class="meal-title">
+                                    <i class="<?php echo $m_data['icon']; ?> meal-icon"></i>
+                                    <?php echo $m_data['label']; ?>
+                                </h4>
+                                <span class="meal-time"><?php echo $m_data['time']; ?></span>
+                            </div>
+                            <a href="<?php echo get_permalink($recipe_id); ?>" class="meal-content">
+                                <div class="meal-image">
+                                    <img src="<?php echo $thumb; ?>" alt="<?php echo $recipe->post_title; ?>">
+                                </div>
+                                <div class="meal-details">
+                                    <h4 class="meal-name"><?php echo $recipe->post_title; ?></h4>
+                                    <p class="meal-description"><?php echo wp_trim_words($recipe->post_content, 12, '...'); ?></p>
+                                    <div class="meal-tags">
+                                        <span class="meal-tag">Rápido</span>
+                                        <span class="meal-tag"><?php echo $tempo; ?></span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    <?php endif; endforeach; ?>
+                </div>
+            <?php endforeach; ?>
+        </div>
     </main>
 
-    <!-- Bottom Nav (Apenas para esta página) -->
-    <nav class="fixed bottom-6 left-6 right-6 z-50 md:max-w-md md:mx-auto">
-        <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/20 dark:border-white/5 p-2 rounded-[32px] shadow-2xl flex items-center justify-between">
-            <button onclick="toggleCardapioView('menu')" id="nav-menu" class="flex-1 flex flex-col items-center gap-1 py-2 text-primary">
-                <span class="material-symbols-outlined">calendar_today</span>
-                <span class="text-[9px] font-black uppercase">Cardápio</span>
-            </button>
-            <button onclick="toggleCardapioView('shopping')" id="nav-shopping" class="flex-1 flex flex-col items-center gap-1 py-2 text-slate-400">
-                <span class="material-symbols-outlined">shopping_cart</span>
-                <span class="text-[9px] font-black uppercase">Compras</span>
-            </button>
-            <button onclick="window.scrollTo({top:0, behavior:'smooth'})" class="flex-1 flex flex-col items-center gap-1 py-2 text-slate-400">
-                <span class="material-symbols-outlined">arrow_upward</span>
-                <span class="text-[9px] font-black uppercase">Topo</span>
-            </button>
+    <!-- Shopping Modal Overlay -->
+    <div class="modal-overlay" id="shoppingModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeShoppingModal()">&times;</button>
+            <h3 style="font-weight:800; text-transform:uppercase; color:var(--primary); margin-bottom:20px;">Lista da Semana</h3>
+            <div id="shoppingListContent">
+                 <div style="text-align:center; padding:40px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size:2rem; color:var(--primary);"></i>
+                    <p style="margin-top:15px; font-weight:600;">Gerando sua lista...</p>
+                 </div>
+            </div>
         </div>
-    </nav>
+    </div>
 
 </div>
 
 <script>
-/**
- * Lógica do Planejador Semanal
- */
-const cardapioRecipes = <?php echo json_encode($all_recipe_ids); ?>;
+const cardapioRecipeIds = <?php echo json_encode($all_ids); ?>;
 
-function toggleCardapioView(view) {
-    const menuSection = document.getElementById('meal-plan-content');
-    const shoppingSection = document.getElementById('shopping-list-section');
-    const navMenu = document.getElementById('nav-menu');
-    const navShopping = document.getElementById('nav-shopping');
-
-    if (view === 'shopping') {
-        menuSection.classList.add('hidden');
-        shoppingSection.classList.remove('hidden');
-        navMenu.classList.replace('text-primary', 'text-slate-400');
-        navShopping.classList.replace('text-slate-400', 'text-primary');
-        loadShoppingList();
-    } else {
-        menuSection.classList.remove('hidden');
-        shoppingSection.classList.add('hidden');
-        navMenu.classList.replace('text-slate-400', 'text-primary');
-        navShopping.classList.replace('text-primary', 'text-slate-400');
+function changeView(view) {
+    if(view === 'cardapio') {
+         window.scrollTo({top: 0, behavior: 'smooth'});
     }
 }
 
-async function loadShoppingList() {
-    const container = document.getElementById('ingredients-compiled-list');
-    if (container.dataset.loaded === 'true') return;
-
+async function openFullShoppingList() {
+    const modal = document.getElementById('shoppingModal');
+    modal.classList.add('active');
+    
+    const content = document.getElementById('shoppingListContent');
+    
     try {
-        const response = await fetch(window.themeConfig.ajaxUrl + '?action=get_cardapio_ingredients&ids=' + cardapioRecipes.join(','));
+        const response = await fetch(window.themeConfig.ajaxUrl + '?action=get_cardapio_ingredients&ids=' + cardapioRecipeIds.join(','));
         const res = await response.json();
 
         if (res.success) {
-            let html = '';
+            let html = '<ul style="list-style:none; padding:0;">';
             res.data.forEach(item => {
                 html += `
-                <div class="flex items-center p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 group hover:border-primary/30 transition-all cursor-pointer">
-                    <input type="checkbox" class="size-5 rounded border-slate-200 text-primary focus:ring-primary mr-4">
-                    <span class="text-[11px] font-bold text-slate-700 dark:text-slate-300 group-hover:text-primary">${item}</span>
-                </div>`;
+                <li style="padding:12px 0; border-bottom:1px solid #eee; display:flex; align-items:center;">
+                    <input type="checkbox" style="width:20px; height:20px; margin-right:15px; accent-color:var(--primary);">
+                    <span style="font-weight:600; font-size:0.9rem; color:var(--dark);">${item}</span>
+                </li>`;
             });
-            container.innerHTML = html;
-            container.dataset.loaded = 'true';
+            html += '</ul>';
+            html += '<button onclick="window.print()" class="week-btn" style="width:100%; border-radius:8px; margin-top:20px; background:var(--primary); color:white;">Imprimir Lista</button>';
+            content.innerHTML = html;
+        } else {
+            content.innerHTML = '<p>Erro ao carregar lista.</p>';
         }
-    } catch (e) {
-        container.innerHTML = '<p class="text-center col-span-full text-slate-400">Erro ao carregar lista.</p>';
+    } catch(e) {
+        content.innerHTML = '<p>Erro fatal ao carregar ingredientes.</p>';
     }
 }
-</script>
 
-<style>
-@media print {
-    nav, header .flex-center, .bottom-nav, button { display: none !important; }
-    #shopping-list-section { display: block !important; }
-    .day-card { page-break-inside: avoid; }
+function closeShoppingModal() {
+    document.getElementById('shoppingModal').classList.remove('active');
 }
-</style>
+</script>
 
 <?php get_footer(); ?>

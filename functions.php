@@ -616,7 +616,20 @@ add_action('wp_ajax_nopriv_sts_recipe_rating', 'sts_ajax_recipe_rating_handler')
 // Ocultar a barra de administração para todos exceto Administradores (Melhoria de UX para Assinantes)
 function sts_hide_admin_bar_for_subscribers() {
     if (!current_user_can('administrator')) {
-        show_admin_bar(false);
+        show_admin_bar(false);/**
+ * Proteção de Cardápios Futuros
+ * Impede o acesso direto a cardápios que ainda não deveriam estar públicos.
+ */
+function sts_protect_future_menus() {
+    if (is_singular('sts_cardapio')) {
+        $post = get_post();
+        if ($post->post_date > current_time('mysql') && !current_user_can('edit_posts')) {
+            wp_redirect(home_url('/cardapios'));
+            exit;
+        }
+    }
+}
+add_action('template_redirect', 'sts_protect_future_menus');
     }
 }
 add_action('after_setup_theme', 'sts_hide_admin_bar_for_subscribers');
