@@ -623,13 +623,14 @@ add_action('after_setup_theme', 'sts_hide_admin_bar_for_subscribers');
 
 // Sistema Profissional de Gerenciamento de Anúncios (CPT)
 require_once get_template_directory() . '/includes/cpt/anuncios.php';
+require_once get_template_directory() . '/includes/cpt/cardapios.php';
 
 /**
  * Injeção Cirúrgica de Anúncios (Estilo Ad Inserter)
  * Injeta anúncios antes/depois de P, H2 e H3 com base no índice configurado.
  */
 function sts_surgical_ad_engine($content) {
-    if (!is_singular('post') || is_admin()) return $content;
+    if (!is_singular('post') || is_singular('sts_cardapio') || is_admin()) return $content;
 
     $ads = get_posts(array(
         'post_type'  => 'sts_anuncios',
@@ -642,6 +643,8 @@ function sts_surgical_ad_engine($content) {
     ));
 
     if (empty($ads)) return $content;
+
+    // ... (restante da lógica mantida igual)
 
     // Organizar anúncios por Posição, Tag e Índice
     $map = array();
@@ -706,3 +709,33 @@ function sts_surgical_ad_engine($content) {
     return $before . $output . $after;
 }
 add_filter('the_content', 'sts_surgical_ad_engine');
+
+/**
+ * AJAX: Compilar Lista de Compras do Cardápio
+ */
+function sts_get_cardapio_ingredients() {
+    $ids_str = isset($_GET['ids']) ? sanitize_text_field($_GET['ids']) : '';
+    $ids = !empty($ids_str) ? explode(',', $ids_str) : array();
+    $compiled = array();
+
+    if (!empty($ids)) {
+        foreach ($ids as $id) {
+            $ing_raw = get_post_meta($id, '_ingredientes_raw', true);
+            if (is_array($ing_raw)) {
+                foreach ($ing_raw as $grupo) {
+                    if (empty($grupo)) continue;
+                    $itens = explode("\n", $grupo);
+                    foreach ($itens as $item) {
+                        $item = trim($item);
+                        if (!empty($item)) $compiled[] = $item;
+                    }
+                }
+            }
+        }
+    }
+
+    $compiled = array_unique($compiled);
+    wp_send_json_success(array_values($compiled));
+}
+add_action('wp_ajax_get_cardapio_ingredients', 'sts_get_cardapio_ingredients');
+add_action('wp_ajax_nopriv_get_cardapio_ingredients', 'sts_get_cardapio_ingredients');

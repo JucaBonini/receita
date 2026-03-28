@@ -65,7 +65,7 @@ if (have_posts()) : while (have_posts()) : the_post();
                 
                 <!-- Anúncio Dinâmico: Abaixo do Título -->
                 <?php sts_display_ad('after_title'); ?>
-                <button class="btn-favorite flex-shrink-0 size-14 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-center hover:scale-110 transition-all text-primary group" data-post-id="<?php the_ID(); ?>" aria-label="Favoritar está receita">
+                <button class="btn-favorite flex-shrink-0 size-14 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-center hover:scale-110 transition-all text-primary group" data-post-id="<?php the_ID(); ?>" aria-label="Favoritar esta receita">
                     <span class="material-symbols-outlined text-2xl">favorite</span>
                 </button>
             </div>

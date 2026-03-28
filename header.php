@@ -114,7 +114,7 @@
             </div>
 
             <div class="relative group" id="fav-dropdown">
-                <button class="p-2 rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all relative">
+                <button class="p-2 rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all relative" aria-label="Ver favoritos">
                     <span class="material-symbols-outlined">favorite</span>
                     <span id="fav-count" class="absolute -top-1 -right-1 bg-primary text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-black border-2 border-white dark:border-background-dark hidden">0</span>
                 </button>
@@ -137,11 +137,11 @@
                 </div>
             </div>
             
-            <button id="mobileMenuBtn" class="lg:hidden p-2 rounded-xl bg-slate-200/50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400 hover:text-primary transition-all">
+            <button id="mobileMenuBtn" class="lg:hidden p-2 rounded-xl bg-slate-200/50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400 hover:text-primary transition-all" aria-label="Abrir menu">
                 <span class="material-symbols-outlined">menu</span>
             </button>
 
-            <button id="theme-toggle" class="p-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-primary transition-all">
+            <button id="theme-toggle" class="p-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-primary transition-all" aria-label="Alternar modo claro/escuro">
                 <span class="material-symbols-outlined dark:!hidden">dark_mode</span>
                 <span class="material-symbols-outlined !hidden dark:!block">light_mode</span>
             </button>

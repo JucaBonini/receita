@@ -298,8 +298,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const pagedIds = favs.slice(start, start + itemsPerFavPage);
 
         // Grid compacta
-        container.classList.remove('grid-cols-1', 'md:grid-cols-2', 'xl:grid-cols-3');
-        container.classList.add('grid-cols-2', 'sm:grid-cols-3', 'xl:grid-cols-3', 'gap-4', 'md:gap-6');
+        container.classList.remove('grid-cols-1', 'md:grid-cols-2', 'xl:grid-cols-3', 'xl:grid-cols-4');
+        container.classList.add('grid-cols-2', 'sm:grid-cols-3', 'xl:grid-cols-4', 'gap-4', 'md:gap-6');
 
         container.innerHTML = '<div class="col-span-full py-10 text-center"><span class="animate-spin material-symbols-outlined text-primary text-4xl">autorenew</span></div>';
 
@@ -316,7 +316,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="aspect-[4/3] overflow-hidden relative">
                             <img src="${item.thumb}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
-                            <button onclick="dashboardRemoveFav(${item.id})" class="absolute top-2 right-2 md:top-4 md:right-4 size-8 md:size-10 bg-white/20 backdrop-blur-md rounded-lg md:rounded-xl text-white opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 shadow-lg flex items-center justify-center">
+                            <button onclick="dashboardRemoveFav(${item.id})" class="absolute top-2 right-2 md:top-4 md:right-4 size-8 md:size-10 bg-white/20 backdrop-blur-md rounded-lg md:rounded-xl text-white opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 shadow-lg flex items-center justify-center" aria-label="Remover dos favoritos">
                                 <span class="material-symbols-outlined text-base md:text-xl">delete</span>
                             </button>
                         </div>
@@ -324,7 +324,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <h4 class="font-black text-slate-900 dark:text-slate-100 leading-tight mb-3 flex-1 line-clamp-2 uppercase tracking-tight text-[10px] md:text-xs">${item.title}</h4>
                             <div class="flex items-center justify-between mt-auto">
                                 <a href="${item.url}" class="px-3 py-1.5 md:px-5 md:py-2 bg-primary text-white rounded-lg md:rounded-xl font-black text-[9px] uppercase tracking-widest hover:scale-105 transition-all">VER</a>
-                                <button onclick="navigator.clipboard.writeText('${item.url}'); alert('Link copiado!');" class="p-1 text-slate-400 hover:text-primary transition-colors">
+                                <button onclick="navigator.clipboard.writeText('${item.url}'); alert('Link copiado!');" class="p-1 text-slate-400 hover:text-primary transition-colors" aria-label="Copiar link da receita">
                                     <span class="material-symbols-outlined text-base md:text-lg">share</span>
                                 </button>
                             </div>
@@ -347,7 +347,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let html = '';
         for (let i = 1; i <= totalPages; i++) {
             const active = i === currentFavPage ? 'bg-primary text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-500 hover:bg-slate-200';
-            html += `<button onclick="changeFavPage(${i})" class="size-10 rounded-xl font-black text-xs transition-all ${active}">${i}</button>`;
+            html += `<button onclick="changeFavPage(${i})" class="size-10 rounded-xl font-black text-xs transition-all ${active}" aria-label="Ir para página ${i}">${i}</button>`;
         }
         pagination.innerHTML = html;
     }
