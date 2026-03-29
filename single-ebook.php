@@ -17,6 +17,15 @@
         <div class="absolute top-0 right-0 size-80 bg-primary/5 blur-[100px] rounded-full pointer-events-none"></div>
         
         <div class="max-w-[1400px] mx-auto text-center md:text-left relative z-10">
+            <!-- Breadcrumbs Premium (SEO Signal) -->
+            <nav class="flex items-center gap-3 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-10 overflow-x-auto whitespace-nowrap scrollbar-hide">
+                <a href="<?php echo home_url(); ?>" class="hover:text-primary transition-colors">Início</a>
+                <span class="material-symbols-outlined text-sm opacity-30 italic">chevron_right</span>
+                <a href="<?php echo get_post_type_archive_link('ebook'); ?>" class="hover:text-primary transition-colors">Biblioteca</a>
+                <span class="material-symbols-outlined text-sm opacity-30 italic">chevron_right</span>
+                <span class="text-slate-900 dark:text-white"><?php the_title(); ?></span>
+            </nav>
+
             <div class="inline-flex items-center gap-3 text-primary font-black uppercase tracking-[0.4em] text-[10px] mb-6">
                 <span class="size-2 bg-primary rounded-full animate-pulse"></span>
                 <?php echo ($ebook_type === 'paid') ? 'PREMIUM ACCESS' : 'FREE CONTENT'; ?>
@@ -65,6 +74,31 @@
             <section class="flex-grow w-full min-w-0 order-1 lg:order-2">
                 <div id="content-viewer" class="w-full relative animate-in fade-in duration-1000">
                     
+                    <!-- Destaques Comerciais (SEO/GEO Boost) -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                        <div class="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-start gap-4">
+                            <span class="material-symbols-outlined text-emerald-500 bg-emerald-500/10 p-2 rounded-xl">auto_awesome</span>
+                            <div>
+                                <h4 class="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest mb-1">Dicas Especialistas</h4>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-normal">Conteúdo validado por quem entende.</p>
+                            </div>
+                        </div>
+                        <div class="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-start gap-4">
+                            <span class="material-symbols-outlined text-amber-500 bg-amber-500/10 p-2 rounded-xl">offline_bolt</span>
+                            <div>
+                                <h4 class="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest mb-1">Passo a Passo</h4>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-normal">Fácil execução em qualquer cozinha.</p>
+                            </div>
+                        </div>
+                        <div class="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-start gap-4">
+                            <span class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-xl">smartphone</span>
+                            <div>
+                                <h4 class="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest mb-1">Full Mobile</h4>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-normal">Leve o guia no seu celular.</p>
+                            </div>
+                        </div>
+                    </div>
+
                     <?php if ($ebook_type === 'paid') : ?>
                         <!-- CHECKOUT LUXO (Apple/Stripe Style) -->
                         <div id="checkout-card" class="bg-white dark:bg-slate-900 rounded-[48px] md:rounded-[64px] border border-slate-100 dark:border-slate-800 shadow-2xl overflow-hidden min-h-[500px] flex flex-col justify-center items-center p-8 md:p-20 text-center relative group">
@@ -201,7 +235,10 @@
 
                         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
                         <script>
-                            const pUrl = '<?php echo esc_url($pdf_url); ?>';
+                            // Otimização Sênior: Configuração de Worker para Performance
+                            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+                            const pUrl = '<?php echo esc_url(set_url_scheme($pdf_url, "https")); ?>';
                             const vPort = document.getElementById('pdf-viewport');
                             pdfjsLib.getDocument(pUrl).promise.then(async (pdf) => {
                                 document.getElementById('tot-p').textContent = pdf.numPages;
