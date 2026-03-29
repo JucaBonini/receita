@@ -126,6 +126,7 @@ foreach ($includes_files as $file) {
 
 // Carregar arquivos de CPTs (VERIFICAR SE EXISTEM)
 $cpt_files = array(
+	'/includes/cpt/cpt-ebooks.php',
     '/includes/cpt/cpt-achadinhos.php',
     '/includes/cpt/cpt-artigos.php', 
     '/includes/cpt/cpt-faqs.php',
@@ -140,6 +141,11 @@ foreach ($cpt_files as $file) {
     if (file_exists(THEME_PATH . $file)) {
         require_once THEME_PATH . $file;
     }
+}
+
+// PagSeguro: Checkout Transparente
+if (file_exists(THEME_PATH . '/includes/pagseguro-handler.php')) {
+    require_once THEME_PATH . '/includes/pagseguro-handler.php';
 }
 
 /**

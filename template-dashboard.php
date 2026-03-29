@@ -108,6 +108,49 @@ $user_post_count = count_user_posts($current_user->ID);
                     <div id="fav-pagination" class="mt-12 flex justify-center items-center gap-4"></div>
                 </div>
 
+                <!-- Seção: Minha Biblioteca Digital (E-books) -->
+                <div id="dashboard-ebooks" class="mt-16 animate-in fade-in slide-in-from-bottom duration-700 delay-300">
+                    <div class="flex flex-col md:flex-row items-center justify-between gap-6 mb-8 text-center md:text-left">
+                        <h2 class="text-2xl font-black text-slate-900 dark:text-slate-100 flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary text-3xl">auto_stories</span>
+                            Minha Biblioteca <span class="text-primary italic">Digital</span>
+                        </h2>
+                        <a href="<?php echo get_post_type_archive_link('ebook'); ?>" class="text-[10px] font-black text-slate-400 hover:text-primary transition-all uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 pb-1">Ver Todos</a>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <?php 
+                        $ebooks = new WP_Query(array(
+                            'post_type' => 'ebook',
+                            'posts_per_page' => 2
+                        ));
+
+                        if ($ebooks->have_posts()) : while ($ebooks->have_posts()) : $ebooks->the_post();
+                            $subtitle = get_post_meta(get_the_ID(), '_ebook_subtitle', true);
+                        ?>
+                            <div class="bg-white dark:bg-slate-800 p-6 rounded-[32px] border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all group flex flex-col sm:flex-row items-center gap-6 relative overflow-hidden">
+                                <div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-primary/10 transition-colors"></div>
+                                
+                                <div class="size-24 rounded-2xl overflow-hidden shadow-lg shrink-0 z-10 mx-auto sm:mx-0">
+                                    <?php if (has_post_thumbnail()) : the_post_thumbnail('thumbnail', ['class' => 'w-full h-full object-cover']); endif; ?>
+                                </div>
+                                
+                                <div class="flex-1 min-w-0 z-10 text-center sm:text-left">
+                                    <h4 class="font-black text-slate-900 dark:text-white uppercase text-xs tracking-tight mb-1 truncate"><?php the_title(); ?></h4>
+                                    <p class="text-[10px] text-slate-400 font-bold mb-4 line-clamp-1 italic"><?php echo $subtitle ?: 'Guia Exclusivo'; ?></p>
+                                    <a href="<?php the_permalink(); ?>" class="inline-flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-widest hover:gap-3 transition-all">
+                                        ACESSAR LEITURA <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                                    </a>
+                                </div>
+                            </div>
+                        <?php endwhile; wp_reset_postdata(); else : ?>
+                            <div class="col-span-full py-12 text-center bg-slate-50/50 dark:bg-slate-900/50 rounded-[32px] border-2 border-dashed border-slate-100 dark:border-slate-700/50">
+                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Novos e-books em breve!</p>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
                 <!-- Minhas Receitas Enviadas -->
                 <div id="dashboard-user-posts" class="mt-16">
                     <h2 class="text-2xl font-black text-slate-900 dark:text-slate-100 mb-8 flex items-center gap-3">
