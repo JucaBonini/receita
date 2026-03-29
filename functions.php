@@ -6,7 +6,7 @@
 // Definir constantes do tema NO TOPO
 define('THEME_PATH', get_template_directory());
 define('THEME_URI', get_template_directory_uri());
-define('THEME_VERSION', '1.0.1'); // Incrementado para limpar cache
+define('THEME_VERSION', '1.0.4'); // Cache Buster Force
 
 // Setup do tema
 function descomplicando_receitas_setup() {

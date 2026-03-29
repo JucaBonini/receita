@@ -26,7 +26,10 @@ if (have_posts()) : while (have_posts()) : the_post();
 
     $rating_total = (int) get_post_meta($post_id, '_rating_total', true);
     $rating_count = (int) get_post_meta($post_id, '_rating_count', true);
-    $rating_avg   = $rating_count > 0 ? round($rating_total / $rating_count, 1) : 4.8;
+    
+    // Caminho do Meio: Se for 0, usamos a nota do autor (5.0 com 1 voto)
+    $display_rating_avg   = $rating_count > 0 ? round($rating_total / $rating_count, 1) : 5.0;
+    $display_rating_count = $rating_count > 0 ? $rating_count : 1;
 
     $video_url    = get_post_meta($post_id, '_video_url', true);
     $diet_type    = get_post_meta($post_id, '_diet_type', true);
@@ -80,8 +83,8 @@ if (have_posts()) : while (have_posts()) : the_post();
             <div class="flex flex-wrap items-center gap-y-3 gap-x-6 text-sm text-slate-600 dark:text-slate-400">
                 <div class="flex items-center gap-1.5 px-3 py-1 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 rounded-full">
                     <span class="material-symbols-outlined text-xl">star</span>
-                    <span class="font-bold"><?php echo $rating_avg; ?></span>
-                    <span class="text-xs opacity-75">(<?php echo $rating_count ?: rand(50, 200); ?>)</span>
+                    <span class="font-bold"><?php echo $display_rating_avg; ?></span>
+                    <span class="text-xs opacity-75">(<?php echo $display_rating_count; ?>)</span>
                 </div>
                 <div class="flex items-center gap-1">
                     <span class="material-symbols-outlined text-slate-400 text-xl">schedule</span>
@@ -250,7 +253,7 @@ if (have_posts()) : while (have_posts()) : the_post();
                     </div>
                     
                     <div id="rating-info" class="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                        Total de <span id="rating-current-count" class="text-primary"><?php echo $rating_count; ?></span> avaliações - Média <span id="rating-current-avg" class="text-primary"><?php echo $rating_avg; ?></span>
+                        Total de <span id="rating-current-count" class="text-primary"><?php echo $display_rating_count; ?></span> <?php echo $display_rating_count > 1 ? 'avaliações' : 'avaliação'; ?> - Média <span id="rating-current-avg" class="text-primary"><?php echo $display_rating_avg; ?></span>
                     </div>
 
                     <!-- Mensagem de Sucesso (Oculta por padrão) -->
@@ -464,7 +467,9 @@ if (have_posts()) : while (have_posts()) : the_post();
         </div>
     </section>
 
-<?php 
+    <?php 
+    // Floating Rating Bar (Scroll Triggered)
+    get_template_part('template-parts/floating-rating');
 endwhile; endif;
 get_footer(); 
 ?>

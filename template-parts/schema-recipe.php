@@ -130,14 +130,13 @@ if (is_array($instrucoes_raw) && !empty($instrucoes_raw)) {
 }
 
 // Avaliação (AggregateRating)
-if ($rating_count > 0) {
-    $schema["aggregateRating"] = [
-        "@type" => "AggregateRating",
-        "ratingValue" => $rating_avg,
-        "reviewCount" => $rating_count,
-        "bestRating" => "5",
-        "worstRating" => "1"
-    ];
-}
+// Caminho do Meio: Usamos os valores calculados no single.php (que incluem o fallback do autor)
+$schema["aggregateRating"] = [
+    "@type" => "AggregateRating",
+    "ratingValue" => $display_rating_avg,
+    "reviewCount" => $display_rating_count,
+    "bestRating" => "5",
+    "worstRating" => "1"
+];
 
 echo '<script type="application/ld+json">' . json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . '</script>';

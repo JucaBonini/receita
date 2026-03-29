@@ -278,66 +278,75 @@ document.addEventListener('DOMContentLoaded', function() {
         const successModal = document.getElementById('rating-success');
         const avgDisplay = document.getElementById('rating-current-avg');
         const countDisplay = document.getElementById('rating-current-count');
-        const postId = document.getElementById('rating_post_id').value;
+        const ratingInfoId = document.getElementById('rating_post_id');
+        
+        if (starBtns.length > 0 && ratingInfoId) {
+            const postId = ratingInfoId.value;
 
-        starBtns.forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                const rating = this.dataset.value;
-                console.log('Voto capturado:', rating, 'no Post:', postId);
-                
-                const formData = new FormData();
-                formData.append('action', 'sts_recipe_rating');
-                formData.append('post_id', postId);
-                formData.append('rating', rating);
+            starBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    if (this.classList.contains('submitting')) return;
+                    
+                    const rating = this.dataset.value;
+                    starBtns.forEach(b => b.classList.add('submitting', 'opacity-50', 'pointer-events-none'));
+                    
+                    const formData = new FormData();
+                    formData.append('action', 'sts_recipe_rating');
+                    formData.append('post_id', postId);
+                    formData.append('rating', rating);
 
-                fetch(window.themeConfig.ajaxUrl, {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(res => res.json())
-                .then(res => {
-                    if (res.success) {
-                        console.log('Voto registrado com sucesso:', res.data);
-                        // Atualiza UI
-                        if (avgDisplay) avgDisplay.innerText = res.data.average;
-                        if (countDisplay) countDisplay.innerText = res.data.count;
-                        
-                        // Mostra SUCESSO com animação simples
-                        if (successModal) {
-                            successModal.classList.remove('hidden');
-                            successModal.classList.add('animate-fadeIn');
+                    fetch(window.themeConfig.ajaxUrl, {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(res => res.json())
+                    .then(res => {
+                        if (res.success) {
+                            // Atualiza os textos na interface
+                            if (avgDisplay) avgDisplay.innerText = res.data.average;
+                            if (countDisplay) countDisplay.innerText = res.data.count;
+                            
+                            // Mostra a mensagem de sucesso
+                            if (successModal) {
+                                successModal.classList.remove('hidden');
+                                successModal.classList.add('flex', 'animate-in', 'fade-in', 'duration-500');
+                            }
+                        } else {
+                            starBtns.forEach(b => b.classList.remove('submitting', 'opacity-50', 'pointer-events-none'));
+                            alert(res.data || 'Erro ao registrar voto.'); 
                         }
-                    } else {
-                        console.error('Falha ao votar:', res.data);
-                        alert(res.data); 
-                    }
-                })
-                .catch(err => console.error('Erro na requisição:', err));
-            });
+                    })
+                    .catch(err => {
+                        starBtns.forEach(b => b.classList.remove('submitting', 'opacity-50', 'pointer-events-none'));
+                        console.error('Erro na requisição:', err);
+                    });
+                });
 
-            // Efeito Hover Melhorado
-            btn.addEventListener('mouseenter', function() {
-                const val = parseInt(this.dataset.value);
-                starBtns.forEach((s, idx) => {
-                    const starIcon = s.querySelector('.material-symbols-outlined');
-                    if (idx < val) {
-                        starIcon.classList.add('text-amber-400');
-                        starIcon.classList.remove('text-slate-200', 'dark:text-slate-700');
-                        starIcon.style.fontVariationSettings = "'FILL' 1";
-                    }
+                // Efeito Hover Melhorado com Persistência
+                btn.addEventListener('mouseenter', function() {
+                    if (this.classList.contains('submitting')) return;
+                    const val = parseInt(this.dataset.value);
+                    starBtns.forEach((s, idx) => {
+                        const starIcon = s.querySelector('.material-symbols-outlined');
+                        if (idx < val) {
+                            starIcon.classList.add('text-amber-400', 'fill-star');
+                            starIcon.style.fontVariationSettings = "'FILL' 1";
+                        }
+                    });
+                });
+
+                btn.addEventListener('mouseleave', function() {
+                    if (this.classList.contains('submitting')) return;
+                    starBtns.forEach(s => {
+                        const starIcon = s.querySelector('.material-symbols-outlined');
+                        starIcon.classList.remove('text-amber-400', 'fill-star');
+                        starIcon.style.fontVariationSettings = "'FILL' 0";
+                    });
                 });
             });
-
-            btn.addEventListener('mouseleave', function() {
-                starBtns.forEach(s => {
-                    const starIcon = s.querySelector('.material-symbols-outlined');
-                    starIcon.classList.remove('text-amber-400');
-                    starIcon.classList.add('text-slate-200', 'dark:text-slate-700');
-                    starIcon.style.fontVariationSettings = "'FILL' 0";
-                });
-            });
-        });
+        }
     }
 
     // 7. Sistema de Aviso LGPD (Cookies)
@@ -372,4 +381,106 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // 8. Barra de Avaliação Flutuante (Floating Slide-in)
+    const floatingBar = document.getElementById('floating-rating-bar');
+    const RATING_STORAGE_KEY = 'sts_floating_hidden';
+    
+    if (floatingBar) {
+        const closeBtn = document.getElementById('close-floating-rating');
+        const floatStars = floatingBar.querySelectorAll('.floating-star-btn');
+        const floatSuccess = document.getElementById('floating-success');
+        const ratingIdElement = document.getElementById('rating_post_id') || document.getElementById('float_rating_post_id');
+        
+        if (ratingIdElement) {
+            const postId = ratingIdElement.value;
+            let hasShown = false;
+
+            // Verifica se o usuário já fechou ou votou nesta sessão (LocalStorage)
+            const isHidden = localStorage.getItem(RATING_STORAGE_KEY + '_' + postId);
+
+            if (!isHidden) {
+                window.addEventListener('scroll', function() {
+                    // Maneira ultra-estável de detectar scroll (em pixels em vez de %)
+                    if (!hasShown && window.scrollY > 600) {
+                        hasShown = true;
+                        console.log('✅ Barra de Avaliação Flutuante Ativada'); 
+                        floatingBar.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-[200%]');
+                        floatingBar.classList.add('active', 'opacity-100', 'translate-y-0');
+                    }
+                });
+            }
+
+            // Fechar manualmente
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => {
+                    floatingBar.classList.remove('active', 'opacity-100');
+                    localStorage.setItem(RATING_STORAGE_KEY + '_' + postId, 'true');
+                });
+            }
+
+            // Lógica de Voto Flutuante
+            floatStars.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (this.classList.contains('submitting')) return;
+                    
+                    const rating = this.dataset.value;
+                    floatStars.forEach(b => b.classList.add('submitting', 'pointer-events-none', 'opacity-50'));
+                    
+                    const formData = new FormData();
+                    formData.append('action', 'sts_recipe_rating');
+                    formData.append('post_id', postId);
+                    formData.append('rating', rating);
+
+                    fetch(window.themeConfig.ajaxUrl, {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(res => res.json())
+                    .then(res => {
+                        if (res.success) {
+                            if (floatSuccess) {
+                                floatSuccess.classList.remove('hidden');
+                                floatSuccess.classList.add('flex');
+                            }
+                            
+                            setTimeout(() => {
+                                floatingBar.classList.remove('active', 'opacity-100');
+                                localStorage.setItem(RATING_STORAGE_KEY + '_' + postId, 'true');
+                            }, 3000);
+
+                            const mainAvg = document.getElementById('rating-current-avg');
+                            const mainCount = document.getElementById('rating-current-count');
+                            if (mainAvg) mainAvg.innerText = res.data.average;
+                            if (mainCount) mainCount.innerText = res.data.count;
+                        } else {
+                            alert(res.data);
+                            floatStars.forEach(b => b.classList.remove('submitting', 'pointer-events-none', 'opacity-50'));
+                        }
+                    });
+                });
+
+                btn.addEventListener('mouseenter', function() {
+                    if (this.classList.contains('submitting')) return;
+                    const val = parseInt(this.dataset.value);
+                    floatStars.forEach((s, idx) => {
+                        const starIcon = s.querySelector('.material-symbols-outlined');
+                        if (idx < val) {
+                            starIcon.classList.add('text-amber-400');
+                            starIcon.style.fontVariationSettings = "'FILL' 1";
+                        }
+                    });
+                });
+
+                btn.addEventListener('mouseleave', function() {
+                    if (this.classList.contains('submitting')) return;
+                    floatStars.forEach(s => {
+                        const starIcon = s.querySelector('.material-symbols-outlined');
+                        starIcon.classList.remove('text-amber-400');
+                        starIcon.style.fontVariationSettings = "'FILL' 0";
+                    });
+                });
+            });
+        }
+    }
 });
