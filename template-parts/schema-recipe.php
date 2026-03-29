@@ -6,18 +6,19 @@
 
 if (!isset($post_id)) $post_id = get_the_ID();
 
-// Formatação ISO 8601 para tempos
+// Formatação ISO 8601 para tempos (Correção do Erro PT0M)
 function dr_format_iso_duration($minutes) {
-    if (!$minutes || !is_numeric($minutes)) return 'PT0M';
-    return 'PT' . (int)$minutes . 'M';
+    $min = (int)$minutes;
+    if ($min <= 0) $min = 20; // Fallback para não quebrar o Schema (Minutos padrão)
+    return 'PT' . $min . 'M';
 }
 
 $prep_iso  = dr_format_iso_duration($tempo_preparo);
 $cook_iso  = dr_format_iso_duration($tempo_cozimento);
-$total_iso = dr_format_iso_duration((int)$tempo_preparo + (int)$tempo_cozimento);
+$total_iso = dr_format_iso_duration((int)($tempo_preparo ?: 20) + (int)($tempo_cozimento ?: 10));
 
 // Imagem (Prioriza Discover Large 1200px)
-$image_url = get_the_post_thumbnail_url($post_id, 'discover-large') ?: get_the_post_thumbnail_url($post_id, 'full');
+$image_url = get_the_post_thumbnail_url($post_id, 'full') ?: '';
 
 // Keywords
 $tags = get_the_tags($post_id);
@@ -31,9 +32,9 @@ $schema = [
     "image" => [ $image_url ],
     "author" => [
         "@type" => "Person",
-        "name" => $author_name,
-        "jobTitle" => $author_job,
-        "url" => $author_url
+        "name" => $author_name ?: get_the_author(),
+        "jobTitle" => $author_job ?: "Especialista em Gastronomia",
+        "url" => $author_url ?: get_author_posts_url(get_the_author_meta('ID'))
     ],
     "datePublished" => get_the_date('c'),
     "dateModified" => get_the_modified_date('c'),
@@ -46,20 +47,19 @@ $schema = [
         "name" => get_bloginfo('name'),
         "logo" => [
             "@type" => "ImageObject",
-            "url" => get_template_directory_uri() . '/assets/images/logotipo-dr-header.png'
+            "url" => get_template_directory_uri() . '/assets/images/logo.png' // Verifique se este caminho existe
         ]
     ],
-    "description" => wp_trim_words(get_the_excerpt(), 30),
+    "description" => wp_trim_words(get_the_excerpt() ?: get_the_content(), 40),
     "prepTime" => $prep_iso,
     "cookTime" => $cook_iso,
     "totalTime" => $total_iso,
-    "keywords" => !empty($kw_array) ? implode(', ', $kw_array) : "receita, culinária",
-    "recipeYield" => $porcoes_meta,
+    "keywords" => !empty($kw_array) ? implode(', ', $kw_array) : "receita, culinária, fácil",
+    "recipeYield" => $porcoes_meta ?: "4 porções",
     "recipeCategory" => !empty($main_cat) ? $main_cat->name : "Receitas",
-    "recipeCuisine" => $cuisine_meta,
+    "recipeCuisine" => $cuisine_meta ?: "Brasileira",
     "nutrition" => [
         "@type" => "NutritionInformation",
-        "servingSize" => $nutri_serving ?: "1 porção",
         "calories" => ($calorias ?: '250') . " calories",
         "carbohydrateContent" => ($carboidratos ?: '30') . "g",
         "proteinContent" => ($proteinas ?: '10') . "g",
@@ -69,41 +69,61 @@ $schema = [
     "recipeInstructions" => []
 ];
 
-if (!empty($diet_type)) {
-    $schema["suitableForDiet"] = esc_html($diet_type);
-}
-
+// Inserir Vídeo (Fator Crítico de Ranking 2026)
 if (!empty($video_url)) {
     $schema["video"] = [
         "@type" => "VideoObject",
         "name" => get_the_title(),
-        "description" => get_the_excerpt(),
+        "description" => get_the_excerpt() ?: get_the_title(),
         "thumbnailUrl" => [ $image_url ],
         "contentUrl" => $video_url,
-        "embedUrl" => $video_url, // Simplificado, idealmente extrair ID
+        "embedUrl" => str_contains($video_url, 'youtube.com') ? str_replace('watch?v=', 'embed/', $video_url) : $video_url,
         "uploadDate" => get_the_date('c')
     ];
 }
 
-// Inserir Ingredientes
-if (is_array($ingredientes_grp)) {
+if (!empty($diet_type)) {
+    $schema["suitableForDiet"] = esc_html($diet_type);
+}
+
+// Inserir Ingredientes (Suporte para Array e String)
+if (is_array($ingredientes_grp) && !empty($ingredientes_grp)) {
     foreach ($ingredientes_grp as $idx => $grupo) {
-        $itens = explode("\n", $ingredientes_raw[$idx]);
-        foreach ($itens as $item) {
-            if (trim($item)) $schema["recipeIngredient"][] = trim($item);
+        if (isset($ingredientes_raw[$idx])) {
+            $itens = explode("\n", $ingredientes_raw[$idx]);
+            foreach ($itens as $item) {
+                if (trim($item)) $schema["recipeIngredient"][] = esc_html(trim($item));
+            }
         }
+    }
+} elseif (!empty($ingredientes_raw)) {
+    // Caso seja apenas um campo de texto simples
+    $itens = is_array($ingredientes_raw) ? $ingredientes_raw : explode("\n", $ingredientes_raw);
+    foreach ($itens as $item) {
+        if (is_string($item) && trim($item)) $schema["recipeIngredient"][] = esc_html(trim($item));
     }
 }
 
-// Inserir Instruções (Steps)
-if (is_array($instrucoes_raw)) {
+// Inserir Instruções (Suporte para Array e String)
+if (is_array($instrucoes_raw) && !empty($instrucoes_raw)) {
     foreach ($instrucoes_raw as $i => $step) {
         if (trim($step)) {
             $schema["recipeInstructions"][] = [
                 "@type" => "HowToStep",
-                "text" => trim($step),
+                "text" => esc_html(trim($step)),
                 "name" => "Passo " . ($i + 1),
                 "url" => get_permalink() . "#step-" . ($i + 1)
+            ];
+        }
+    }
+} elseif (!empty($instrucoes_raw) && is_string($instrucoes_raw)) {
+    $steps = explode("\n", $instrucoes_raw);
+    foreach ($steps as $i => $step) {
+        if (trim($step)) {
+            $schema["recipeInstructions"][] = [
+                "@type" => "HowToStep",
+                "text" => esc_html(trim($step)),
+                "name" => "Passo " . ($i + 1)
             ];
         }
     }

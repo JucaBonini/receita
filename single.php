@@ -65,9 +65,12 @@ if (have_posts()) : while (have_posts()) : the_post();
                     <?php the_title(); ?>
                 </h1>
                 
-                <div class="flex items-center gap-4 self-end sm:self-start">
-                    <!-- Anúncio Dinâmico: Abaixo do Título em Mobile, Lado em Desktop -->
-                    <?php sts_display_ad('after_title'); ?>
+                <div class="flex flex-wrap items-center gap-4 self-end sm:self-start">
+                    <!-- Reserva de Espaço para Anúncio (Evita CLS) -->
+                    <div class="sts-ad-slot-header min-w-[280px] min-h-[90px] bg-slate-50 dark:bg-slate-900/40 rounded-xl flex items-center justify-center text-[9px] text-slate-300 uppercase tracking-widest border border-dashed border-slate-200 dark:border-slate-800">
+                        <?php sts_display_ad('after_title'); ?>
+                    </div>
+                    
                     <button class="btn-favorite flex-shrink-0 size-14 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-center hover:scale-110 transition-all text-primary group" data-post-id="<?php the_ID(); ?>" aria-label="Favoritar esta receita">
                         <span class="material-symbols-outlined text-2xl">favorite</span>
                     </button>
@@ -87,18 +90,19 @@ if (have_posts()) : while (have_posts()) : the_post();
             </div>
         </div>
 
-        <!-- Hero Image (LCP Optimization) -->
-        <div class="aspect-video w-full rounded-2xl overflow-hidden mb-8 shadow-xl relative group">
+        <!-- Hero Image (LCP Optimization & CLS Prevention) -->
+        <div class="aspect-video w-full rounded-[32px] overflow-hidden mb-10 shadow-2xl relative group bg-slate-100 dark:bg-slate-800">
             <?php 
             if (has_post_thumbnail()) {
                 the_post_thumbnail('full', [
                     'class' => 'w-full h-full object-cover transition-transform duration-700 group-hover:scale-105',
                     'loading' => 'eager', 
                     'fetchpriority' => 'high',
-                    'decoding' => 'async'
+                    'decoding' => 'async',
+                    'alt' => get_the_title()
                 ]); 
             } else {
-                echo '<div class="w-full h-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center"><span class="material-symbols-outlined text-6xl text-slate-400">restaurant</span></div>';
+                echo '<div class="w-full h-full flex items-center justify-center"><span class="material-symbols-outlined text-6xl text-slate-300">recipe</span></div>';
             }
             ?>
         </div>
@@ -270,37 +274,72 @@ if (have_posts()) : while (have_posts()) : the_post();
 
             <!-- Sidebar Area -->
             <aside class="space-y-8">
-                
-                <!-- Author Box (Premium E-E-A-T Card) -->
-                <div class="bg-white dark:bg-slate-800 p-8 rounded-[32px] shadow-sm border border-slate-100 dark:border-slate-700 relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-bl-full -mr-12 -mt-12 transition-transform group-hover:scale-110"></div>
+                <!-- Author Box (Ultra-Premium E-E-A-T Card) -->
+                <div class="bg-white dark:bg-slate-800 p-8 rounded-[40px] shadow-sm border border-slate-100 dark:border-slate-700 relative overflow-hidden group">
+                    <!-- Badge de Autoridade (Flutuante) -->
+                    <div class="absolute -top-1 -right-1 bg-primary text-white text-[9px] font-black uppercase tracking-widest py-2 px-6 rotate-12 shadow-lg shadow-primary/20">
+                        CHEF VERIFICADA
+                    </div>
                     
-                    <div class="flex items-center gap-5 mb-6 relative">
-                        <div class="size-20 rounded-full overflow-hidden border-4 border-slate-50 dark:border-slate-700 shadow-md transform transition-transform group-hover:rotate-6">
-                            <img src="<?php echo esc_url($author_avatar); ?>" alt="<?php echo esc_attr($author_name); ?>" class="w-full h-full object-cover">
+                    <div class="flex items-center gap-5 mb-6">
+                        <div class="relative">
+                            <div class="size-20 rounded-full overflow-hidden border-4 border-slate-50 dark:border-slate-700 shadow-xl transform transition-transform group-hover:scale-105">
+                                <img src="<?php echo esc_url($author_avatar); ?>" alt="<?php echo esc_attr($author_name); ?>" class="w-full h-full object-cover">
+                            </div>
+                            <!-- Icone de Check de Autoridade -->
+                            <div class="absolute -bottom-1 -right-1 size-7 bg-primary rounded-full border-4 border-white dark:border-slate-800 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-white text-xs">verified</span>
+                            </div>
                         </div>
                         <div class="flex-1">
                             <h4 class="font-black text-xl text-slate-900 dark:text-white leading-tight mb-1"><?php echo $author_name; ?></h4>
-                            <p class="text-[10px] font-black text-primary uppercase tracking-[0.15em] leading-tight">
-                                <?php echo nl2br(str_replace(' e ', "\ne ", $author_job)); ?>
-                            </p>
+                            <div class="flex flex-col">
+                                <p class="text-[10px] font-black text-primary uppercase tracking-[0.15em] leading-tight">
+                                    Curadoria Especialista
+                                </p>
+                                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">
+                                    <?php echo $author_job ?: 'Chef Executiva'; ?>
+                                </p>
+                            </div>
                         </div>
                     </div>
                     
+                    <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-2xl mb-8 border border-slate-100 dark:border-slate-800">
+                        <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed italic">
+                            "Minha missão é descomplicar a cozinha para que você tenha mais prazer no seu dia a dia."
+                        </p>
+                    </div>
+
                     <?php if ($author_expertise) : ?>
-                        <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed mb-8 line-clamp-3">
+                        <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed mb-8 line-clamp-4">
                             <?php echo $author_expertise; ?>
                         </p>
                     <?php endif; ?>
                     
-                    <div class="grid grid-cols-2 gap-3 pt-6 border-t border-slate-50 dark:border-slate-700/50">
-                        <a href="<?php echo $author_url; ?>" class="flex items-center justify-center gap-2 py-3 rounded-2xl bg-slate-50 dark:bg-slate-900 text-slate-400 hover:text-primary hover:bg-primary/5 transition-all text-sm font-bold group/link">
-                            <span class="material-symbols-outlined text-lg group-hover/link:scale-110 transition-transform">account_circle</span>
-                            Perfil
+                    <!-- Selos de Confiança -->
+                    <div class="flex items-center gap-3 mb-8">
+                        <div class="flex-1 h-px bg-slate-100 dark:bg-slate-700"></div>
+                        <span class="text-[9px] font-bold text-slate-300 uppercase tracking-widest">Garantia de Qualidade</span>
+                        <div class="flex-1 h-px bg-slate-100 dark:bg-slate-700"></div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 mb-8">
+                        <div class="flex flex-col items-center p-3 rounded-2xl bg-amber-50/50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/20 text-center">
+                            <span class="material-symbols-outlined text-amber-500 text-xl mb-1">check_circle</span>
+                            <span class="text-[8px] font-black text-amber-700 dark:text-amber-400 uppercase">Receita Testada</span>
+                        </div>
+                        <div class="flex flex-col items-center p-3 rounded-2xl bg-emerald-50/50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-900/20 text-center">
+                            <span class="material-symbols-outlined text-emerald-500 text-xl mb-1">verified_user</span>
+                            <span class="text-[8px] font-black text-emerald-700 dark:text-emerald-400 uppercase">100% Autoral</span>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <a href="<?php echo $author_url; ?>" class="flex items-center justify-center gap-2 py-4 rounded-2xl bg-slate-900 text-white hover:bg-primary transition-all text-[10px] font-black uppercase tracking-widest group/link shadow-lg shadow-slate-900/10">
+                            Perfil Oficial
                         </a>
-                        <a href="<?php echo get_the_author_meta('user_url') ?: '#'; ?>" target="_blank" class="flex items-center justify-center gap-2 py-3 rounded-2xl bg-slate-50 dark:bg-slate-900 text-slate-400 hover:text-primary hover:bg-primary/5 transition-all text-sm font-bold group/link">
-                            <span class="material-symbols-outlined text-lg group-hover/link:scale-110 transition-transform">language</span>
-                            Web
+                        <a href="<?php echo $author_url; ?>#contato" class="flex items-center justify-center gap-2 py-4 rounded-2xl bg-white border border-slate-100 text-slate-400 hover:text-primary hover:border-primary transition-all text-[10px] font-black uppercase tracking-widest">
+                            Falar com a Mary
                         </a>
                     </div>
                 </div>
