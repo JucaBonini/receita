@@ -150,7 +150,7 @@
 
             <!-- Profile Dropdown -->
             <div class="relative group">
-                <div class="h-10 w-10 rounded-full overflow-hidden cursor-pointer border-2 border-slate-100 dark:border-slate-800 group-hover:border-primary transition-all flex items-center justify-center bg-slate-50 dark:bg-slate-900 shadow-sm">
+                <div id="user-profile-trigger" class="h-10 w-10 rounded-full overflow-hidden cursor-pointer border-2 border-slate-100 dark:border-slate-800 group-hover:border-primary transition-all flex items-center justify-center bg-slate-50 dark:bg-slate-900 shadow-sm">
                     <?php if (is_user_logged_in()) : 
                         $current_user = wp_get_current_user();
                         echo get_avatar($current_user->ID, 40, '', 'Meu Perfil', ['class' => 'w-full h-full object-cover']);
@@ -219,9 +219,6 @@
                         <button onclick="if(navigator.share) { navigator.share({ title: 'Descomplicando Receitas', url: window.location.href }); } else { navigator.clipboard.writeText(window.location.href); alert('Link copiado!'); }" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-primary hover:text-white transition-all">
                             <span class="material-symbols-outlined text-xl">share</span>
                         </button>
-                        <a href="https://whatsapp.com/channel/0029Va5fCv1FXUuaQxDdVg0H?utm_source=header_mobile" target="_blank" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-[#25D366] hover:text-white transition-all">
-                            <span class="material-symbols-outlined text-xl">group</span>
-                        </a>
                     </div>
                 </div>
             </div>

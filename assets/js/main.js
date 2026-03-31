@@ -204,9 +204,50 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 5. Autenticação e Perfil (Popups & Dashboard)
     const initAuth = () => {
-        // Gatilho Automático pela URL
-        const params = new URLSearchParams(window.location.search);
+        // Gatilho do Perfil (Header)
+        const userTrigger = document.getElementById('user-profile-trigger');
         const authModal = document.getElementById('auth-modal');
+        
+        if (userTrigger) {
+            userTrigger.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                if (!document.body.classList.contains('logged-in')) {
+                    if (authModal) authModal.classList.remove('hidden');
+                } else {
+                    // Toggle Dropdown (Desktop-like) para Logados no Mobile
+                    const dropdown = this.nextElementSibling;
+                    if (dropdown) {
+                        const isOpen = !dropdown.classList.contains('invisible');
+                        
+                        // Fecha outros dropdowns se necessário
+                        document.querySelectorAll('.user-dropdown-active').forEach(d => {
+                            d.classList.add('invisible', 'opacity-0', 'translate-y-2');
+                            d.classList.remove('visible', 'opacity-100', 'translate-y-0', 'user-dropdown-active');
+                        });
+
+                        if (!isOpen) {
+                            dropdown.classList.remove('invisible', 'opacity-0', 'translate-y-2');
+                            dropdown.classList.add('visible', 'opacity-100', 'translate-y-0', 'user-dropdown-active');
+                        }
+                    }
+                }
+            });
+        }
+
+        // Fechar dropdowns ao clicar fora
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.group')) {
+                document.querySelectorAll('.user-dropdown-active').forEach(d => {
+                    d.classList.add('invisible', 'opacity-0', 'translate-y-2');
+                    d.classList.remove('visible', 'opacity-100', 'translate-y-0', 'user-dropdown-active');
+                });
+            }
+        });
+
+        // Gatilho Automático pela URL (Continuação do código original)
+        const params = new URLSearchParams(window.location.search);
         if (params.get('auth') === 'required' && authModal) {
             authModal.classList.remove('hidden');
         }
