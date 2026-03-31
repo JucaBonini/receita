@@ -7,12 +7,12 @@ get_header();
 if (have_posts()) : while (have_posts()) : the_post();
     $post_id = get_the_ID();
 
-    // 1. Coleta de Dados
-    $tempo_preparo    = get_field('tempo') ?: get_post_meta($post_id, '_tempo_preparo', true); 
-    $tempo_cozimento  = get_post_meta($post_id, '_tempo_cozimento', true);
-    $porcoes_meta     = get_post_meta($post_id, '_porcoes', true);
-    $dificuldade      = get_field('dificuldade') ?: get_post_meta($post_id, '_dificuldade', true);
-    $cuisine_meta     = get_post_meta($post_id, '_recipe_cuisine', true) ?: 'Brasileira'; 
+    // 1. Coleta de Dados (Compatibilidade Multi-Campos)
+    $tempo_preparo    = get_field('tempo') ?: (get_post_meta($post_id, '_tempo_preparo', true) ?: get_post_meta($post_id, 'tempo', true)); 
+    $tempo_cozimento  = get_post_meta($post_id, '_tempo_cozimento', true) ?: get_post_meta($post_id, 'tempo_cozimento', true);
+    $porcoes_meta     = get_field('rendimento') ?: (get_post_meta($post_id, '_porcoes', true) ?: get_post_meta($post_id, 'porcoes', true));
+    $dificuldade      = get_field('dificuldade') ?: (get_post_meta($post_id, '_dificuldade', true) ?: get_post_meta($post_id, 'dificuldade', true));
+    $cuisine_meta     = get_post_meta($post_id, '_recipe_cuisine', true) ?: (get_post_meta($post_id, 'recipe_cuisine', true) ?: 'Brasileira'); 
 
     $calorias         = get_post_meta($post_id, '_calorias', true);
     $carboidratos     = get_post_meta($post_id, '_carboidratos', true);
@@ -125,7 +125,7 @@ if (have_posts()) : while (have_posts()) : the_post();
             <div class="bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
                 <span class="material-symbols-outlined text-primary mb-2">restaurant</span>
                 <span class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Rendimento</span>
-                <span class="text-base sm:text-xl font-bold"><?php echo $porcoes_meta ?: '4'; ?></span>
+                <span class="text-base sm:text-xl font-bold"><?php echo trim($porcoes_meta ?: '4'); ?></span>
             </div>
             <div class="bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
                 <span class="material-symbols-outlined text-primary mb-2">bar_chart</span>
