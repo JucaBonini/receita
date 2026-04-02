@@ -78,8 +78,20 @@
 
     <!-- Espaço Publicitário -->
     <div class="max-w-6xl mx-auto py-8 px-4 text-center">
-        <div class="bg-slate-200 h-[100px] flex items-center justify-center text-slate-400 text-xs uppercase tracking-widest border border-dashed border-slate-300">
-            <?php if (function_exists('sts_display_ad')) sts_display_ad('header_top'); else echo "Espaço Publicitário AdSense"; ?>
+        <p class="text-[9px] uppercase tracking-[0.2em] text-slate-400 mb-2 font-bold">Publicidade</p>
+        <div class="min-h-[100px] flex items-center justify-center">
+            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7381677975479553"
+                 crossorigin="anonymous"></script>
+            <!-- [LP] SEMANA SANTA -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-7381677975479553"
+                 data-ad-slot="7983908781"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
         </div>
     </div>
 
