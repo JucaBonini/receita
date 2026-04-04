@@ -116,7 +116,8 @@ $includes_files = array(
     '/includes/receitas-cpt.php',
     '/includes/sidebar-receita.php',
     '/includes/breadcrumb.php',
-    '/includes/header&footer.php'
+    '/includes/header&footer.php',
+    '/includes/otimizacao-imagens.php'
 );
 
 foreach ($includes_files as $file) {

@@ -90,8 +90,8 @@ if (have_posts()) : while (have_posts()) : the_post();
                     <span class="material-symbols-outlined text-slate-400 text-xl">schedule</span>
                     <span>Atualizado em <?php the_modified_date('d/m/Y'); ?></span>
                 </div>
-                <div class="flex items-center gap-1">
-                    <span class="material-symbols-outlined text-slate-400 text-xl">visibility</span>
+                <div class="flex items-center gap-1.5 px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-full text-xs font-bold border border-slate-200 dark:border-slate-700">
+                    <span class="material-symbols-outlined text-lg">visibility</span>
                     <span><?php echo get_post_views($post_id); ?></span>
                 </div>
             </div>

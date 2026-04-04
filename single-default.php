@@ -127,7 +127,7 @@ echo json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON
                 <div>
                     <p class="font-bold text-lg text-slate-900 dark:text-white">Por <?php echo $autor_nome; ?></p>
                     <p class="text-sm text-slate-500">
-                        <?php echo $autor_job; ?> • <?php echo get_the_date('d \d\e F, Y'); ?> • <?php echo $tempo_leitura; ?> min • <span class="inline-flex items-center gap-0.5"><span class="material-symbols-outlined text-[16px] translate-y-[1px]">visibility</span><?php echo get_post_views($post_id); ?></span>
+                        <?php echo $autor_job; ?> • <?php echo get_the_date('d \d\e F, Y'); ?> • <?php echo $tempo_leitura; ?> min • <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 dark:bg-slate-800 rounded-md text-xs font-bold border border-slate-200 dark:border-slate-700 ml-1"><span class="material-symbols-outlined text-[14px]">visibility</span><?php echo get_post_views($post_id); ?></span>
                     </p>
                 </div>
             </div>
