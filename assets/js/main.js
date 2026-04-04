@@ -390,7 +390,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // 7. Sistema de Aviso LGPD (Cookies)
+    // 7. Sistema de Aviso LGPD (Cookies) 
     const LGPD_KEY = 'sts_lgpd_consent_2026';
     const lgpdBanner = document.getElementById('lgpd-banner');
     
@@ -418,6 +418,41 @@ document.addEventListener('DOMContentLoaded', function() {
                 localStorage.setItem(LGPD_KEY, 'declined');
                 lgpdBanner.classList.remove('show');
                 setTimeout(() => lgpdBanner.remove(), 700);
+            });
+        }
+    }
+
+    // 7.1 Gatilho de Convite WhatsApp (65% Scroll Strategy)
+    const WPP_KEY = 'sts_whatsapp_invite_hidden';
+    const wppBanner = document.getElementById('whatsapp-channel-banner');
+
+    if (wppBanner) {
+        let wppHasShown = false;
+        const WPP_KEY = 'sts_whatsapp_invite_hidden';
+        const wppIsHidden = localStorage.getItem(WPP_KEY);
+
+        if (!wppIsHidden) {
+            window.addEventListener('scroll', function() {
+                // Cálculo de Porcentagem de Scroll (Ultra Preciso)
+                const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+                const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const scrolled = (winScroll / height) * 100;
+
+                // Debug: console.log('Scroll:', scrolled.toFixed(2) + '%'); 
+
+                if (!wppHasShown && scrolled >= 65) {
+                    wppHasShown = true;
+                    // console.log('✅ Disparando Banner WhatsApp 65%');
+                    wppBanner.classList.add('show');
+                }
+            });
+        }
+
+        const closeWpp = document.getElementById('close-whatsapp-banner');
+        if (closeWpp) {
+            closeWpp.addEventListener('click', () => {
+                wppBanner.classList.remove('show');
+                localStorage.setItem(WPP_KEY, 'true');
             });
         }
     }
@@ -521,6 +556,140 @@ document.addEventListener('DOMContentLoaded', function() {
                         starIcon.style.fontVariationSettings = "'FILL' 0";
                     });
                 });
+            });
+        }
+    }
+    // 9. Live Search AJAX Logic
+    const searchInput = document.getElementById('sts-live-search');
+    const searchResults = document.getElementById('sts-live-results');
+
+    if (searchInput && searchResults) {
+        let timeout = null;
+
+        searchInput.addEventListener('input', function() {
+            const term = this.value;
+
+            if (timeout) clearTimeout(timeout);
+
+            if (term.length < 2) {
+                searchResults.innerHTML = '';
+                searchResults.classList.add('hidden');
+                return;
+            }
+
+            timeout = setTimeout(() => {
+                const formData = new FormData();
+                formData.append('action', 'sts_live_search');
+                formData.append('term', term);
+
+                fetch(window.themeConfig.ajaxUrl, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(res => {
+                    if (res.success && res.data.length > 0) {
+                        searchResults.innerHTML = res.data.map(item => `
+                            <a href="${item.url}" class="flex items-center gap-3 p-3 hover:bg-primary/5 dark:hover:bg-slate-800 transition-all border-b border-slate-50 dark:border-slate-800 last:border-0 group">
+                                <div class="size-12 rounded-xl overflow-hidden flex-shrink-0 shadow-sm">
+                                    <img src="${item.thumb}" class="w-full h-full object-cover group-hover:scale-110 transition-transform">
+                                </div>
+                                <div class="flex-1 overflow-hidden text-left">
+                                    <h5 class="text-[11px] font-black leading-tight truncate uppercase tracking-tight text-slate-800 dark:text-slate-200">${item.title}</h5>
+                                    <span class="text-[9px] font-bold text-primary uppercase">${item.type}</span>
+                                </div>
+                            </a>
+                        `).join('');
+                        searchResults.classList.remove('hidden');
+                    } else if (res.success && res.data.length === 0) {
+                        searchResults.innerHTML = '<div class="p-4 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">Nenhuma receita encontrada.</div>';
+                        searchResults.classList.remove('hidden');
+                    }
+                });
+            }, 300);
+        });
+
+        // Fechar ao clicar fora
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#sts-live-search') && !e.target.closest('#sts-live-results')) {
+                searchResults.classList.add('hidden');
+            }
+        });
+    }
+
+    // 10. Cooking Mode Logic
+    const cookingBtn = document.getElementById('start-cooking-mode');
+    const cookingOverlay = document.getElementById('cooking-mode-overlay');
+    const closeCookingBtn = document.getElementById('close-cooking-mode');
+    let wakeLock = null;
+
+    if (cookingBtn && cookingOverlay) {
+        cookingBtn.addEventListener('click', async () => {
+            // 1. Preencher Conteúdo
+            const titleElement = document.querySelector('h1');
+            const title = titleElement ? titleElement.innerText : 'Receita';
+            const steps = document.querySelectorAll('#instructions .relative.pl-12');
+            const container = document.getElementById('cooking-steps-container');
+            const modalTitle = document.getElementById('cooking-recipe-title');
+            
+            if (modalTitle) modalTitle.innerText = title;
+            
+            if (container) {
+                container.innerHTML = Array.from(steps).map((step, i) => {
+                    const descElement = step.querySelector('.text-slate-600, .dark\\:text-slate-400');
+                    const desc = descElement ? descElement.innerHTML : '';
+                    return `
+                        <div class="cooking-step-item bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-8 md:p-12 rounded-[40px] shadow-sm">
+                            <div class="flex items-center gap-6 mb-8">
+                                <span class="size-16 rounded-full bg-primary text-white flex items-center justify-center font-black text-2xl shadow-lg shadow-primary/20">${i+1}</span>
+                                <h4 class="text-xl font-black text-slate-400 uppercase tracking-widest">PASSO ${i+1}</h4>
+                            </div>
+                            <div class="text-2xl md:text-3xl font-bold leading-relaxed text-slate-800 dark:text-slate-200">
+                                ${desc}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // 2. Mostrar Overlay
+            cookingOverlay.classList.remove('hidden');
+            cookingOverlay.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+
+            // 3. Ativar Wake Lock (Impedir tela de apagar)
+            if ('wakeLock' in navigator) {
+                try {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    const statusText = document.getElementById('cooking-mode-status');
+                    if (statusText) {
+                        statusText.innerText = 'Tela permanecerá ligada';
+                        statusText.classList.remove('text-slate-400');
+                        statusText.classList.add('text-primary');
+                    }
+                } catch (err) {
+                    console.error(`${err.name}, ${err.message}`);
+                }
+            }
+        });
+
+        if (closeCookingBtn) {
+            closeCookingBtn.addEventListener('click', () => {
+                cookingOverlay.classList.remove('flex');
+                cookingOverlay.classList.add('hidden');
+                document.body.style.overflow = '';
+                
+                if (wakeLock !== null) {
+                    wakeLock.release().then(() => {
+                        wakeLock = null;
+                        const statusText = document.getElementById('cooking-mode-status');
+                        if (statusText) {
+                            statusText.innerText = 'Tela pode apagar normal';
+                            statusText.classList.remove('text-primary');
+                            statusText.classList.add('text-slate-400');
+                        }
+                    });
+                }
             });
         }
     }

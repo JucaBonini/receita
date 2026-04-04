@@ -194,6 +194,10 @@ echo json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON
                 <?php comments_template(); ?>
             </section>
 
+            <div class="print-footer hidden print:block">
+                Artigo retirado de: <?php echo get_bloginfo('name'); ?> - <?php the_permalink(); ?>
+            </div>
+
         </article>
 
         <!-- Sidebar -->

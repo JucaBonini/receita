@@ -100,17 +100,20 @@ if (have_posts()) : while (have_posts()) : the_post();
         <div class="aspect-video w-full rounded-[32px] overflow-hidden mb-10 shadow-2xl relative group bg-slate-100 dark:bg-slate-800">
             <?php 
             if (has_post_thumbnail()) {
+                $thumb_id = get_post_thumbnail_id();
+                $alt_text = get_post_meta($thumb_id, '_wp_attachment_image_alt', true) ?: get_the_title();
                 the_post_thumbnail('full', [
                     'class' => 'w-full h-full object-cover transition-transform duration-700 group-hover:scale-105',
                     'loading' => 'eager', 
                     'fetchpriority' => 'high',
                     'decoding' => 'async',
-                    'alt' => get_the_title()
+                    'alt' => esc_attr($alt_text),
+                    'itemprop' => 'image'
                 ]); 
             } else {
                 // Imagem de Fallback quando não há destaque (SEO & Google Discover)
                 $default_image = get_template_directory_uri() . '/assets/images/default-image.webp';
-                echo '<img src="' . esc_url($default_image) . '" alt="' . esc_attr(get_the_title()) . '" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="eager" decoding="async">';
+                echo '<img src="' . esc_url($default_image) . '" alt="' . esc_attr(get_the_title()) . '" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="eager" decoding="async" fetchpriority="high">';
             }
             ?>
         </div>
@@ -160,6 +163,9 @@ if (have_posts()) : while (have_posts()) : the_post();
             <!-- Main Content Area -->
             <div class="lg:col-span-2">
                 
+                <!-- Navigation Index (Pílulas com Ícones - Inteligente) -->
+                <?php sts_render_recipe_pill_toc(); ?>
+
                 <!-- Intro/Content -->
                 <div class="prose sm:prose-xl dark:prose-invert max-w-none text-lg leading-relaxed space-y-8 prose-headings:text-primary prose-a:text-primary mb-12 selection:bg-primary/20">
                     <?php if (has_excerpt()) : ?>
@@ -223,15 +229,21 @@ if (have_posts()) : while (have_posts()) : the_post();
 
                 <!-- Instructions Section -->
                 <section class="mb-12" id="instructions">
-                    <h2 class="text-2xl font-bold flex items-center gap-2 mb-8">
-                        <span class="material-symbols-outlined text-primary">format_list_numbered</span>
-                        Modo de Preparo
-                    </h2>
+                    <div class="flex items-center justify-between gap-4 mb-10">
+                        <h2 class="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tight flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary text-3xl">restaurant</span>
+                            Modo de Preparo
+                        </h2>
+                        <button id="start-cooking-mode" class="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full font-bold text-xs hover:bg-primary hover:text-white transition-all group">
+                            <span class="material-symbols-outlined text-lg group-hover:animate-pulse">kitchen</span>
+                            Modo Cozinha
+                        </button>
+                    </div>
                     <div class="space-y-10 relative before:absolute before:left-5 before:top-2 before:bottom-2 before:w-0.5 before:bg-primary/10">
                         <?php 
                         if (is_array($instrucoes_raw)) : foreach($instrucoes_raw as $i => $passo) : if(trim($passo)) :
                         ?>
-                        <div class="relative pl-12 group">
+                        <div id="step-<?php echo $i + 1; ?>" class="relative pl-12 group scroll-mt-32">
                             <div class="absolute left-0 top-0 w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform z-10"><?php echo $i + 1; ?></div>
                             <h3 class="text-lg font-bold mb-3 text-slate-800 dark:text-slate-200">Passo <?php echo $i + 1; ?></h3>
                             <div class="text-slate-600 dark:text-slate-400 leading-relaxed text-lg">
@@ -440,6 +452,10 @@ if (have_posts()) : while (have_posts()) : the_post();
 
             </aside>
 
+        </div>
+
+        <div class="print-footer hidden print:block">
+            Receita retirada de: <?php echo get_bloginfo('name'); ?> - <?php the_permalink(); ?>
         </div>
 
         </article>

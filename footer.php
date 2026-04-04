@@ -5,12 +5,18 @@
             
             <!-- Logo & Bio -->
             <div class="col-span-1 md:col-span-2">
-                <div class="flex items-center gap-2 mb-6">
-                    <div class="bg-primary text-white p-1 rounded-lg">
-                        <span class="material-symbols-outlined block text-xl">restaurant_menu</span>
-                    </div>
-                    <span class="text-xl font-black text-white"><?php bloginfo('name'); ?></span>
-                </div>
+            <div class="mb-6">
+                <a href="<?php echo esc_url(home_url('/')); ?>" class="block">
+                    <?php 
+                    $custom_logo_id = get_theme_mod('custom_logo');
+                    $logo = wp_get_attachment_image_src($custom_logo_id , 'full');
+                    if ($logo) : ?>
+                        <img src="<?php echo esc_url($logo[0]); ?>" class="h-10 md:h-12 w-auto object-contain brightness-0 invert opacity-90" alt="<?php bloginfo('name'); ?>">
+                    <?php else : ?>
+                        <span class="text-xl font-black text-white"><?php bloginfo('name'); ?></span>
+                    <?php endif; ?>
+                </a>
+            </div>
                 <p class="max-w-md text-slate-400 leading-relaxed">
                     <?php bloginfo('description'); ?>. Transformamos ingredientes comuns em refeições extraordinárias para o seu dia a dia.
                 </p>
@@ -83,6 +89,7 @@
 
 
 <?php get_template_part('template-parts/lgpd-banner'); ?>
+<?php get_template_part('template-parts/whatsapp-banner'); ?>
 
 <?php wp_footer(); ?>
 </body>

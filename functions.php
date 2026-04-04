@@ -6,7 +6,7 @@
 // Definir constantes do tema NO TOPO
 define('THEME_PATH', get_template_directory());
 define('THEME_URI', get_template_directory_uri());
-define('THEME_VERSION', '1.0.4'); // Cache Buster Force
+define('THEME_VERSION', '1.0.5'); // Cache Buster Force
 
 // Setup do tema
 function descomplicando_receitas_setup() {
@@ -54,6 +54,9 @@ function descomplicando_receitas_scripts() {
     // Carregar Tailwind CSS Compilado
     wp_enqueue_style('main-css', THEME_URI . '/assets/css/main.min.css', array(), THEME_VERSION, 'all');
     
+    // Novo Sistema de Impressão Premium
+    wp_enqueue_style('print-css', THEME_URI . '/assets/css/print.css', array(), THEME_VERSION, 'print');
+    
     // Novas fontes (Public Sans) gerenciadas no header.php
     
     // JS - Carregamento com defer (true no último parâmetro)
@@ -70,15 +73,35 @@ function descomplicando_receitas_scripts() {
 add_action('wp_enqueue_scripts', 'descomplicando_receitas_scripts');
 
 /**
- * Ajuste de Lazy Loading para Core Web Vitals
- * Remove lazy loading de imagens que marcamos como 'eager' ou 'high' priority
+ * Otimização de Imagens: Discover & Core Web Vitals (CLS/LCP)
+ * 1. Remove lazy-loading de imagens críticas (LCP)
+ * 2. Adiciona width/height se faltarem para evitar saltos (CLS)
  */
 add_filter('wp_get_loading_optimization_attributes', function($attrs, $tag_name, $context) {
-    if (isset($attrs['loading']) && $attrs['loading'] === 'eager') {
-        unset($attrs['loading']); // Remove o atributo 'loading' para forçar carregamento imediato
+    if (isset($attrs['loading']) && ($attrs['loading'] === 'eager' || is_singular())) {
+        // Se for a imagem de destaque ou no topo, removemos o lazy para velocidade máxima
+        unset($attrs['loading']); 
     }
     return $attrs;
 }, 10, 3);
+
+function sts_optimize_content_images($content) {
+    if (!is_singular()) return $content;
+    
+    // Adicionar width/height faltantes para evitar CLS em imagens do post
+    $pattern = '/<img [^>]*src="[^"]+"[^>]*>/i';
+    if (preg_match_all($pattern, $content, $matches)) {
+        foreach ($matches[0] as $img_tag) {
+            if (strpos($img_tag, 'width=') === false || strpos($img_tag, 'height=') === false) {
+                // Aqui o WordPress já tenta fazer nativamente, mas reforçamos se necessário
+                $img_tag_new = str_replace('<img ', '<img loading="lazy" decoding="async" ', $img_tag);
+                $content = str_replace($img_tag, $img_tag_new, $content);
+            }
+        }
+    }
+    return $content;
+}
+add_filter('the_content', 'sts_optimize_content_images');
 
 // Adicionar atributos async/defer ao JS para otimizar o INP
 function add_async_defer_attributes($tag, $handle, $src) {
@@ -117,7 +140,10 @@ $includes_files = array(
     '/includes/sidebar-receita.php',
     '/includes/breadcrumb.php',
     '/includes/header&footer.php',
-    '/includes/otimizacao-imagens.php'
+    '/includes/otimizacao-imagens.php',
+    '/includes/live-search.php',
+    '/includes/sumario.php',
+    '/includes/cooking-mode.php'
 );
 
 foreach ($includes_files as $file) {
@@ -760,3 +786,74 @@ function sts_get_cardapio_ingredients() {
 }
 add_action('wp_ajax_get_cardapio_ingredients', 'sts_get_cardapio_ingredients');
 add_action('wp_ajax_nopriv_get_cardapio_ingredients', 'sts_get_cardapio_ingredients');
+/**
+ * Paginação Premium com Tailwind CSS
+ */
+function sts_pagination() {
+    if (is_singular()) return;
+
+    global $wp_query;
+    $big = 999999999;
+    $pages = paginate_links(array(
+        'base'      => str_replace($big, '%#%', esc_url(get_pagenum_link($big))),
+        'format'    => '?paged=%#%',
+        'current'   => max(1, get_query_var('paged')),
+        'total'     => $wp_query->max_num_pages,
+        'type'      => 'array',
+        'prev_next' => true,
+        'prev_text' => '<span class="material-symbols-outlined">west</span>',
+        'next_text' => '<span class="material-symbols-outlined">east</span>',
+    ));
+
+    if (is_array($pages)) {
+        echo '<nav class="flex justify-center items-center gap-2 mt-16" aria-label="Navegação de páginas">';
+        foreach ($pages as $page) {
+            $class = "inline-flex items-center justify-center size-12 rounded-2xl bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold hover:bg-primary hover:text-white border border-slate-100 dark:border-slate-700 transition-all shadow-sm";
+            
+            // Verifica se é a página atual
+            if (strpos($page, 'current') !== false) {
+                $page = str_replace('page-numbers current', 'page-numbers', $page);
+                echo str_replace('page-numbers', $class . ' !bg-primary !text-white shadow-lg shadow-primary/20', $page);
+            } 
+            // Botões de Próximo/Anterior
+            elseif (strpos($page, 'prev') !== false || strpos($page, 'next') !== false) {
+                echo str_replace('page-numbers', $class . ' bg-slate-50 dark:bg-slate-900 border-none', $page);
+            }
+            // Dots (...)
+            elseif (strpos($page, 'dots') !== false) {
+                echo '<span class="px-2 text-slate-400 font-bold">...</span>';
+            }
+            // Páginas normais
+            else {
+                echo str_replace('page-numbers', $class, $page);
+            }
+        }
+        echo '</nav>';
+    }
+}
+/**
+ * Minificador de HTML Nativo (Zero-Plugin Cache)
+ * Remove espaços, quebras de linha e comentários inúteis.
+ */
+function sts_minify_html_output($buffer) {
+    if (is_admin()) return $buffer; // Não minifica o painel administrativo
+    
+    $search = array(
+        '/\>\s+\</',      // Remove espaços entre tags
+        '/\s{2,}/',       // Remove espaços duplos
+        '/(\r?\n)/',      // Remove quebras de linha
+        '/<!--(.*?)-->/s' // Remove comentários HTML (Exceto Konditional comments do IE se houver)
+    );
+    $replace = array(
+        '><',
+        ' ',
+        '',
+        ''
+    );
+    return preg_replace($search, $replace, $buffer);
+}
+
+function sts_start_minification() {
+    ob_start('sts_minify_html_output');
+}
+add_action('get_header', 'sts_start_minification');

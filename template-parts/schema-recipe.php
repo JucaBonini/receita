@@ -47,7 +47,7 @@ $schema = [
         "name" => get_bloginfo('name'),
         "logo" => [
             "@type" => "ImageObject",
-            "url" => get_template_directory_uri() . '/assets/images/logo.png' // Verifique se este caminho existe
+            "url" => get_template_directory_uri() . '/assets/images/logotipo-descomplicando_receitas300x300.png'
         ]
     ],
     "description" => wp_trim_words(get_the_excerpt() ?: get_the_content(), 40),

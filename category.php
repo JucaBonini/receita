@@ -75,46 +75,55 @@ $category_image = get_term_meta($category_id, 'category_image', true);
                             $tempo = get_post_meta(get_the_ID(), '_tempo_preparo', true) ?: '20 min';
                             $dif = get_post_meta(get_the_ID(), '_dificuldade', true) ?: 'Fácil';
                         ?>
-                        <article class="bg-white dark:bg-slate-800 rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-700 hover:shadow-2xl transition-all group flex flex-col h-full">
+                        <article class="bg-white dark:bg-slate-800 rounded-[40px] overflow-hidden border border-slate-100 dark:border-slate-700/50 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500 group flex flex-col h-full">
+                            <!-- Imagem principal com Zoom no Hover -->
                             <div class="relative aspect-[4/3] overflow-hidden">
-                                <a href="<?php the_permalink(); ?>">
-                                    <?php the_post_thumbnail('medium_large', array('class' => 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-700')); ?>
+                                <a href="<?php the_permalink(); ?>" class="block w-full h-full">
+                                    <?php if(has_post_thumbnail()) : ?>
+                                        <?php the_post_thumbnail('medium_large', array('class' => 'w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-out')); ?>
+                                    <?php else : ?>
+                                        <div class="w-full h-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+                                            <span class="material-symbols-outlined text-slate-300 text-6xl">image</span>
+                                        </div>
+                                    <?php endif; ?>
                                 </a>
-                                <div class="absolute top-4 left-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider text-primary shadow-sm">
-                                    <?php echo $dif; ?>
+                                <!-- Badge de Dificuldade -->
+                                <div class="absolute top-4 left-4 bg-white/60 dark:bg-slate-900/60 backdrop-blur-md px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-white shadow-sm border border-white/20">
+                                    <?php echo esc_html($dif); ?>
                                 </div>
                             </div>
-                            <div class="p-8 flex flex-col flex-1">
-                                <h3 class="text-2xl font-bold mb-3 group-hover:text-primary transition-colors leading-tight">
+
+                            <div class="p-8 md:p-10 flex flex-col flex-1">
+                                <!-- Título com foco narrativo -->
+                                <h3 class="text-2xl font-black mb-4 group-hover:text-primary transition-colors leading-tight tracking-tight">
                                     <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
                                 </h3>
-                                <p class="text-slate-600 dark:text-slate-400 text-sm mb-6 line-clamp-2"><?php echo wp_trim_words(get_the_excerpt(), 18); ?></p>
                                 
-                                <div class="flex items-center justify-between pt-6 border-t border-slate-100 dark:border-slate-700 mt-auto">
-                                    <div class="flex items-center gap-3">
-                                        <span class="material-symbols-outlined text-primary">schedule</span>
-                                        <span class="text-sm font-bold"><?php echo $tempo; ?></span>
+                                <!-- Meta de Tempo (Badget elegante) -->
+                                <div class="flex items-center gap-2 mb-6">
+                                    <div class="flex items-center gap-1.5 px-3 py-1 bg-primary/5 text-primary rounded-full">
+                                        <span class="material-symbols-outlined text-sm">schedule</span>
+                                        <span class="text-xs font-bold uppercase tracking-tight"><?php echo esc_html($tempo); ?></span>
                                     </div>
-                                    <a href="<?php the_permalink(); ?>" class="size-10 rounded-full bg-primary/10 text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-all transform group-hover:translate-x-1">
-                                        <span class="material-symbols-outlined">arrow_forward</span>
-                                    </a>
+                                    <div class="flex items-center gap-1.5 px-3 py-1 bg-slate-100 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 rounded-full">
+                                        <span class="material-symbols-outlined text-sm">visibility</span>
+                                        <span class="text-xs font-bold uppercase tracking-tight"><?php echo get_post_views(get_the_ID()); ?> vistas</span>
+                                    </div>
                                 </div>
+
+                                <p class="text-slate-600 dark:text-slate-400 text-base leading-relaxed mb-8 line-clamp-2"><?php echo wp_trim_words(get_the_excerpt(), 20); ?></p>
+                                
+                                <a href="<?php the_permalink(); ?>" class="mt-auto flex items-center justify-center gap-2 w-full py-4 bg-slate-50 dark:bg-slate-900/50 text-slate-900 dark:text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-primary hover:text-white transition-all group">
+                                    Ver Receita Completa
+                                    <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                </a>
                             </div>
                         </article>
                         <?php endwhile; ?>
                     </div>
 
-                    <!-- Paginação -->
-                    <div class="mt-16 flex justify-center">
-                        <?php
-                        echo paginate_links(array(
-                            'prev_text' => '<span class="material-symbols-outlined">west</span>',
-                            'next_text' => '<span class="material-symbols-outlined">east</span>',
-                            'type' => 'plain',
-                            'class' => 'flex gap-2'
-                        ));
-                        ?>
-                    </div>
+                    <!-- Paginação Premium -->
+                    <?php sts_pagination(); ?>
                 <?php endif; ?>
             </div>
 

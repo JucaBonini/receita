@@ -1,0 +1,151 @@
+/* 
+ * STS RECIPE - Estilo de Impressão Premium
+ * Focado em economia de tinta e design de livro de receitas.
+ */
+
+@media print {
+    /* 1. Limpeza total de distrações e custos (Tinta) */
+    header, footer, nav, aside, .sidebar, 
+    .sts-ad-slot-header, .sts-ad-injected, .sts-ad-injected-inline,
+    .btn-favorite, .social-sharing, .comments-area, 
+    #rating-widget, .sts-floating-rating, #rating-success,
+    section.bg-slate-50, section.mt-8, .sts-ad-slot-after-title,
+    .bread-nav, .breadcrumb, button, .print-btn, .header-search-icon,
+    iframe, #disqus_thread, #respond, h4#related-title, .related-posts,
+    .achadinhos-section, section[id='rating-widget'], .st-social-share {
+        display: none !important;
+    }
+
+    /* 2. Reset de Layout (A4 Friendly) */
+    body {
+        background: #fff !important;
+        color: #000 !important;
+        font-size: 11pt;
+        line-height: 1.5;
+        margin: 0;
+        padding: 0;
+    }
+
+    main {
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: block !important;
+    }
+
+    /* Forçar colunas únicas e visibilidade total */
+    .grid {
+        display: block !important;
+    }
+
+    .lg\:col-span-2, .lg\:col-span-8, article {
+        width: 100% !important;
+        display: block !important;
+    }
+
+    /* 3. Títulos e Identidade */
+    h1 {
+        font-size: 24pt !important;
+        font-weight: bold !important;
+        margin-bottom: 20px !important;
+        text-align: center !important;
+        color: #000 !important;
+    }
+
+    /* 4. Imagem Principal (Controlada para não gastar muita tinta e caber na folha) */
+    .aspect-video {
+        aspect-ratio: auto !important;
+        height: 250px !important;
+        width: 100% !important;
+        border-radius: 0 !important;
+        margin-bottom: 20px !important;
+        box-shadow: none !important;
+    }
+
+    img {
+        max-width: 100% !important;
+        height: auto !important;
+        page-break-inside: avoid;
+    }
+
+    /* 5. Metadados (Tempo, Rendimento, etc) */
+    .grid-cols-2, .grid-cols-3, .grid-cols-5 {
+        display: flex !important;
+        justify-content: space-between !important;
+        margin-bottom: 30px !important;
+        border: 1px solid #eee;
+        padding: 10px;
+        background: #fafafa !important;
+    }
+    
+    .bg-white, .dark\:bg-slate-800 {
+        background: none !important;
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+    }
+
+    .material-symbols-outlined {
+        display: inline-block !important;
+        color: #333 !important;
+        font-size: 16px !important;
+    }
+
+    /* 6. Ingredientes e Modo de Preparo */
+    section {
+        page-break-inside: avoid;
+        margin-bottom: 30px !important;
+    }
+
+    h2 {
+        font-size: 16pt !important;
+        border-bottom: 2px solid #000;
+        padding-bottom: 5px;
+        margin-bottom: 15px !important;
+        color: #000 !important;
+    }
+
+    ul, ol {
+        list-style-type: disc !important;
+        padding-left: 20px !important;
+    }
+
+    input[type="checkbox"] {
+        display: none !important;
+    }
+
+    .label-ingredient span {
+        text-decoration: none !important;
+        color: #000 !important;
+    }
+
+    .relative.pl-12 {
+        padding-left: 20px !important;
+        margin-bottom: 15px !important;
+    }
+
+    .rounded-full.bg-primary {
+        background: #000 !important;
+        color: #fff !important;
+        border: 1px solid #000;
+        print-color-adjust: exact;
+    }
+
+    /* 7. Branding - Marca d'água de origem */
+    .print-footer {
+        display: block !important;
+        text-align: center;
+        font-size: 8pt;
+        color: #888;
+        margin-top: 40px;
+        border-top: 1px dashed #ccc;
+        padding-top: 20px;
+    }
+
+    /* Forçar cores de fundo se suportado (para o número dos passos) */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+}
