@@ -68,9 +68,19 @@ get_header(); ?>
                             $dif = get_post_meta(get_the_ID(), '_dificuldade', true) ?: 'Fácil';
                         ?>
                         <article class="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 hover:shadow-2xl transition-all group flex flex-col h-full">
-                            <div class="relative aspect-[4/3] overflow-hidden">
+                            <div class="relative aspect-video overflow-hidden bg-slate-100 dark:bg-slate-900">
                                 <a href="<?php the_permalink(); ?>">
-                                    <?php the_post_thumbnail('recipe-card', array('class' => 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')); ?>
+                                    <?php 
+                                    if (has_post_thumbnail()) {
+                                        the_post_thumbnail('recipe-card', array(
+                                            'class' => 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500',
+                                            'alt' => get_the_title()
+                                        )); 
+                                    } else {
+                                        $default_image = get_template_directory_uri() . '/assets/images/default-image.webp';
+                                        echo '<img src="' . esc_url($default_image) . '" alt="' . esc_attr(get_the_title()) . '" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" decoding="async">';
+                                    }
+                                    ?>
                                 </a>
                                 <button class="absolute top-4 right-4 p-2 bg-white/80 dark:bg-slate-900/80 rounded-full backdrop-blur hover:bg-white dark:hover:bg-slate-900 transition-colors">
                                     <span class="material-symbols-outlined text-primary">favorite</span>

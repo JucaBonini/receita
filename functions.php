@@ -129,9 +129,9 @@ $cpt_files = array(
 	'/includes/cpt/cpt-ebooks.php',
     '/includes/cpt/cpt-achadinhos.php',
     '/includes/cpt/cpt-artigos.php', 
+    '/includes/cpt/cpt-glossario.php',
     '/includes/cpt/cpt-faqs.php',
     '/includes/cpt/cpt-reviews.php',
-    '/includes/cpt/custom-taxonomies.php',
     '/includes/cpt/custom-taxonomies.php',
     '/includes/cpt/meta-tags.-cabecalho.php',
 	'/includes/cpt/avaliacao.php'

@@ -93,7 +93,6 @@ if (have_posts()) : while (have_posts()) : the_post();
             </div>
         </div>
 
-        <!-- Hero Image (LCP Optimization & CLS Prevention) -->
         <div class="aspect-video w-full rounded-[32px] overflow-hidden mb-10 shadow-2xl relative group bg-slate-100 dark:bg-slate-800">
             <?php 
             if (has_post_thumbnail()) {
@@ -105,7 +104,9 @@ if (have_posts()) : while (have_posts()) : the_post();
                     'alt' => get_the_title()
                 ]); 
             } else {
-                echo '<div class="w-full h-full flex items-center justify-center"><span class="material-symbols-outlined text-6xl text-slate-300">recipe</span></div>';
+                // Imagem de Fallback quando não há destaque (SEO & Google Discover)
+                $default_image = get_template_directory_uri() . '/assets/images/default-image.webp';
+                echo '<img src="' . esc_url($default_image) . '" alt="' . esc_attr(get_the_title()) . '" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="eager" decoding="async">';
             }
             ?>
         </div>
@@ -268,8 +269,38 @@ if (have_posts()) : while (have_posts()) : the_post();
                     <input type="hidden" id="rating_post_id" value="<?php echo $post_id; ?>">
                 </section>
 
+                <!-- 🟢 Social Sharing (Engagement Boost) -->
+                <div class="mb-12 pt-10 border-t border-slate-100 dark:border-slate-800">
+                    <p class="text-[11px] font-black uppercase tracking-[0.25em] text-slate-400 mb-6 flex items-center gap-4">
+                        Gostou da receita? Compartilhe:
+                        <span class="flex-1 h-px bg-slate-50 dark:bg-slate-800/10"></span>
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <?php 
+                        $share_url = urlencode(get_permalink());
+                        $share_title = urlencode(get_the_title());
+                        ?>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $share_url; ?>" target="_blank" class="flex items-center gap-2 px-6 py-3 bg-[#1877F2] text-white rounded-2xl hover:bg-[#1877F2]/90 transition-all font-bold text-sm shadow-lg shadow-[#1877F2]/20 transform active:scale-95">
+                            <span class="material-symbols-outlined text-xl">share</span>
+                            Facebook
+                        </a>
+                        <a href="https://twitter.com/intent/tweet?text=<?php echo $share_title; ?>&url=<?php echo $share_url; ?>" target="_blank" class="flex items-center gap-2 px-6 py-3 bg-[#1DA1F2] text-white rounded-2xl hover:bg-[#1DA1F2]/90 transition-all font-bold text-sm shadow-lg shadow-[#1DA1F2]/20 transform active:scale-95">
+                            <span class="material-symbols-outlined text-xl">post_add</span>
+                            Twitter
+                        </a>
+                        <a href="https://api.whatsapp.com/send?text=<?php echo $share_title . ' ' . $share_url; ?>" target="_blank" class="flex items-center gap-2 px-6 py-3 bg-[#25D366] text-white rounded-2xl hover:bg-[#25D366]/90 transition-all font-bold text-sm shadow-lg shadow-[#25D366]/20 transform active:scale-95">
+                            <span class="material-symbols-outlined text-xl">chat</span>
+                            WhatsApp
+                        </a>
+                        <button onclick="navigator.clipboard.writeText('<?php the_permalink(); ?>'); alert('Link da receita copiado!');" class="flex items-center gap-2 px-6 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-2xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all font-bold text-sm transform active:scale-95">
+                            <span class="material-symbols-outlined text-xl">link</span>
+                            Copiar Link
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Comments/Reviews Placeholder -->
-                <section class="mt-16 pt-12 border-t border-slate-200 dark:border-slate-800">
+                <section class="mt-8 pt-12 border-t border-slate-200 dark:border-slate-800">
                     <?php if (comments_open() || get_comments_number()) comments_template(); ?>
                 </section>
 

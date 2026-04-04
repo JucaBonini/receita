@@ -51,13 +51,21 @@ get_header();
                 if ($hero_query->have_posts()) : while ($hero_query->have_posts()) : $hero_query->the_post();
                     $hero_img = get_the_post_thumbnail_url(get_the_ID(), 'full') ?: THEME_URI . '/assets/images/placeholder.jpg';
                 ?>
-                <div class="w-full lg:w-3/5 relative rounded-[32px] overflow-hidden group min-h-[450px] shadow-2xl border border-slate-100 dark:border-slate-800">
-                    <img src="<?php echo esc_url($hero_img); ?>" 
-                         alt="<?php the_title_attribute(); ?>"
-                         class="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
-                         loading="eager"
-                         fetchpriority="high"
-                         decoding="async">
+                <div class="w-full lg:w-3/5 relative rounded-[32px] overflow-hidden group min-h-[450px] shadow-2xl border border-slate-100 dark:border-slate-800 bg-slate-100 dark:bg-slate-900">
+                    <?php 
+                    if (has_post_thumbnail()) {
+                        the_post_thumbnail('full', [
+                            'class' => 'absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110',
+                            'loading' => 'eager', 
+                            'fetchpriority' => 'high',
+                            'decoding' => 'async',
+                            'alt' => get_the_title()
+                        ]); 
+                    } else {
+                        $default_image = get_template_directory_uri() . '/assets/images/default-image.webp';
+                        echo '<img src="' . esc_url($default_image) . '" alt="' . esc_attr(get_the_title()) . '" class="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" loading="eager" decoding="async">';
+                    }
+                    ?>
                     <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
                     
                     <div class="absolute top-6 left-6 z-10">
@@ -116,8 +124,15 @@ get_header();
                                 $t_img = get_the_post_thumbnail_url(get_the_ID(), 'thumbnail') ?: THEME_URI . '/assets/images/placeholder.jpg';
                             ?>
                             <a class="flex gap-5 group items-center p-3 rounded-2xl hover:bg-white dark:hover:bg-slate-800 transition-all border border-transparent hover:border-slate-100 dark:hover:border-slate-700 hover:shadow-xl hover:shadow-primary/5" href="<?php the_permalink(); ?>">
-                                <div class="size-20 rounded-2xl overflow-hidden shrink-0 shadow-lg group-hover:shadow-primary/20 transition-all">
-                                    <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('<?php echo esc_url($t_img); ?>')"></div>
+                                <div class="size-20 rounded-2xl overflow-hidden shrink-0 shadow-lg group-hover:shadow-primary/20 transition-all bg-slate-100 dark:bg-slate-900">
+                                    <?php 
+                                    if (has_post_thumbnail()) {
+                                        the_post_thumbnail('thumbnail', array('class' => 'w-full h-full object-cover group-hover:scale-110 transition-transform duration-700', 'alt' => get_the_title())); 
+                                    } else {
+                                        $default_image = get_template_directory_uri() . '/assets/images/default-image.webp';
+                                        echo '<img src="' . esc_url($default_image) . '" alt="' . esc_attr(get_the_title()) . '" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" decoding="async">';
+                                    }
+                                    ?>
                                 </div>
                                 <div class="flex flex-col">
                                     <h3 class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-primary transition-colors line-clamp-2 leading-tight">
@@ -243,9 +258,16 @@ get_header();
                 $dif = get_post_meta(get_the_ID(), '_dificuldade', true) ?: 'Fácil';
             ?>
             <article class="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 hover:shadow-2xl transition-all group flex flex-col h-full">
-                <div class="relative aspect-[4/3] overflow-hidden">
+                <div class="relative aspect-video overflow-hidden bg-slate-100 dark:bg-slate-900">
                     <a href="<?php the_permalink(); ?>">
-                        <?php the_post_thumbnail('recipe-card', array('class' => 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')); ?>
+                        <?php 
+                        if (has_post_thumbnail()) {
+                            the_post_thumbnail('recipe-card', array('class' => 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500', 'alt' => get_the_title())); 
+                        } else {
+                            $default_image = get_template_directory_uri() . '/assets/images/default-image.webp';
+                            echo '<img src="' . esc_url($default_image) . '" alt="' . esc_attr(get_the_title()) . '" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" decoding="async">';
+                        }
+                        ?>
                     </a>
                     <button class="btn-favorite absolute top-4 right-4 p-2 bg-white/80 dark:bg-slate-900/80 rounded-full backdrop-blur hover:bg-white dark:hover:bg-slate-900 transition-colors z-10" data-post-id="<?php the_ID(); ?>" aria-label="Favoritar receita">
                         <span class="material-symbols-outlined text-primary">favorite</span>
@@ -322,8 +344,15 @@ get_header();
             ?>
                 <!-- Card de Destaque -->
                 <article class="md:col-span-2 lg:col-span-3 group relative h-[400px] sm:h-[500px] rounded-[32px] overflow-hidden shadow-2xl mb-4">
-                    <a href="<?php the_permalink(); ?>" class="absolute inset-0 z-0">
-                        <?php the_post_thumbnail('large', array('class' => 'w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110')); ?>
+                    <a href="<?php the_permalink(); ?>" class="absolute inset-0 z-0 bg-slate-100 dark:bg-slate-900">
+                        <?php 
+                        if (has_post_thumbnail()) {
+                            the_post_thumbnail('large', array('class' => 'w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110', 'alt' => get_the_title())); 
+                        } else {
+                            $default_image = get_template_directory_uri() . '/assets/images/default-image.webp';
+                            echo '<img src="' . esc_url($default_image) . '" alt="' . esc_attr(get_the_title()) . '" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" loading="lazy" decoding="async">';
+                        }
+                        ?>
                     </a>
                     <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent z-1"></div>
                     
@@ -343,9 +372,16 @@ get_header();
             <?php else : // As outras 6 receitas em grade ?>
                 <!-- Card Padrão Grade -->
                 <article class="bg-white dark:bg-slate-800 rounded-3xl overflow-hidden border border-slate-100 dark:border-slate-700 hover:shadow-xl transition-all group flex flex-col">
-                    <div class="relative aspect-video overflow-hidden">
+                    <div class="relative aspect-video overflow-hidden bg-slate-100 dark:bg-slate-900">
                         <a href="<?php the_permalink(); ?>">
-                            <?php the_post_thumbnail('recipe-card', array('class' => 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500')); ?>
+                            <?php 
+                            if (has_post_thumbnail()) {
+                                the_post_thumbnail('recipe-card', array('class' => 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500', 'alt' => get_the_title())); 
+                            } else {
+                                $default_image = get_template_directory_uri() . '/assets/images/default-image.webp';
+                                echo '<img src="' . esc_url($default_image) . '" alt="' . esc_attr(get_the_title()) . '" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" decoding="async">';
+                            }
+                            ?>
                         </a>
                         <div class="absolute top-4 left-4">
                              <div class="bg-white/90 dark:bg-slate-900/90 backdrop-blur px-3 py-1 rounded-lg shadow-sm text-[10px] font-black uppercase text-primary flex items-center gap-1">

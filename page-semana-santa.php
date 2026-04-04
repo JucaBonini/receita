@@ -77,23 +77,27 @@
     </section>
 
     <!-- Espaço Publicitário -->
-    <div class="max-w-6xl mx-auto py-8 px-4 text-center">
-        <p class="text-[9px] uppercase tracking-[0.2em] text-slate-400 mb-2 font-bold">Publicidade</p>
-        <div class="min-h-[100px] flex items-center justify-center">
-            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7381677975479553"
-                 crossorigin="anonymous"></script>
-            <!-- [LP] SEMANA SANTA -->
-            <ins class="adsbygoogle"
-                 style="display:block"
-                 data-ad-client="ca-pub-7381677975479553"
-                 data-ad-slot="7983908781"
-                 data-ad-format="auto"
-                 data-full-width-responsive="true"></ins>
-            <script>
-                 (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-        </div>
+<div class="max-w-6xl mx-auto py-8 px-4 text-center">
+  <div class="relative border-t border-gray-400 w-[250px] mx-auto pt-4">
+    <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-white px-3 text-[9px] uppercase tracking-[0.2em] text-slate-400 font-bold">
+      ANÚNCIO
     </div>
+    <div class="mt-4">
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7381677975479553"
+              crossorigin="anonymous"></script>
+      <!-- [LP] SEMANA SANTA -->
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-7381677975479553"
+           data-ad-slot="7983908781"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script>
+           (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</div>
 
     <main id="cardapio" class="max-w-6xl mx-auto px-4 py-12">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

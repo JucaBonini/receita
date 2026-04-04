@@ -83,7 +83,7 @@ if (!function_exists('flush_rewrite_rules_artigos')) {
 }
 // Forçar single-default.php para CPTs específicos
 function custom_single_template($template) {
-    $cpts = array('artigos', 'achadinhos', 'reviews', 'faqs');
+    $cpts = array('artigos', 'achadinhos', 'reviews', 'faqs', 'glossario');
     
     if (is_singular($cpts) && !locate_template('single-' . get_post_type() . '.php')) {
         $new_template = locate_template(array('single-default.php'));
