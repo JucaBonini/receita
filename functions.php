@@ -188,7 +188,8 @@ $includes_files = array(
     '/includes/live-search.php',
     '/includes/sumario.php',
     '/includes/cooking-mode.php',
-    '/includes/cloudflare-cache.php'
+    '/includes/cloudflare-cache.php',
+    '/includes/pwa-smart-banner.php'
 );
 
 foreach ($includes_files as $file) {
