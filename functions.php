@@ -864,8 +864,9 @@ function sts_show_ad_slot($slot_id) {
     $ad_code = get_theme_mod($slot_id);
     if (empty($ad_code)) return;
     ?>
-    <div class="sts-ad-container my-8 flex justify-center overflow-hidden min-h-[100px]" data-ad-slot="<?php echo esc_attr($slot_id); ?>">
-        <div class="sts-ad-inner lazy-ad-loader" data-code="<?php echo base64_encode($ad_code); ?>">
+    <div class="sts-ad-container my-10 flex flex-col items-center overflow-hidden">
+        <span class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 opacity-50">Publicidade</span>
+        <div class="sts-ad-inner lazy-ad-loader min-h-[100px] flex justify-center w-full" data-code="<?php echo base64_encode($ad_code); ?>">
             <!-- Anúncio será injetado aqui via JS Lazy Load -->
         </div>
     </div>
