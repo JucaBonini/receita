@@ -9,7 +9,7 @@ get_header(); ?>
 <main id="main-content" class="min-h-screen bg-slate-50 dark:bg-slate-900 pb-24">
     
     <!-- 🟢 SEÇÃO 1: CABEÇALHO (Isolado e com fundo limpo) -->
-    <section class="relative pt-16 md:pt-24 pb-12 md:pb-20 bg-white dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800">
+    <section class="relative pt-16 md:pt-24 pb-8 md:pb-12 bg-white dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800">
         <div class="max-w-7xl mx-auto px-6 text-center">
             
             <h1 class="text-5xl md:text-8xl font-black text-slate-900 dark:text-white leading-[0.9] tracking-tighter mb-10">
@@ -49,7 +49,7 @@ get_header(); ?>
     </section>
 
     <!-- 🟢 SEÇÃO 2: VITRINE DE PRODUTOS (Nova Seção, Nova Section) -->
-    <section class="py-16 md:py-24">
+    <section class="py-12 md:py-16">
         <div class="max-w-7xl mx-auto px-6">
             
             <?php
