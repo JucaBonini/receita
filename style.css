@@ -3,7 +3,7 @@ Theme Name: Descomplicando Receitas
 Theme URI: https://descomplicandoreceitas.com.br
 Author: Juca Souza Bonini
 Description: Tema profissional de receitas otimizado para Google Discover e CWV.
-Version: 1.0.11
+Version: 1.0.12
 Text Domain: sts-recipe-2
 */
 
@@ -11,30 +11,74 @@ Text Domain: sts-recipe-2
    PRINT STYLES - PDF GENERATOR (PROFESSIONAL LEVEL)
    ============================================================ */
 @media print {
+
     /* Esconder elementos desnecessários */
-    header, footer, aside, 
-    .sts-ad-slot-header, .sts-ad-injected, #pwa-install-banner, 
-    #lgpd-banner, #whatsapp-channel-banner, .btn-favorite,
-    .social-share-bar, .author-box, section.bg-slate-50, 
-    button, .print-footer, .floating-rating-bar {
+    header,
+    footer,
+    aside,
+    .sts-ad-slot-header,
+    .sts-ad-injected,
+    #pwa-install-banner,
+    #lgpd-banner,
+    #whatsapp-channel-banner,
+    .btn-favorite,
+    .social-share-bar,
+    .author-box,
+    section.bg-slate-50,
+    button,
+    .print-footer,
+    .floating-rating-bar {
         display: none !important;
     }
 
     /* Reset de Layout */
-    body { background: white !important; color: black !important; font-size: 12pt; }
-    main { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
-    .max-w-6xl, .max-w-7xl { max-width: 100% !important; width: 100% !important; }
-    
+    body {
+        background: white !important;
+        color: black !important;
+        font-size: 12pt;
+    }
+
+    main {
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .max-w-6xl,
+    .max-w-7xl {
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
     /* Forçar visualização de cores */
-    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
 
     /* Estilização da Receita no PDF */
-    h1 { font-size: 28pt !important; margin-bottom: 10pt !important; color: #ec5b13 !important; }
-    .aspect-video { height: 300px !important; margin-bottom: 20pt !important; }
-    
-    .grid { display: block !important; }
-    .bg-white, .dark\:bg-slate-800 { background: #f9fafb !important; border: 1px solid #eee !important; margin-bottom: 15pt !important; }
-    
+    h1 {
+        font-size: 28pt !important;
+        margin-bottom: 10pt !important;
+        color: #ec5b13 !important;
+    }
+
+    .aspect-video {
+        height: 300px !important;
+        margin-bottom: 20pt !important;
+    }
+
+    .grid {
+        display: block !important;
+    }
+
+    .bg-white,
+    .dark\:bg-slate-800 {
+        background: #f9fafb !important;
+        border: 1px solid #eee !important;
+        margin-bottom: 15pt !important;
+    }
+
     /* Branding no Topo do PDF */
     body::before {
         content: "Receita retirada de: Descomplicando Receitas (www.descomplicandoreceitas.com.br)";
@@ -46,11 +90,17 @@ Text Domain: sts-recipe-2
         border-bottom: 1px solid #eee;
         padding-bottom: 10pt;
     }
-    
+
     /* Lista de Ingredientes e Instruções */
-    ul, ol { padding-left: 20pt !important; }
-    li { margin-bottom: 5pt !important; }
-    
+    ul,
+    ol {
+        padding-left: 20pt !important;
+    }
+
+    li {
+        margin-bottom: 5pt !important;
+    }
+
     /* Rodapé do PDF */
     body::after {
         content: "© <?php echo date('Y'); ?> Descomplicando Receitas - Cozinhe com Amor.";

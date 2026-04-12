@@ -830,6 +830,7 @@ function sts_customize_register_ads($wp_customize) {
     // Array de slots estratégicos
     $ad_slots = array(
         'ad_top_billboard' => 'Billboard Superior (Abaixo do Header)',
+        'ad_mid_content_h3' => 'Conteúdo: Após o 3º H3 (Subtítulo)',
         'ad_single_before_ingredients' => 'Single: Antes dos Ingredientes',
         'ad_single_after_recipe' => 'Single: Final da Receita',
         'ad_sidebar_sticky' => 'Sidebar: Banner Fixo'
@@ -870,3 +871,29 @@ function sts_show_ad_slot($slot_id) {
     </div>
     <?php
 }
+
+/**
+ * Injeção Automática: Anúncio após o 3º H3 do conteúdo
+ */
+function sts_inject_ad_after_h3($content) {
+    if (!is_singular('post') || is_admin()) return $content;
+
+    $ad_code = get_theme_mod('ad_mid_content_h3');
+    if (empty($ad_code)) return $content;
+
+    $closing_h3 = '</h3>';
+    $paragraphs = explode($closing_h3, $content);
+
+    if (count($paragraphs) > 3) {
+        ob_start();
+        sts_show_ad_slot('ad_mid_content_h3');
+        $ad_html = ob_get_clean();
+
+        // Insere o anúncio após o 3º fechamento de H3
+        $paragraphs[2] .= $ad_html;
+        $content = implode($closing_h3, $paragraphs);
+    }
+
+    return $content;
+}
+add_filter('the_content', 'sts_inject_ad_after_h3', 20);
