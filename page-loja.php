@@ -10,43 +10,45 @@ get_header(); ?>
     <div class="max-w-7xl mx-auto px-4">
         
         <!-- Premium Header Area -->
-        <header class="mb-16 text-center max-w-3xl mx-auto">
-            <div class="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-primary/20">
+        <header class="mb-12 md:mb-20 text-center max-w-4xl mx-auto">
+            <div class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary/10 text-primary rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-8 border border-primary/20 shadow-sm">
                 <span class="material-symbols-outlined text-sm">verified</span>
                 Curadoria Verificada pela Mary
             </div>
-            <h1 class="text-4xl md:text-6xl font-black text-slate-900 dark:text-white leading-none mb-6">
-                Loja de <span class="text-primary italic">Indicações</span>
+            
+            <h1 class="text-4xl sm:text-5xl md:text-7xl font-black text-slate-900 dark:text-white leading-[0.9] mb-10 tracking-tighter">
+                Loja de <br class="sm:hidden"> <span class="text-primary italic">Indicações</span>
             </h1>
-            <p class="text-lg text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
-                Encontre aqui todos os utensílios, acessórios e ingredientes que confio e utilizo no meu dia a dia na cozinha.
+            
+            <p class="text-base md:text-xl text-slate-500 dark:text-slate-400 leading-relaxed max-w-2xl mx-auto mb-12">
+                Encontre aqui todos os utensílios, acessórios e ingredientes que <span class="text-slate-900 dark:text-slate-200 font-bold">confio e utilizo</span> no meu dia a dia na cozinha.
             </p>
-        </header>
 
-        <!-- Filtros Rápidos (Acessibilidade & UX) -->
-        <?php
-        $current_mkt = isset($_GET['mkt']) ? sanitize_text_field($_GET['mkt']) : 'todos';
-        $marketplaces = array(
-            'todos'         => 'Ver Tudo',
-            'shopee'        => 'Shopee',
-            'amazon'        => 'Amazon',
-            'mercado_livre' => 'M. Livre'
-        );
-        ?>
-        <nav class="flex flex-wrap items-center justify-center gap-3 mb-12" aria-label="Filtrar por loja">
-            <?php foreach ($marketplaces as $slug => $label) : 
-                $active = ($current_mkt === $slug);
-                $url = ($slug === 'todos') ? get_permalink() : add_query_arg('mkt', $slug, get_permalink());
+            <!-- Filtros Rápidos (Acessibilidade & UX) -->
+            <?php
+            $current_mkt = isset($_GET['mkt']) ? sanitize_text_field($_GET['mkt']) : 'todos';
+            $marketplaces = array(
+                'todos'         => 'Ver Tudo',
+                'shopee'        => 'Shopee',
+                'amazon'        => 'Amazon',
+                'mercado_livre' => 'M. Livre'
+            );
             ?>
-                <a href="<?php echo esc_url($url); ?>" 
-                   class="px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all
-                          <?php echo $active 
-                            ? 'bg-primary text-white shadow-lg shadow-primary/20 scale-105' 
-                            : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-100 dark:border-slate-700'; ?>">
-                    <?php echo $label; ?>
-                </a>
-            <?php endforeach; ?>
-        </nav>
+            <nav class="flex flex-wrap items-center justify-center gap-3 md:gap-4" aria-label="Filtrar por loja">
+                <?php foreach ($marketplaces as $slug => $label) : 
+                    $active = ($current_mkt === $slug);
+                    $url = ($slug === 'todos') ? get_permalink() : add_query_arg('mkt', $slug, get_permalink());
+                ?>
+                    <a href="<?php echo esc_url($url); ?>" 
+                       class="px-5 md:px-8 py-3 md:py-4 rounded-2xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all duration-300
+                              <?php echo $active 
+                                ? 'bg-primary text-white shadow-xl shadow-primary/30 scale-105 active:scale-95' 
+                                : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-primary hover:border-primary border border-slate-100 dark:border-slate-700 shadow-sm'; ?>">
+                        <?php echo $label; ?>
+                    </a>
+                <?php endforeach; ?>
+            </nav>
+        </header>
 
         <!-- Vitrine Grid -->
         <?php
