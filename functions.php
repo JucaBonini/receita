@@ -190,7 +190,8 @@ $includes_files = array(
     '/includes/cooking-mode.php',
     '/includes/cloudflare-cache.php',
     '/includes/pwa-smart-banner.php',
-    '/includes/cpt-afiliados.php'
+    '/includes/cpt-afiliados.php',
+    '/includes/view-tracker.php'
 );
 
 foreach ($includes_files as $file) {
