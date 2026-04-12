@@ -837,5 +837,4 @@ function sts_minify_html_output($buffer) {
 // }
 // add_action('get_header', 'sts_start_minification');
 
-    }
-}
+
