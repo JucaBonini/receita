@@ -328,7 +328,7 @@ if (have_posts()) : while (have_posts()) : the_post();
                         </a>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
                         <?php while ($indicacoes_query->have_posts()) : $indicacoes_query->the_post(); 
                             $url = get_post_meta(get_the_ID(), '_sts_product_url', true);
                             $price = get_post_meta(get_the_ID(), '_sts_product_price', true);
@@ -341,48 +341,48 @@ if (have_posts()) : while (have_posts()) : the_post();
                             
                             if ($marketplace === 'shopee') {
                                 $btn_style = 'bg-[#ee4d2d] hover:bg-[#d73211] shadow-lg shadow-[#ee4d2d]/20 text-white';
-                                $btn_text = 'Compre na Shopee';
+                                $btn_text = 'Na Shopee';
                                 $mkt_label = 'Shopee';
                             } elseif ($marketplace === 'amazon') {
                                 $btn_style = 'bg-[#FF9900] hover:bg-[#e68a00] shadow-lg shadow-[#FF9900]/20 text-black';
-                                $btn_text = 'Compre na Amazon';
+                                $btn_text = 'Na Amazon';
                                 $mkt_label = 'Amazon';
                             } elseif ($marketplace === 'mercado_livre') {
                                 $btn_style = 'bg-[#FFE600] hover:bg-[#e6cf00] shadow-lg shadow-[#FFE600]/20 text-[#2d3277]';
-                                $btn_text = 'Compre no Mercado Livre';
-                                $mkt_label = 'Mercado Livre';
+                                $btn_text = 'No ML';
+                                $mkt_label = 'M. Livre';
                             }
                         ?>
-                        <div class="bg-white dark:bg-slate-800 rounded-[40px] p-5 shadow-[0_10px_40px_rgba(0,0,0,0.04)] border border-slate-100 dark:border-slate-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 flex flex-col group/card relative overflow-hidden">
+                        <div class="bg-white dark:bg-slate-800 rounded-[24px] md:rounded-[40px] p-3 md:p-5 shadow-[0_10px_40px_rgba(0,0,0,0.04)] border border-slate-100 dark:border-slate-700 hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 flex flex-col group/card relative overflow-hidden">
                             
                             <!-- Imagem com Preço Flutuante -->
-                            <div class="aspect-[4/5] rounded-[30px] overflow-hidden bg-slate-50 dark:bg-slate-900 mb-6 relative">
+                            <div class="aspect-square rounded-[18px] md:rounded-[30px] overflow-hidden bg-slate-50 dark:bg-slate-900 mb-4 md:mb-6 relative">
                                 <?php if (has_post_thumbnail()) : ?>
                                     <?php the_post_thumbnail('large', ['class' => 'w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110']); ?>
                                 <?php endif; ?>
                                 
                                 <!-- Badge de Marketplace -->
-                                <div class="absolute top-4 left-4 px-4 py-2 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-2xl text-[9px] font-black text-slate-500 uppercase tracking-widest shadow-sm">
+                                <div class="absolute top-2 left-2 md:top-4 md:left-4 px-2 md:px-4 py-1 md:py-2 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-xl text-[7px] md:text-[9px] font-black text-slate-500 uppercase tracking-widest shadow-sm">
                                     <?php echo $mkt_label; ?>
                                 </div>
 
                                 <!-- Preço em Destaque -->
                                 <?php if ($price) : ?>
-                                    <div class="absolute bottom-4 right-4 bg-primary text-white px-5 py-2 rounded-2xl text-xs font-black shadow-xl animate-bounce-slow">
+                                    <div class="absolute bottom-2 right-2 md:bottom-4 md:right-4 bg-primary text-white px-2 md:px-5 py-1 md:py-2 rounded-xl text-[9px] md:text-xs font-black shadow-xl">
                                         <?php echo $price; ?>
                                     </div>
                                 <?php endif; ?>
                             </div>
                             
-                            <h4 class="px-2 text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight line-clamp-2 mb-6 h-10 leading-tight">
+                            <h4 class="px-1 text-[11px] md:text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight line-clamp-2 mb-3 md:mb-6 h-8 md:h-10 leading-tight">
                                 <?php the_title(); ?>
                             </h4>
 
                             <!-- Botão Customizado -->
                             <a href="<?php echo esc_url($url); ?>" target="_blank" rel="noopener nofollow" 
-                               class="w-full flex items-center justify-center gap-3 py-5 px-4 <?php echo $btn_style; ?> rounded-[24px] text-xs font-black uppercase tracking-widest transition-all duration-300 group/btn">
+                               class="w-full flex items-center justify-center gap-1.5 md:gap-3 py-3 md:py-5 px-2 <?php echo $btn_style; ?> rounded-[16px] md:rounded-[24px] text-[8px] md:text-xs font-black uppercase tracking-widest transition-all duration-300 group/btn">
                                 <span><?php echo $btn_text; ?></span>
-                                <span class="material-symbols-outlined text-lg transition-transform group-hover/btn:translate-x-1">shopping_bag</span>
+                                <span class="material-symbols-outlined text-sm md:text-lg">shopping_bag</span>
                             </a>
                         </div>
                         <?php endwhile; wp_reset_postdata(); ?>
