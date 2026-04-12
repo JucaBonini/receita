@@ -334,22 +334,22 @@ if (have_posts()) : while (have_posts()) : the_post();
                             $price = get_post_meta(get_the_ID(), '_sts_product_price', true);
                             $marketplace = get_post_meta(get_the_ID(), '_sts_marketplace', true);
                             
-                            // Configuração Estética Blindada (Sincronizada com a Loja)
-                            $btn_bg = 'bg-slate-900 dark:bg-slate-700';
-                            $btn_text_color = 'text-white';
-                            $btn_label = 'Ver Oferta';
+                            // Cores Blindadas via HEX (Sincronizado com a Loja)
+                            $mkt_hex = '#0f172a'; // Slate-900 (Default)
+                            $txt_hex = '#ffffff';
+                            $btn_label = 'VER OFERTA';
                             
                             if ($marketplace === 'shopee') {
-                                $btn_bg = 'bg-[#D73211] shadow-lg shadow-[#D73211]/20';
-                                $btn_label = 'Na Shopee';
+                                $mkt_hex = '#D73211';
+                                $btn_label = 'NA SHOPEE';
                             } elseif ($marketplace === 'amazon') {
-                                $btn_bg = 'bg-[#FF9900] shadow-lg shadow-[#FF9900]/20';
-                                $btn_text_color = 'text-black';
-                                $btn_label = 'Na Amazon';
+                                $mkt_hex = '#FF9900';
+                                $txt_hex = '#000000';
+                                $btn_label = 'NA AMAZON';
                             } elseif ($marketplace === 'mercado_livre') {
-                                $btn_bg = 'bg-[#FFE600] shadow-lg shadow-[#FFE600]/20';
-                                $btn_text_color = 'text-[#2d3277]';
-                                $btn_label = 'No ML';
+                                $mkt_hex = '#FFE600';
+                                $txt_hex = '#2d3277';
+                                $btn_label = 'NO ML';
                             }
                         ?>
                         <div class="bg-white dark:bg-slate-800 rounded-[28px] md:rounded-[40px] p-3 md:p-5 shadow-[0_10px_40px_rgba(0,0,0,0.04)] border border-slate-100 dark:border-slate-700 hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 flex flex-col group/card relative overflow-hidden">
@@ -377,9 +377,10 @@ if (have_posts()) : while (have_posts()) : the_post();
                                 <?php the_title(); ?>
                             </h4>
 
-                            <!-- Botão Customizado (Sincronizado) -->
+                            <!-- Botão Blindado (Sincronizado) -->
                             <a href="<?php echo $url ? esc_url($url) : '#'; ?>" target="_blank" rel="noopener nofollow" 
-                               class="w-full flex items-center justify-center gap-1.5 md:gap-3 py-3 md:py-5 px-2 <?php echo $btn_bg; ?> <?php echo $btn_text_color; ?> rounded-[16px] md:rounded-[24px] text-[8px] md:text-xs font-black uppercase tracking-widest transition-all duration-300 group/btn active:scale-95 shadow-lg">
+                               style="background-color: <?php echo $mkt_hex; ?>; color: <?php echo $txt_hex; ?>;"
+                               class="w-full flex items-center justify-center gap-1.5 md:gap-3 py-3 md:py-5 px-2 rounded-[16px] md:rounded-[24px] text-[8px] md:text-xs font-black uppercase tracking-widest transition-all duration-300 group/btn active:scale-95 shadow-lg">
                                 <span><?php echo $btn_label; ?></span>
                                 <span class="material-symbols-outlined text-sm md:text-lg">shopping_cart</span>
                             </a>
