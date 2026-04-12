@@ -85,25 +85,25 @@ get_header(); ?>
                         
                         $count_lcp = ($count <= 4 && $paged === 1);
 
-                        // Configuração Estética Blindada (Garante que o botão NUNCA suma)
-                        $btn_bg = 'bg-slate-900 dark:bg-slate-700';
-                        $btn_text_color = 'text-white';
-                        $btn_label = 'Ver Oferta';
+                        // Cores Blindadas via HEX (Garante que apareça independente do CSS)
+                        $mkt_hex = '#0f172a'; // Slate-900 (Default)
+                        $txt_hex = '#ffffff';
+                        $btn_label = 'VER OFERTA';
                         
                         if ($mkt === 'shopee') {
-                            $btn_bg = 'bg-[#D73211] shadow-lg shadow-[#D73211]/20';
-                            $btn_label = 'Ir para Shopee';
+                            $mkt_hex = '#D73211';
+                            $btn_label = 'IR PARA SHOPEE';
                         } elseif ($mkt === 'amazon') {
-                            $btn_bg = 'bg-[#FF9900] shadow-lg shadow-[#FF9900]/20';
-                            $btn_text_color = 'text-black';
-                            $btn_label = 'Ir para Amazon';
+                            $mkt_hex = '#FF9900';
+                            $txt_hex = '#000000';
+                            $btn_label = 'IR PARA AMAZON';
                         } elseif ($mkt === 'mercado_livre') {
-                            $btn_bg = 'bg-[#FFE600] shadow-lg shadow-[#FFE600]/20';
-                            $btn_text_color = 'text-[#2d3277]';
-                            $btn_label = 'Ir para M. Livre';
+                            $mkt_hex = '#FFE600';
+                            $txt_hex = '#2d3277';
+                            $btn_label = 'IR PARA M. LIVRE';
                         }
                     ?>
-                    <article class="bg-white dark:bg-slate-800 rounded-[32px] md:rounded-[48px] p-4 md:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 dark:border-slate-700 flex flex-col group transition-all duration-500 hover:shadow-2xl hover:-translate-y-2">
+                    <article class="bg-white dark:bg-slate-800 rounded-[32px] md:rounded-[48px] p-4 md:p-6 shadow-[0_8px_40px_rgba(0,0,0,0.06)] border border-slate-100 dark:border-slate-700 flex flex-col group transition-all duration-500 hover:shadow-2xl hover:-translate-y-2">
                         <div class="aspect-square rounded-[24px] md:rounded-[36px] overflow-hidden bg-slate-50 dark:bg-slate-900 mb-6 md:mb-8 relative border border-slate-100 dark:border-slate-800">
                             <?php if (has_post_thumbnail()) : ?>
                                 <?php the_post_thumbnail('large', [
@@ -120,13 +120,15 @@ get_header(); ?>
                             <?php endif; ?>
                         </div>
 
-                        <h2 class="px-2 text-xs md:text-base font-black text-slate-900 dark:text-white uppercase tracking-tight line-clamp-2 mb-6 md:mb-8 h-10 md:h-12 leading-tight">
+                        <h2 class="px-2 text-xs md:text-base font-black text-slate-700 dark:text-white uppercase tracking-tight line-clamp-2 mb-6 md:mb-8 h-10 md:h-12 leading-tight">
                             <?php the_title(); ?>
                         </h2>
 
+                        <!-- Botão Blindado com Cor Fixa -->
                         <a href="<?php echo $url ? esc_url($url) : '#'; ?>" target="_blank" rel="noopener nofollow" 
-                           class="mt-auto w-full flex items-center justify-center gap-2 py-4 md:py-6 px-4 <?php echo $btn_bg; ?> <?php echo $btn_text_color; ?> rounded-[20px] md:rounded-[28px] text-[10px] md:text-sm font-black uppercase tracking-widest transition-all hover:brightness-110 shadow-lg active:scale-95">
-                            <?php echo $btn_label; ?>
+                           style="background-color: <?php echo $mkt_hex; ?>; color: <?php echo $txt_hex; ?>;"
+                           class="mt-auto w-full flex items-center justify-center gap-2 py-5 md:py-6 px-4 rounded-[22px] md:rounded-[32px] text-[10px] md:text-xs font-black uppercase tracking-widest transition-all hover:brightness-110 shadow-lg active:scale-95">
+                            <span><?php echo $btn_label; ?></span>
                             <span class="material-symbols-outlined text-sm md:text-xl">shopping_cart</span>
                         </a>
                     </article>
