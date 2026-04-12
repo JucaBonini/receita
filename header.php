@@ -93,10 +93,10 @@
                 wp_nav_menu(array(
                     'theme_location' => 'main-menu',
                     'container' => false,
-                    'menu_class' => 'flex items-center gap-1 xl:gap-2',
+                    'menu_class' => 'flex items-center gap-3 xl:gap-4',
                     'fallback_cb' => false,
                     'items_wrap' => '<ul class="%2$s">%3$s</ul>',
-                    'add_li_class'  => 'px-5 py-2.5 text-[12px] font-bold text-slate-600 dark:text-slate-400 hover:text-primary transition-all uppercase tracking-[0.15em] rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 border border-transparent hover:border-slate-100 dark:hover:border-slate-700'
+                    'add_li_class'  => 'px-6 py-2.5 text-[12px] font-bold text-slate-600 dark:text-slate-400 hover:text-primary transition-all uppercase tracking-[0.15em] rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 border border-transparent hover:border-slate-100 dark:hover:border-slate-700'
                 ));
                 ?>
             </nav>

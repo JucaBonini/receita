@@ -132,15 +132,17 @@ Text Domain: sts-recipe-2
 
 /* Espaçamento e Distinção Visual Clara */
 nav ul li {
-    margin: 0 4px; /* Garante que os LIs nunca se encostem */
+    margin: 0 10px; /* Aumentado para mais respiro */
 }
 
 nav ul li a {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 100px; /* Largura mínima para garantir clique fácil */
+    min-width: 110px; /* Aumentado para botões mais generosos */
     text-align: center;
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
 }
 
 /* Efeito de Vidro no Hover */
