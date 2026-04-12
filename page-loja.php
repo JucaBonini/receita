@@ -6,73 +6,74 @@
 
 get_header(); ?>
 
-<main id="main-content" class="min-h-screen bg-slate-50 dark:bg-slate-900 pt-10 pb-20">
-    <div class="max-w-7xl mx-auto px-4">
+<main id="main-content" class="min-h-screen bg-slate-50 dark:bg-slate-900 pt-16 pb-24">
+    <div class="max-w-7xl mx-auto px-6">
         
-        <!-- Premium Header Area -->
-        <header class="mb-12 md:mb-20 text-center max-w-4xl mx-auto">
-            <div class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary/10 text-primary rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-8 border border-primary/20 shadow-sm">
+        <!-- Premium Header Area (Full Width Block) -->
+        <header class="w-full mb-16 md:mb-24 text-center">
+            <div class="inline-flex items-center gap-2 px-6 py-2.5 bg-primary/10 text-primary rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-10 border border-primary/20 shadow-sm">
                 <span class="material-symbols-outlined text-sm">verified</span>
                 Curadoria Verificada pela Mary
             </div>
             
-            <h1 class="text-4xl sm:text-5xl md:text-7xl font-black text-slate-900 dark:text-white leading-[0.9] mb-10 tracking-tighter">
-                Loja de <br class="sm:hidden"> <span class="text-primary italic">Indicações</span>
+            <h1 class="text-5xl md:text-8xl font-black text-slate-900 dark:text-white leading-[0.85] mb-12 tracking-tighter block">
+                Loja de <br class="md:hidden"> <span class="text-primary italic">Indicações</span>
             </h1>
             
-            <p class="text-base md:text-xl text-slate-500 dark:text-slate-400 leading-relaxed max-w-2xl mx-auto mb-12">
-                Encontre aqui todos os utensílios, acessórios e ingredientes que <span class="text-slate-900 dark:text-slate-200 font-bold">confio e utilizo</span> no meu dia a dia na cozinha.
+            <p class="text-lg md:text-2xl text-slate-500 dark:text-slate-400 leading-relaxed max-w-3xl mx-auto mb-14">
+                Encontre aqui os utensílios e ingredientes que <span class="text-slate-900 dark:text-slate-200 font-bold underline decoration-primary/30 decoration-4 underline-offset-4">eu confio e utilizo</span> no dia a dia.
             </p>
 
-            <!-- Filtros Rápidos (Acessibilidade & UX) -->
-            <?php
-            $current_mkt = isset($_GET['mkt']) ? sanitize_text_field($_GET['mkt']) : 'todos';
-            $marketplaces = array(
-                'todos'         => 'Ver Tudo',
-                'shopee'        => 'Shopee',
-                'amazon'        => 'Amazon',
-                'mercado_livre' => 'M. Livre'
-            );
-            ?>
-            <nav class="flex flex-wrap items-center justify-center gap-3 md:gap-4" aria-label="Filtrar por loja">
-                <?php foreach ($marketplaces as $slug => $label) : 
+            <!-- Filtros Rápidos -->
+            <nav class="flex flex-wrap items-center justify-center gap-4 md:gap-6" aria-label="Filtrar por loja">
+                <?php
+                $current_mkt = isset($_GET['mkt']) ? sanitize_text_field($_GET['mkt']) : 'todos';
+                $marketplaces = array(
+                    'todos'         => '🎁 Ver Tudo',
+                    'shopee'        => '🛍️ Shopee',
+                    'amazon'        => '📦 Amazon',
+                    'mercado_livre' => '🤝 M. Livre'
+                );
+                
+                foreach ($marketplaces as $slug => $label) : 
                     $active = ($current_mkt === $slug);
                     $url = ($slug === 'todos') ? get_permalink() : add_query_arg('mkt', $slug, get_permalink());
                 ?>
                     <a href="<?php echo esc_url($url); ?>" 
-                       class="px-5 md:px-8 py-3 md:py-4 rounded-2xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all duration-300
+                       class="px-6 md:px-10 py-4 md:py-5 rounded-[24px] text-[10px] md:text-xs font-black uppercase tracking-widest transition-all duration-300 shadow-sm
                               <?php echo $active 
-                                ? 'bg-primary text-white shadow-xl shadow-primary/30 scale-105 active:scale-95' 
-                                : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-primary hover:border-primary border border-slate-100 dark:border-slate-700 shadow-sm'; ?>">
+                                ? 'bg-primary text-white shadow-2xl shadow-primary/30 scale-105' 
+                                : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-primary hover:border-primary border border-slate-100 dark:border-slate-700'; ?>">
                         <?php echo $label; ?>
                     </a>
                 <?php endforeach; ?>
             </nav>
         </header>
 
-        <!-- Vitrine Grid -->
-        <?php
-        $paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
-        $args = array(
-            'post_type'      => 'sts_indicacoes',
-            'posts_per_page' => 12,
-            'paged'          => $paged
-        );
-
-        if ($current_mkt !== 'todos') {
-            $args['meta_query'] = array(
-                array(
-                    'key'     => '_sts_marketplace',
-                    'value'   => $current_mkt,
-                    'compare' => '='
-                )
+        <!-- Vitrine Grid (Garante que comece após o header) -->
+        <div class="block w-full clear-both pt-8 border-t border-slate-200/50 dark:border-slate-800/50">
+            <?php
+            $paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
+            $args = array(
+                'post_type'      => 'sts_indicacoes',
+                'posts_per_page' => 12,
+                'paged'          => $paged
             );
-        }
 
-        $loja_query = new WP_Query($args);
+            if ($current_mkt !== 'todos') {
+                $args['meta_query'] = array(
+                    array(
+                        'key'     => '_sts_marketplace',
+                        'value'   => $current_mkt,
+                        'compare' => '='
+                    )
+                );
+            }
 
-        if ($loja_query->have_posts()) : ?>
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
+            $loja_query = new WP_Query($args);
+
+            if ($loja_query->have_posts()) : ?>
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10">
                 <?php 
                 $count = 0;
                 while ($loja_query->have_posts()) : $loja_query->the_post(); 
