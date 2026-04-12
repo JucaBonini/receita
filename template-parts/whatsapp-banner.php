@@ -5,7 +5,7 @@
  */
 ?>
 <div id="whatsapp-channel-banner" role="alert" aria-label="Convite para o Canal do WhatsApp"
-     class="fixed bottom-6 right-6 z-[10001] max-w-[320px] bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-emerald-100 dark:border-emerald-900/30 rounded-[32px] shadow-[0_25px_60px_rgba(0,0,0,0.2)] translate-y-[150%] opacity-0 invisible transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] pointer-events-none overflow-hidden group/card hover:scale-[1.02] active:scale-95">
+     class="fixed bottom-6 right-6 z-[10001] max-w-[320px] bg-emerald-50 dark:bg-slate-900 border-2 border-emerald-100 dark:border-emerald-800 rounded-[32px] shadow-[0_25px_60px_rgba(0,0,0,0.3)] translate-y-[150%] opacity-0 invisible transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] pointer-events-none overflow-hidden group/card hover:scale-[1.02] active:scale-95">
     
     <!-- Link Principal (Cobre o card todo) -->
     <a href="https://whatsapp.com/channel/0029Va5fCv1FXUuaQxDdVg0H" target="_blank" rel="noopener" class="block p-6 cursor-pointer">
