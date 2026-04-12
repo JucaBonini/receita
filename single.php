@@ -73,10 +73,6 @@ if (have_posts()) : while (have_posts()) : the_post();
                     <div class="sts-ad-slot-header min-w-[280px] min-h-[90px] bg-slate-50 dark:bg-slate-900/40 rounded-xl flex items-center justify-center text-[9px] text-slate-300 uppercase tracking-widest border border-dashed border-slate-200 dark:border-slate-800">
                         <!-- Espaço para AdSense (Ad Inserter) -->
                     </div>
-                    
-                    <button class="btn-favorite flex-shrink-0 size-14 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-center hover:scale-110 transition-all text-primary group" data-post-id="<?php the_ID(); ?>" aria-label="Favoritar esta receita">
-                        <span class="material-symbols-outlined text-2xl">favorite</span>
-                    </button>
                 </div>
             </div>
 
@@ -97,7 +93,7 @@ if (have_posts()) : while (have_posts()) : the_post();
             </div>
         </div>
 
-        <div class="aspect-video w-full rounded-[32px] overflow-hidden mb-10 shadow-2xl relative group bg-slate-100 dark:bg-slate-800">
+        <div class="aspect-video w-full rounded-[32px] overflow-hidden mb-10 shadow-2xl relative group bg-slate-100 dark:bg-slate-800 border border-slate-100 dark:border-slate-800">
             <?php 
             if (has_post_thumbnail()) {
                 $thumb_id = get_post_thumbnail_id();
@@ -116,6 +112,16 @@ if (have_posts()) : while (have_posts()) : the_post();
                 echo '<img src="' . esc_url($default_image) . '" alt="' . esc_attr(get_the_title()) . '" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="eager" decoding="async" fetchpriority="high">';
             }
             ?>
+            
+            <!-- Botão de Favorito Premium sobre a Imagem -->
+            <button id="single-fav-btn" 
+                    data-post-id="<?php the_ID(); ?>" 
+                    class="btn-favorite absolute top-4 right-4 md:top-6 md:right-6 size-12 md:size-14 bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-white/20 dark:border-slate-700/50 rounded-2xl flex items-center justify-center text-slate-400 hover:text-red-510 hover:bg-white dark:hover:bg-slate-900 shadow-xl transition-all duration-300 group/fav z-20 active:scale-90"
+                    aria-label="Adicionar aos favoritos">
+                <span class="material-symbols-outlined text-2xl md:text-3xl transition-all group-hover/fav:scale-110">favorite</span>
+            </button>
+            
+            <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
         </div>
 
         <!-- Metadata Cards Grid -->
