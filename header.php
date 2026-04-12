@@ -116,7 +116,7 @@
 
                 <!-- Theme Toggle -->
                 <button id="theme-toggle" type="button" aria-label="Alternar modo de cor"
-                        class="size-10 md:size-11 flex items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-primary transition-all">
+                        class="size-11 flex items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-primary transition-all">
                     <span class="material-symbols-outlined text-xl dark:hidden" aria-hidden="true">dark_mode</span>
                     <span class="material-symbols-outlined text-xl hidden dark:block" aria-hidden="true">light_mode</span>
                 </button>
@@ -124,7 +124,7 @@
                 <!-- Favorites -->
                 <div class="relative group">
                     <button id="favorites-trigger" type="button" aria-label="Minhas favoritas"
-                            class="size-10 md:size-11 flex items-center justify-center rounded-2xl bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all">
+                            class="size-11 flex items-center justify-center rounded-2xl bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all">
                         <span class="material-symbols-outlined text-xl" aria-hidden="true">favorite</span>
                         <span id="fav-count" class="absolute -top-1 -right-1 size-4 bg-primary text-white text-[9px] font-bold rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center hidden">0</span>
                     </button>
@@ -137,7 +137,7 @@
                 <!-- User Profile -->
                 <div class="relative group">
                     <button id="user-profile-trigger" type="button" aria-label="Perfil do usuário"
-                            class="size-10 md:size-11 flex items-center justify-center rounded-2xl bg-slate-900 dark:bg-slate-800 text-white overflow-hidden transition-all">
+                            class="size-11 flex items-center justify-center rounded-2xl bg-slate-900 dark:bg-slate-800 text-white overflow-hidden transition-all">
                         <?php if (is_user_logged_in()) : 
                             echo get_avatar(get_current_user_id(), 44, '', '', ['class' => 'w-full h-full object-cover']);
                         else : ?>
@@ -163,7 +163,7 @@
 
                 <!-- Toggle Mobile -->
                 <button id="mobileMenuBtn" type="button" aria-label="Abrir menu" aria-expanded="false"
-                        class="lg:hidden size-10 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-400">
+                        class="lg:hidden size-11 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-400">
                     <span class="material-symbols-outlined text-2xl" aria-hidden="true">menu</span>
                 </button>
 

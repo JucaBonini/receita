@@ -106,7 +106,7 @@ if (have_posts()) : while (have_posts()) : the_post();
                     'class' => 'w-full h-full object-cover transition-transform duration-700 group-hover:scale-105',
                     'loading' => 'eager', 
                     'fetchpriority' => 'high',
-                    'decoding' => 'async',
+                    'decoding' => 'sync',
                     'alt' => esc_attr($alt_text),
                     'itemprop' => 'image'
                 ]); 

@@ -485,9 +485,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 if (!wppHasShown && scrolled >= 65) {
                     wppHasShown = true;
-                    // Remove bloqueios de interatividade antes de mostrar
                     wppBanner.classList.remove('invisible', 'pointer-events-none');
                     wppBanner.classList.add('show');
+                } else if (wppHasShown && scrolled < 15) {
+                    // Esconde se voltar pro topo para não cobrir o LCP/Título
+                    wppBanner.classList.add('invisible', 'pointer-events-none');
+                    wppBanner.classList.remove('show');
+                    wppHasShown = false; // Permite mostrar de novo se descer
                 }
             });
         }
