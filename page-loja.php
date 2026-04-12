@@ -12,11 +12,6 @@ get_header(); ?>
     <section class="relative pt-16 md:pt-24 pb-12 md:pb-20 bg-white dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800">
         <div class="max-w-7xl mx-auto px-6 text-center">
             
-            <div class="inline-flex items-center gap-2 px-5 py-2 bg-primary/10 text-primary rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-10 border border-primary/20">
-                <span class="material-symbols-outlined text-sm">verified</span>
-                Curadoria Mary
-            </div>
-            
             <h1 class="text-5xl md:text-8xl font-black text-slate-900 dark:text-white leading-[0.9] tracking-tighter mb-10">
                 Loja de <br class="md:hidden"> <span class="text-primary italic">Indicações</span>
             </h1>
