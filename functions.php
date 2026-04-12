@@ -147,8 +147,11 @@ add_filter('the_content', 'sts_insert_whatsapp_banner', 15);
 // Adicionar atributos async/defer ao JS para otimizar o INP
 function add_async_defer_attributes($tag, $handle, $src) {
     if (is_admin()) return $tag;
-    if (strpos($tag, ' defer') !== false || strpos($tag, ' async') !== false) return $tag;
-    return str_replace(' src', ' defer src', $tag);
+    // Não adicionar defer se já tiver async ou defer, ou se for o script do AdSense
+    if (strpos($tag, ' defer') !== false || strpos($tag, ' async') !== false || $handle === 'google-adsense') {
+        return $tag;
+    }
+    return str_replace('<script ', '<script defer ', $tag);
 }
 add_filter('script_loader_tag', 'add_async_defer_attributes', 10, 3);
 
@@ -810,10 +813,10 @@ function sts_minify_html_output($buffer) {
     return preg_replace($search, $replace, $buffer);
 }
 
-function sts_start_minification() {
-    ob_start('sts_minify_html_output');
-}
-add_action('get_header', 'sts_start_minification');
+// function sts_start_minification() {
+//     ob_start('sts_minify_html_output');
+// }
+// add_action('get_header', 'sts_start_minification');
 
 /**
  * ============================================================

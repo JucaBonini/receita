@@ -30,25 +30,47 @@ function loadAd(element) {
 
     try {
         // Decodifica o código (Base64 para evitar quebras de aspas no HTML)
-        const adCode = atob(encodedCode);
+        let adCode;
+        try {
+            adCode = atob(encodedCode);
+        } catch (e) {
+            console.error('[LazyAds] Erro ao decodificar Base64:', e);
+            return;
+        }
         
         // Injeta o código no container
         element.innerHTML = adCode;
         
         // Se houver tags <script> no código injetado, o innerHTML não as executa.
-        // Precisamos extrair e executar manualmente ou garantir que o AdSense rode.
+        // Precisamos extrair e executar manualmente.
         const scripts = element.querySelectorAll('script');
+        let hasPushCall = false;
+
         scripts.forEach(oldScript => {
             const newScript = document.createElement('script');
-            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+            Array.from(oldScript.attributes).forEach(attr => {
+                newScript.setAttribute(attr.name, attr.value);
+            });
+            
+            if (oldScript.innerHTML) {
+                newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                if (oldScript.innerHTML.includes('adsbygoogle.push')) {
+                    hasPushCall = true;
+                }
+            }
+            
             oldScript.parentNode.replaceChild(newScript, oldScript);
         });
 
-        // Força a inicialização do AdSense se necessário
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
+        // Força a inicialização do AdSense APENAS se não houver um push() manual no código injetado
+        if (!hasPushCall) {
+            (window.adsbygoogle = window.adsbygoogle || []).push({});
+            console.log('[LazyAds] push({}) manual executado para o slot:', element.parentElement.dataset.adSlot);
+        } else {
+            console.log('[LazyAds] Código injetado já contém push(), ignorando push() manual.');
+        }
         
-        console.log('[LazyAds] Anúncio carregado no slot:', element.parentElement.dataset.adSlot);
+        console.log('[LazyAds] Anúncio processado no slot:', element.parentElement.dataset.adSlot);
     } catch (e) {
         console.error('[LazyAds] Erro ao carregar anúncio:', e);
     }
