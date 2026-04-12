@@ -303,6 +303,65 @@ if (have_posts()) : while (have_posts()) : the_post();
                     <input type="hidden" id="rating_post_id" value="<?php echo $post_id; ?>">
                 </section>
 
+                <!-- 🛍️ Vitrine de Indicações (Afiliados Mary) -->
+                <?php
+                $indicacoes_query = new WP_Query(array(
+                    'post_type'      => 'sts_indicacoes',
+                    'posts_per_page' => 4,
+                    'orderby'        => 'rand'
+                ));
+
+                if ($indicacoes_query->have_posts()) : ?>
+                <section class="mt-16 mb-12 py-12 border-t border-slate-100 dark:border-slate-800">
+                    <div class="flex flex-col sm:flex-row justify-between items-end gap-4 mb-8">
+                        <div>
+                            <span class="text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-2 block">Loja de Afiliados</span>
+                            <h3 class="text-3xl font-black text-slate-900 dark:text-white leading-tight">Utensílios para sua <span class="text-primary italic">Cozinha</span></h3>
+                            <p class="text-sm text-slate-500 mt-2">Selecionamos os melhores produtos que usamos e recomendamos para preparar esta e outras receitas.</p>
+                        </div>
+                        <a href="<?php echo home_url('/loja'); ?>" class="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest flex items-center gap-2 hover:text-primary transition-colors pb-1">
+                            Ver vitrine completa <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </a>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <?php while ($indicacoes_query->have_posts()) : $indicacoes_query->the_post(); 
+                            $url = get_post_meta(get_the_ID(), '_sts_product_url', true);
+                            $price = get_post_meta(get_the_ID(), '_sts_product_price', true);
+                            $marketplace = get_post_meta(get_the_ID(), '_sts_marketplace', true);
+                            
+                            $btn_text = 'COMPRE AGORA';
+                            if ($marketplace === 'shopee') $btn_text = 'Compre na Shopee';
+                            elseif ($marketplace === 'amazon') $btn_text = 'Compre na Amazon';
+                            elseif ($marketplace === 'mercado_livre') $btn_text = 'Compre no ML';
+                        ?>
+                        <div class="bg-white dark:bg-slate-800 rounded-[32px] p-4 shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-2xl hover:scale-[1.02] transition-all flex flex-col group">
+                            <div class="aspect-square rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-900 mb-4 relative">
+                                <?php if (has_post_thumbnail()) : ?>
+                                    <?php the_post_thumbnail('medium', ['class' => 'w-full h-full object-cover group-hover:scale-110 transition-transform duration-500']); ?>
+                                <?php endif; ?>
+                                <?php if ($price) : ?>
+                                    <div class="absolute bottom-2 left-2 bg-white/90 dark:bg-slate-900/90 backdrop-blur px-3 py-1 rounded-full text-[9px] font-black text-primary">
+                                        <?php echo $price; ?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            
+                            <h4 class="text-xs font-black text-slate-900 dark:text-white uppercase tracking-tight line-clamp-2 mb-4 h-8">
+                                <?php the_title(); ?>
+                            </h4>
+
+                            <a href="<?php echo esc_url($url); ?>" target="_blank" rel="noopener nofollow" 
+                               class="mt-auto flex items-center justify-center gap-2 py-3 bg-slate-900 dark:bg-slate-700 text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-primary transition-all shadow-lg shadow-slate-900/10">
+                                <?php echo $btn_text; ?>
+                                <span class="material-symbols-outlined text-sm">shopping_cart</span>
+                            </a>
+                        </div>
+                        <?php endwhile; wp_reset_postdata(); ?>
+                    </div>
+                </section>
+                <?php endif; ?>
+
                 <!-- 🟢 Social Sharing (Engagement Boost) -->
                 <div class="mb-12 pt-10 border-t border-slate-100 dark:border-slate-800">
                     <p class="text-[11px] font-black uppercase tracking-[0.25em] text-slate-400 mb-6 flex items-center gap-4">
