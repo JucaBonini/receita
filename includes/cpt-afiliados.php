@@ -72,3 +72,31 @@ function sts_save_indicacoes_meta($post_id) {
     if (isset($_POST['sts_marketplace'])) update_post_meta($post_id, '_sts_marketplace', sanitize_text_field($_POST['sts_marketplace']));
 }
 add_action('save_post', 'sts_save_indicacoes_meta');
+
+/**
+ * Adiciona Coluna na Listagem do Admin
+ */
+function sts_set_indicacoes_columns($columns) {
+    $new_columns = array();
+    foreach($columns as $key => $title) {
+        if ($key === 'date') {
+            $new_columns['marketplace'] = 'Marketplace';
+        }
+        $new_columns[$key] = $title;
+    }
+    return $new_columns;
+}
+add_filter('manage_sts_indicacoes_posts_columns', 'sts_set_indicacoes_columns');
+
+function sts_fill_indicacoes_columns($column, $post_id) {
+    if ($column === 'marketplace') {
+        $mkt = get_post_meta($post_id, '_sts_marketplace', true);
+        switch ($mkt) {
+            case 'shopee': echo '<span class="dashicons dashicons-cart" style="color: #ee4d2d;"></span> Shopee'; break;
+            case 'amazon': echo '<span class="dashicons dashicons-amazon" style="color: #ff9900;"></span> Amazon'; break;
+            case 'mercado_livre': echo '<span class="dashicons dashicons-store" style="color: #ffe600; background: #2d3277; padding: 2px 5px; border-radius: 4px;"></span> ML'; break;
+            default: echo 'Outros'; break;
+        }
+    }
+}
+add_action('manage_sts_indicacoes_posts_custom_column', 'sts_fill_indicacoes_columns', 10, 2);
