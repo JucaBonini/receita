@@ -12,8 +12,8 @@ get_header(); ?>
     <section class="relative pt-16 md:pt-24 pb-8 md:pb-12 bg-white dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800">
         <div class="max-w-7xl mx-auto px-6 text-center">
             
-            <h1 class="text-5xl md:text-8xl font-black text-slate-900 dark:text-white leading-[0.9] tracking-tighter mb-10">
-                Loja de <br class="md:hidden"> <span class="text-primary italic">Indicações</span>
+            <h1 class="text-5xl md:text-8xl font-black text-slate-700 dark:text-white leading-[0.9] tracking-tighter mb-10">
+                Loja de <span class="text-primary italic">Indicações</span>
             </h1>
             
             <p class="text-lg md:text-2xl text-slate-500 dark:text-slate-400 leading-relaxed max-w-2xl mx-auto mb-16">
