@@ -67,13 +67,6 @@ if (have_posts()) : while (have_posts()) : the_post();
                 <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-slate-100 leading-tight">
                     <?php the_title(); ?>
                 </h1>
-                
-                <div class="flex flex-wrap items-center gap-4 self-end sm:self-start">
-                    <!-- Reserva de Espaço para Anúncio (Evita CLS) -->
-                    <div class="sts-ad-slot-header min-w-[280px] min-h-[90px] bg-slate-50 dark:bg-slate-900/40 rounded-xl flex items-center justify-center text-[9px] text-slate-300 uppercase tracking-widest border border-dashed border-slate-200 dark:border-slate-800">
-                        <!-- Espaço para AdSense (Ad Inserter) -->
-                    </div>
-                </div>
             </div>
 
             <div class="flex flex-wrap items-center gap-y-3 gap-x-6 text-sm text-slate-600 dark:text-slate-400">

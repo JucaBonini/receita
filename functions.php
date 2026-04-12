@@ -67,11 +67,7 @@ function descomplicando_receitas_scripts() {
         wp_enqueue_script('sts-smart-rec', THEME_URI . '/assets/js/smart-recommendations.js', array(), THEME_VERSION, true);
     }
 
-    // Google AdSense - Carregado uma única vez
-    wp_enqueue_script('google-adsense', 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7381677975479553', array(), null, array('async' => true));
-    
-    // Nosso Lazy Load de Anúncios
-    wp_enqueue_script('sts-lazy-ads', THEME_URI . '/assets/js/lazy-ads.js', array(), THEME_VERSION, true);
+
     
     wp_enqueue_script('achadinhos-js', THEME_URI . '/assets/js/achadinhos.js', array('jquery'), THEME_VERSION, true);
     
@@ -841,99 +837,5 @@ function sts_minify_html_output($buffer) {
 // }
 // add_action('get_header', 'sts_start_minification');
 
-/**
- * ============================================================
- * NATIVE AD MANAGER (CUSTOMIZER) - THEME VERSION 1.0.12
- * ============================================================
- */
-function sts_customize_register_ads($wp_customize) {
-    // Seção Principal
-    $wp_customize->add_section('sts_ads_section', array(
-        'title'    => __('Configurações de Publicidade', 'sts-recipe-2'),
-        'priority' => 30,
-    ));
-
-    // Array de slots estratégicos
-    $ad_slots = array(
-        'ad_top_billboard' => 'Billboard Superior (Abaixo do Header)',
-        'ad_mid_content_h3' => 'Conteúdo: Após o 3º H3 (Subtítulo)',
-        'ad_single_before_ingredients' => 'Single: Antes dos Ingredientes',
-        'ad_single_after_recipe' => 'Single: Final da Receita',
-        'ad_sidebar_sticky' => 'Sidebar: Banner Fixo'
-    );
-
-    foreach ($ad_slots as $id => $label) {
-        $wp_customize->add_setting($id, array(
-            'default'           => '',
-            'sanitize_callback' => 'sts_sanitize_html_raw', 
-            'transport'         => 'refresh',
-        ));
-
-        $wp_customize->add_control($id, array(
-            'label'    => $label,
-            'section'  => 'sts_ads_section',
-            'type'     => 'textarea',
-            'description' => 'Cole aqui o código do Google AdSense para este slot.'
-        ));
     }
 }
-add_action('customize_register', 'sts_customize_register_ads');
-
-function sts_sanitize_html_raw($input) {
-    return $input; 
-}
-
-/**
- * Função para exibir o slot de anúncio com Lazy Loading
- */
-function sts_show_ad_slot($slot_id, $lazy = true) {
-    $ad_code = get_theme_mod($slot_id);
-    if (empty($ad_code)) return;
-    
-    // Se for carregamento imediato (eager), não usamos a classe de loader nem base64
-    if (!$lazy) {
-        ?>
-        <div class="sts-ad-container my-10 flex flex-col items-center overflow-hidden">
-            <span class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 opacity-50">Publicidade</span>
-            <div class="sts-ad-inner flex justify-center w-full">
-                <?php echo $ad_code; ?>
-            </div>
-        </div>
-        <?php
-        return;
-    }
-    ?>
-    <div class="sts-ad-container my-10 flex flex-col items-center overflow-hidden">
-        <span class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 opacity-50">Publicidade</span>
-        <div class="sts-ad-inner lazy-ad-loader min-h-[100px] flex justify-center w-full" data-code="<?php echo base64_encode($ad_code); ?>">
-            <!-- Anúncio será injetado aqui via JS Lazy Load -->
-        </div>
-    </div>
-    <?php
-}
-
-/**
- * Injeção Automática: Anúncio após o 3º H3 do conteúdo
- */
-function sts_inject_ad_after_h3($content) {
-    if (!is_singular('post') || is_admin()) return $content;
-
-    $ad_code = get_theme_mod('ad_mid_content_h3');
-    if (empty($ad_code)) return $content;
-
-    $closing_h3 = '</h3>';
-    $paragraphs = explode($closing_h3, $content);
-
-    if (count($paragraphs) > 3) {
-        ob_start();
-        sts_show_ad_slot('ad_mid_content_h3');
-        $ad_html = ob_get_clean();
-
-        // Insere o anúncio após o 3º fechamento de H3
-        $paragraphs[2] .= $ad_html;
-        $content = implode($closing_h3, $paragraphs);
-    }
-
-    return $content;
-}
-add_filter('the_content', 'sts_inject_ad_after_h3', 20);

@@ -178,10 +178,7 @@
         </div>
     </header>
 
-    <!-- Ad: Billboard Top (Native Manager) -->
-    <div class="max-w-7xl mx-auto px-4 mt-6">
-        <?php if(function_exists('sts_show_ad_slot')) sts_show_ad_slot('ad_top_billboard', false); ?>
-    </div>
+
 
     <!-- Auth Modal -->
     <div id="auth-modal" class="hidden fixed inset-0 z-[20001] flex items-center justify-center p-4">

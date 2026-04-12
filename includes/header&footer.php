@@ -13,10 +13,8 @@ add_action('wp_head', function() {
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
-  // Configuração múltipla (Analytics e Ads)
+  // Configuração (Analytics)
   gtag('config', 'G-1NRXPK21JE');
-  gtag('config', 'AW-10822325396');
-  gtag('config', 'AW-16694162226');
 </script>
 
 <!-- Meta Pixel Code DR-Pixel News -->
