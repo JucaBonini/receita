@@ -61,7 +61,7 @@
 
     <div id="global-overlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[20000] hidden opacity-0 transition-opacity duration-300"></div>
 
-    <header class="sticky top-0 z-[100] w-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-100 dark:border-slate-800">
+    <header class="sticky top-[var(--header-top,0px)] z-[100] w-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-100 dark:border-slate-800 transition-[top] duration-700">
         <div class="max-w-6xl mx-auto flex items-center justify-between gap-4 px-4 h-16 md:h-20">
             
             <!-- Logo Section -->
@@ -105,7 +105,7 @@
             <div class="flex items-center gap-2 md:gap-3">
                 
                 <!-- Live Search -->
-                <div class="relative group hidden sm:block">
+                <div class="relative group hidden md:block">
                     <div class="flex items-center bg-slate-100 dark:bg-slate-800 rounded-2xl px-4 py-2 border border-transparent focus-within:border-primary/20 w-48 xl:w-64 transition-all">
                         <span class="material-symbols-outlined text-slate-400 text-xl mr-2" aria-hidden="true">search</span>
                         <input type="text" id="sts-live-search" placeholder="Buscar..." aria-label="Buscar receitas"

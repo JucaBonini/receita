@@ -165,6 +165,48 @@ document.addEventListener('DOMContentLoaded', function() {
     // Inicializa UI
     updateFavUI();
     
+    // 1.3 Toggle Dropdowns no Mobile (Favoritos e Perfil)
+    const dropdownTriggers = ['favorites-trigger', 'user-profile-trigger'];
+    dropdownTriggers.forEach(id => {
+        const trigger = document.getElementById(id);
+        if (trigger) {
+            trigger.addEventListener('click', function(e) {
+                if (window.innerWidth < 1024) { // Apenas no mobile/tablet
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const dropdown = this.nextElementSibling;
+                    if (dropdown) {
+                        const isVisible = !dropdown.classList.contains('invisible');
+                        
+                        // Fecha outros primeiro
+                        document.querySelectorAll('.dropdown-mobile-active').forEach(d => {
+                            if (d !== dropdown) {
+                                d.classList.add('invisible', 'opacity-0', 'translate-y-4');
+                                d.classList.remove('visible', 'opacity-100', 'translate-y-0', 'dropdown-mobile-active');
+                            }
+                        });
+
+                        if (!isVisible) {
+                            dropdown.classList.remove('invisible', 'opacity-0', 'translate-y-4');
+                            dropdown.classList.add('visible', 'opacity-100', 'translate-y-0', 'dropdown-mobile-active');
+                        } else {
+                            dropdown.classList.add('invisible', 'opacity-0', 'translate-y-4');
+                            dropdown.classList.remove('visible', 'opacity-100', 'translate-y-0', 'dropdown-mobile-active');
+                        }
+                    }
+                }
+            });
+        }
+    });
+
+    // Fecha dropdowns ao clicar fora
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.dropdown-mobile-active').forEach(d => {
+            d.classList.add('invisible', 'opacity-0', 'translate-y-4');
+            d.classList.remove('visible', 'opacity-100', 'translate-y-0', 'dropdown-mobile-active');
+        });
+    });
+
     // 3. Lazy Loading & Animations
     const observerOptions = {
         threshold: 0.1

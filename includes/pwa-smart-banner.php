@@ -87,6 +87,9 @@ function sts_render_pwa_smart_banner() {
                 setTimeout(() => {
                     banner.classList.add('show');
                     document.body.classList.add('pwa-banner-active');
+                    // Ajusta o topo do Header grudado
+                    const bannerHeight = banner.offsetHeight || 76;
+                    document.documentElement.style.setProperty('--header-top', bannerHeight + 'px');
                 }, 100);
             }
         }
@@ -98,6 +101,7 @@ function sts_render_pwa_smart_banner() {
                 
                 banner.classList.remove('show');
                 document.body.classList.remove('pwa-banner-active');
+                document.documentElement.style.setProperty('--header-top', '0px');
                 
                 deferredPrompt.prompt();
                 const { outcome } = await deferredPrompt.userChoice;
@@ -115,6 +119,7 @@ function sts_render_pwa_smart_banner() {
             closeBtn.addEventListener('click', () => {
                 banner.classList.remove('show');
                 document.body.classList.remove('pwa-banner-active');
+                document.documentElement.style.setProperty('--header-top', '0px');
                 
                 // Salva o timestamp da rejeição
                 const expireDate = new Date().getTime() + (7 * 24 * 60 * 60 * 1000);
