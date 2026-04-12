@@ -169,18 +169,18 @@
 
             </div>
         </div>
+
+        <!-- Mobile Menu (Movido para dentro da header para posicionamento correto) -->
+        <div id="mobileMenu" class="hidden absolute top-full left-0 w-full bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shadow-xl z-[150]">
+            <nav class="p-6">
+                <?php wp_nav_menu(array('theme_location' => 'main-menu', 'container' => false, 'menu_class' => 'flex flex-col gap-4 text-sm font-black uppercase tracking-widest')); ?>
+            </nav>
+        </div>
     </header>
 
     <!-- Ad: Billboard Top (Native Manager) -->
     <div class="max-w-7xl mx-auto px-4 mt-6">
         <?php if(function_exists('sts_show_ad_slot')) sts_show_ad_slot('ad_top_billboard', false); ?>
-    </div>
-
-    <!-- Mobile Menu -->
-    <div id="mobileMenu" class="hidden absolute top-full left-0 w-full bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shadow-xl z-[40]">
-        <nav class="p-6">
-            <?php wp_nav_menu(array('theme_location' => 'main-menu', 'container' => false, 'menu_class' => 'flex flex-col gap-4 text-sm font-black uppercase tracking-widest')); ?>
-        </nav>
     </div>
 
     <!-- Auth Modal -->
