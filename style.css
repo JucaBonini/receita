@@ -111,3 +111,30 @@ Text Domain: sts-recipe-2
         margin-top: 30pt;
     }
 }
+
+/* ============================================================ 
+   GENERAL THEME STYLES
+   ============================================================ */
+
+/* Active Menu State - Premium Indicator */
+.current-menu-item > a {
+    background-color: #ec5b13 !important; /* Cor Primária */
+    color: #ffffff !important;
+    border-color: #ec5b13 !important;
+    box-shadow: 0 4px 12px rgba(236, 91, 19, 0.2);
+}
+
+.dark .current-menu-item > a {
+    background-color: #ec5b13 !important;
+    color: #ffffff !important;
+    border-color: #ec5b13 !important;
+}
+
+/* Smooth Transitions for Navigation */
+nav a {
+    will-change: transform, background-color;
+}
+
+nav a:active {
+    transform: scale(0.95);
+}
