@@ -51,7 +51,7 @@ get_header(); ?>
 
     <!-- Anúncio Estratégico Archive (Estratégia 2026) -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
-        <?php sts_display_ad('archive_grid'); ?>
+        <!-- Espaço para Publicidade (Ad Inserter) -->
     </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -160,8 +160,8 @@ get_header(); ?>
                     </ul>
                 </div>
 
-                <!-- Anúncio Dinâmico: Sidebar -->
-                <?php sts_display_ad('sidebar'); ?>
+                <!-- Anúncio Dinâmico: Sidebar (Ad Inserter) -->
+                <?php // sts_display_ad('sidebar'); ?>
 
                 <!-- WhatsApp Sidebar Card -->
                 <div class="bg-[#25D366]/5 dark:bg-[#25D366]/10 p-6 rounded-2xl border border-[#25D366]/10 relative overflow-hidden">

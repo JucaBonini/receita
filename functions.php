@@ -62,6 +62,17 @@ function descomplicando_receitas_scripts() {
     // JS - Carregamento com defer (true no último parâmetro)
     wp_enqueue_script('jquery'); // Garantir que jQuery está carregado
     wp_enqueue_script('main-js', THEME_URI . '/assets/js/main.js', array('jquery'), THEME_VERSION, true);
+    
+    if (is_singular('post')) {
+        wp_enqueue_script('sts-smart-rec', THEME_URI . '/assets/js/smart-recommendations.js', array(), THEME_VERSION, true);
+    }
+
+    // Google AdSense - Carregado uma única vez
+    wp_enqueue_script('google-adsense', 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7381677975479553', array(), null, array('async' => true));
+    
+    // Nosso Lazy Load de Anúncios
+    wp_enqueue_script('sts-lazy-ads', THEME_URI . '/assets/js/lazy-ads.js', array(), THEME_VERSION, true);
+    
     wp_enqueue_script('achadinhos-js', THEME_URI . '/assets/js/achadinhos.js', array('jquery'), THEME_VERSION, true);
     
     // Localize script para AJAX (se necessário)
@@ -698,94 +709,10 @@ add_action('template_redirect', 'sts_protect_future_menus');
 }
 add_action('after_setup_theme', 'sts_hide_admin_bar_for_subscribers');
 
-// Sistema Profissional de Gerenciamento de Anúncios (CPT)
-require_once get_template_directory() . '/includes/cpt/anuncios.php';
+// Sistema Profissional de Gerenciamento de Anúncios (CPT) REMOVIDO
 require_once get_template_directory() . '/includes/cpt/cardapios.php';
 
-/**
- * Injeção Cirúrgica de Anúncios (Estilo Ad Inserter)
- * Injeta anúncios antes/depois de P, H2 e H3 com base no índice configurado.
- */
-function sts_surgical_ad_engine($content) {
-    if (!is_singular('post') || is_singular('sts_cardapio') || is_admin()) return $content;
-
-    $ads = get_posts(array(
-        'post_type'  => 'sts_anuncios',
-        'meta_query' => array(
-            'relation' => 'AND',
-            array('key' => '_sts_ad_position', 'value' => 'in_content'),
-            array('key' => '_sts_ad_status',   'value' => 'active')
-        ),
-        'posts_per_page' => -1
-    ));
-
-    if (empty($ads)) return $content;
-
-    // ... (restante da lógica mantida igual)
-
-    // Organizar anúncios por Posição, Tag e Índice
-    $map = array();
-    foreach ($ads as $ad) {
-        $tag   = get_post_meta($ad->ID, '_sts_ad_target_tag', true)   ?: 'p';
-        $logic = get_post_meta($ad->ID, '_sts_ad_target_logic', true) ?: 'after';
-        $index = get_post_meta($ad->ID, '_sts_ad_target_index', true) ?: '1';
-        $code  = get_post_meta($ad->ID, '_sts_ad_code', true);
-
-        $key = "{$tag}_{$index}_{$logic}";
-        $map[$key][] = $code;
-    }
-
-    // Parser DOM para contar tags
-    // Divide o conteúdo mantendo as tags delimitadoras
-    $parts = preg_split('/(<\/p>|<h2[^>]*>|<\/h2>|<h3[^>]*>|<\/h3>)/i', $content, -1, PREG_SPLIT_DELIM_CAPTURE);
-    
-    $counters = array('p' => 0, 'h2' => 0, 'h3' => 0);
-    $output = '';
-
-    foreach ($parts as $part) {
-        $tag_start = '';
-        if (preg_match('/^<h(2|3)[^>]*>/i', $part, $matches)) {
-            $tag_start = 'h' . $matches[1];
-        }
-
-        // Lógica BEFORE (H2, H3)
-        if ($tag_start) {
-            $counters[$tag_start]++;
-            $key_before = "{$tag_start}_{$counters[$tag_start]}_before";
-            if (isset($map[$key_before])) {
-                foreach ($map[$key_before] as $ad) $output .= '<div class="sts-ad-injected py-4">' . $ad . '</div>';
-            }
-        }
-
-        $output .= $part;
-
-        // Lógica AFTER (P, H2, H3)
-        $tag_end = '';
-        if (stripos($part, '</p>') !== false) $tag_end = 'p';
-        elseif (stripos($part, '</h2>') !== false) $tag_end = 'h2';
-        elseif (stripos($part, '</h3>') !== false) $tag_end = 'h3';
-
-        if ($tag_end) {
-            if ($tag_end === 'p') $counters['p']++;
-            $key_after = "{$tag_end}_{$counters[$tag_end]}_after";
-            if (isset($map[$key_after])) {
-                foreach ($map[$key_after] as $ad) $output .= '<div class="sts-ad-injected py-4">' . $ad . '</div>';
-            }
-        }
-    }
-
-    // Injeção de Início e Fim do Artigo
-    ob_start();
-    sts_display_ad('before_content');
-    $before = ob_get_clean();
-
-    ob_start();
-    sts_display_ad('after_content');
-    $after = ob_get_clean();
-
-    return $before . $output . $after;
-}
-add_filter('the_content', 'sts_surgical_ad_engine');
+// Sistema Surgical Ad Engine REMOVIDO
 
 /**
  * AJAX: Compilar Lista de Compras do Cardápio
@@ -887,3 +814,59 @@ function sts_start_minification() {
     ob_start('sts_minify_html_output');
 }
 add_action('get_header', 'sts_start_minification');
+
+/**
+ * ============================================================
+ * NATIVE AD MANAGER (CUSTOMIZER) - THEME VERSION 1.0.12
+ * ============================================================
+ */
+function sts_customize_register_ads($wp_customize) {
+    // Seção Principal
+    $wp_customize->add_section('sts_ads_section', array(
+        'title'    => __('Configurações de Publicidade', 'sts-recipe-2'),
+        'priority' => 30,
+    ));
+
+    // Array de slots estratégicos
+    $ad_slots = array(
+        'ad_top_billboard' => 'Billboard Superior (Abaixo do Header)',
+        'ad_single_before_ingredients' => 'Single: Antes dos Ingredientes',
+        'ad_single_after_recipe' => 'Single: Final da Receita',
+        'ad_sidebar_sticky' => 'Sidebar: Banner Fixo'
+    );
+
+    foreach ($ad_slots as $id => $label) {
+        $wp_customize->add_setting($id, array(
+            'default'           => '',
+            'sanitize_callback' => 'sts_sanitize_html_raw', 
+            'transport'         => 'refresh',
+        ));
+
+        $wp_customize->add_control($id, array(
+            'label'    => $label,
+            'section'  => 'sts_ads_section',
+            'type'     => 'textarea',
+            'description' => 'Cole aqui o código do Google AdSense para este slot.'
+        ));
+    }
+}
+add_action('customize_register', 'sts_customize_register_ads');
+
+function sts_sanitize_html_raw($input) {
+    return $input; 
+}
+
+/**
+ * Função para exibir o slot de anúncio com Lazy Loading
+ */
+function sts_show_ad_slot($slot_id) {
+    $ad_code = get_theme_mod($slot_id);
+    if (empty($ad_code)) return;
+    ?>
+    <div class="sts-ad-container my-8 flex justify-center overflow-hidden min-h-[100px]" data-ad-slot="<?php echo esc_attr($slot_id); ?>">
+        <div class="sts-ad-inner lazy-ad-loader" data-code="<?php echo base64_encode($ad_code); ?>">
+            <!-- Anúncio será injetado aqui via JS Lazy Load -->
+        </div>
+    </div>
+    <?php
+}

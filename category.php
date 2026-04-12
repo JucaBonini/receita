@@ -61,7 +61,7 @@ $category_image = get_term_meta($category_id, 'category_image', true);
 
     <!-- Anúncio Estratégico Archive (Estratégia 2026) -->
     <div class="max-w-7xl mx-auto px-4 mt-12 overflow-hidden flex justify-center">
-        <?php sts_display_ad('archive_grid'); ?>
+        <!-- Espaço para Publicidade (Ad Inserter) -->
     </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -169,9 +169,8 @@ $category_image = get_term_meta($category_id, 'category_image', true);
                 </div>
                 </div>
 
-                <!-- Anúncio Dinâmico: Sidebar -->
+                <!-- Anúncio Dinâmico: Sidebar (Ad Inserter) -->
                 <div class="flex justify-center overflow-hidden">
-                    <?php sts_display_ad('sidebar'); ?>
                 </div>
             </aside>
         </div>

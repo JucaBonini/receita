@@ -159,10 +159,15 @@ get_header();
             </div>
         </div>
     </section>
+    
+    <!-- Filtro de Dispensa (Mecanismo de Busca Avançado) -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <?php get_template_part('template-parts/pantry-filter'); ?>
+    </div>
 
     <!-- Anúncio Estratégico Display (Estratégia 2026) -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <?php sts_display_ad('archive_grid'); ?>
+        <!-- Espaço para Publicidade (Ad Inserter) -->
     </div>
 
     <!-- Categorias -->

@@ -90,6 +90,7 @@
 
 <?php get_template_part('template-parts/lgpd-banner'); ?>
 <?php get_template_part('template-parts/whatsapp-banner'); ?>
+<?php get_template_part('template-parts/pwa-install-banner'); ?>
 
 <?php wp_footer(); ?>
 </body>

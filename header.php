@@ -8,6 +8,24 @@
     <link rel="canonical" href="<?php echo get_permalink(); ?>" />
     
     <?php wp_head(); ?>
+
+    <!-- PWA: Configurações de Aplicativo (Tier 1) -->
+    <link rel="manifest" href="<?php echo THEME_URI; ?>/manifest.json">
+    <meta name="theme-color" content="#ec5b13">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="D. Receitas">
+    <link rel="apple-touch-icon" href="<?php echo THEME_URI; ?>/assets/images/logotipo-descomplicando_receitas300x300.png">
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('<?php echo THEME_URI; ?>/sw.js')
+                    .then(reg => console.log('[PWA] Service Worker registrado com sucesso!'))
+                    .catch(err => console.log('[PWA] Erro ao registrar SW:', err));
+            });
+        }
+    </script>
     
     <!-- Preload das Fontes Locais (Otimização CWV) -->
     <link rel="preload" href="<?php echo THEME_URI; ?>/assets/fonts/public-sans-400.ttf" as="font" type="font/ttf" crossorigin>
@@ -33,7 +51,7 @@
     </script>
 </head>
 
-<body <?php body_class('bg-white dark:bg-slate-900 transition-colors duration-200'); ?>>
+<body <?php body_class('bg-white dark:bg-slate-900 transition-colors duration-200'); ?> data-category="<?php if(is_singular('post')) { $cat = get_the_category(); if($cat) echo $cat[0]->slug; } ?>">
     <?php wp_body_open(); ?>
 
     <!-- Pular para o Conteúdo (Acessibilidade) -->
@@ -152,6 +170,11 @@
             </div>
         </div>
     </header>
+
+    <!-- Ad: Billboard Top (Native Manager) -->
+    <div class="max-w-7xl mx-auto px-4 mt-6">
+        <?php if(function_exists('sts_show_ad_slot')) sts_show_ad_slot('ad_top_billboard'); ?>
+    </div>
 
     <!-- Mobile Menu -->
     <div id="mobileMenu" class="hidden absolute top-full left-0 w-full bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shadow-xl z-[40]">

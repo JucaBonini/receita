@@ -1,50 +1,48 @@
-const CACHE_NAME = 'dr-pwa-v1';
-const ASSETS_TO_CACHE = [
-  './',
+const CACHE_NAME = 'dr-pwa-v2.0'; // Atualizado para forçar atualização
+const OFFLINE_URL = 'offline.html';
+
+const ASSETS_TO_PRECACHE = [
+  '/',
+  './offline.html',
   './assets/css/main.min.css',
   './assets/js/main.js',
-  './assets/images/placeholder.jpg'
+  './assets/images/logotipo-descomplicando_receitas300x300.png'
 ];
 
-// Instalação do Service Worker
+// Instalação: Cacheia arquivos críticos
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[PWA] Precaching Offline Assets');
-      return cache.addAll(ASSETS_TO_CACHE);
+      console.log('[PWA] Precaching Critical Assets');
+      return cache.addAll(ASSETS_TO_PRECACHE);
     })
   );
   self.skipWaiting();
 });
 
-// Ativação e limpeza de caches antigos
+// Ativação: Limpa caches antigos
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
-        cacheNames.map((cache) => {
-          if (cache !== CACHE_NAME) {
-            console.log('[PWA] Clearing Old Cache', cache);
-            return caches.delete(cache);
-          }
-        })
+        cacheNames.filter(name => name !== CACHE_NAME).map(name => caches.delete(name))
       );
     })
   );
-  return self.clients.claim();
+  self.clients.claim();
 });
 
-// Estratégia: Stale-While-Revalidate (Cache primeiro, atualiza em background)
+// Interceptação de Requisições
 self.addEventListener('fetch', (event) => {
-  // Ignorar requisições do Google AdSense e outras origens externas
-  if (event.request.url.includes('google') || event.request.url.includes('doubleclick')) {
-    return;
-  }
+  // Ignorar AdSense e Analytics externas para não quebrar o cache
+  if (!event.request.url.startsWith(self.location.origin)) return;
 
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      const fetchPromise = fetch(event.request).then((networkResponse) => {
-        // Apenas cacheia posts e assets internos
+      if (cachedResponse) return cachedResponse;
+
+      return fetch(event.request).then((networkResponse) => {
+        // Cache dinâmico para imagens e posts que o usuário visita
         if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
           const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {
@@ -52,10 +50,12 @@ self.addEventListener('fetch', (event) => {
           });
         }
         return networkResponse;
+      }).catch(() => {
+        // Fallback para a página offline se for uma navegação de página
+        if (event.request.mode === 'navigate') {
+          return caches.match(OFFLINE_URL);
+        }
       });
-
-      // Retorna o cache se existir, senão espera o network
-      return cachedResponse || fetchPromise;
     })
   );
 });

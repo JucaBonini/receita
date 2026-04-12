@@ -71,7 +71,7 @@ if (have_posts()) : while (have_posts()) : the_post();
                 <div class="flex flex-wrap items-center gap-4 self-end sm:self-start">
                     <!-- Reserva de Espaço para Anúncio (Evita CLS) -->
                     <div class="sts-ad-slot-header min-w-[280px] min-h-[90px] bg-slate-50 dark:bg-slate-900/40 rounded-xl flex items-center justify-center text-[9px] text-slate-300 uppercase tracking-widest border border-dashed border-slate-200 dark:border-slate-800">
-                        <?php sts_display_ad('after_title'); ?>
+                        <!-- Espaço para AdSense (Ad Inserter) -->
                     </div>
                     
                     <button class="btn-favorite flex-shrink-0 size-14 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-center hover:scale-110 transition-all text-primary group" data-post-id="<?php the_ID(); ?>" aria-label="Favoritar esta receita">
@@ -140,11 +140,17 @@ if (have_posts()) : while (have_posts()) : the_post();
                 <span class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Dificuldade</span>
                 <span class="text-base sm:text-xl font-bold"><?php echo $dificuldade ?: 'Fácil'; ?></span>
             </div>
-            <div class="bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center col-span-2 min-[480px]:col-span-1">
+            <div class="bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
                 <span class="material-symbols-outlined text-primary mb-2">health_and_safety</span>
                 <span class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Dieta</span>
-                <span class="text-base sm:text-xl font-bold truncate w-full"><?php echo $diet_type ?: 'Padrão'; ?></span>
+                <span class="text-base sm:text-xl font-bold truncate w-full text-slate-800 dark:text-slate-100"><?php echo $diet_type ?: 'Padrão'; ?></span>
             </div>
+            <!-- Botão Salvar em PDF (6º Card) -->
+            <button onclick="window.print()" class="bg-primary/5 hover:bg-primary text-primary hover:text-white p-4 sm:p-5 rounded-2xl border border-primary/20 flex flex-col items-center text-center transition-all group">
+                <span class="material-symbols-outlined mb-2 group-hover:scale-110 transition-transform">picture_as_pdf</span>
+                <span class="text-[10px] uppercase tracking-wider font-bold mb-1">Salvar</span>
+                <span class="text-base sm:text-xl font-bold">PDF</span>
+            </button>
         </div>
 
         <!-- Video Section (If exists) -->
@@ -191,6 +197,9 @@ if (have_posts()) : while (have_posts()) : the_post();
                     </ul>
                 </section>
                 <?php endif; ?>
+
+                <!-- Ad: Antes dos Ingredientes (Nativo) -->
+                <?php if(function_exists('sts_show_ad_slot')) sts_show_ad_slot('ad_single_before_ingredients'); ?>
 
                 <!-- Ingredients Section -->
                 <section class="mb-12" id="ingredients">
@@ -253,6 +262,9 @@ if (have_posts()) : while (have_posts()) : the_post();
                         <?php endif; endforeach; endif; ?>
                     </div>
                 </section>
+
+                <!-- Ad: Final da Receita (Nativo) -->
+                <?php if(function_exists('sts_show_ad_slot')) sts_show_ad_slot('ad_single_after_recipe'); ?>
 
                 <!-- Avaliação da Receita Widget -->
                 <section class="mb-12 bg-white dark:bg-slate-800 p-8 rounded-[32px] border border-slate-100 dark:border-slate-700 shadow-sm text-center relative overflow-hidden" id="rating-widget">
@@ -324,6 +336,11 @@ if (have_posts()) : while (have_posts()) : the_post();
 
             <!-- Sidebar Area -->
             <aside class="space-y-8">
+                <!-- Ad: Sidebar Sticky (Nativo) -->
+                <div class="sticky top-24">
+                    <?php if(function_exists('sts_show_ad_slot')) sts_show_ad_slot('ad_sidebar_sticky'); ?>
+                </div>
+
                 <!-- Author Box (Ultra-Premium E-E-A-T Card) -->
                 <div class="bg-white dark:bg-slate-800 p-8 rounded-[40px] shadow-sm border border-slate-100 dark:border-slate-700 relative overflow-hidden group">
                     <!-- Badge de Autoridade (Flutuante) -->
@@ -436,8 +453,12 @@ if (have_posts()) : while (have_posts()) : the_post();
                         ));
 
                         if ($related_query->have_posts()) : while ($related_query->have_posts()) : $related_query->the_post();
+                            $r_cat = get_the_category();
+                            $r_slug = $r_cat ? $r_cat[0]->slug : '';
                         ?>
-                        <a class="group flex gap-3 items-center" href="<?php the_permalink(); ?>">
+                        <a class="group flex gap-3 items-center smart-recommendation-item transition-all" 
+                           href="<?php the_permalink(); ?>" 
+                           data-category="<?php echo $r_slug; ?>">
                             <div class="size-20 rounded-xl overflow-hidden flex-shrink-0">
                                 <?php the_post_thumbnail('thumbnail', ['class' => 'w-full h-full object-cover group-hover:scale-110 transition-transform']); ?>
                             </div>
