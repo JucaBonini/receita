@@ -41,7 +41,7 @@
         Pular para o conteúdo principal
     </a>
 
-    <div id="global-overlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[99] hidden opacity-0 transition-opacity duration-300"></div>
+    <div id="global-overlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[20000] hidden opacity-0 transition-opacity duration-300"></div>
 
     <header class="sticky top-0 z-[100] w-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-100 dark:border-slate-800">
         <div class="max-w-6xl mx-auto flex items-center justify-between gap-4 px-4 h-16 md:h-20">
@@ -161,7 +161,7 @@
     </div>
 
     <!-- Auth Modal -->
-    <div id="auth-modal" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-xl">
+    <div id="auth-modal" class="hidden fixed inset-0 z-[20001] flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-800 w-full max-w-md rounded-[40px] shadow-2xl p-10 relative">
             <button onclick="document.getElementById('auth-modal').classList.add('hidden')" aria-label="Fechar" class="absolute top-6 right-6 text-slate-400">
                 <span class="material-symbols-outlined">close</span>

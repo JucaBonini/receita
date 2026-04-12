@@ -103,6 +103,36 @@ function sts_optimize_content_images($content) {
 }
 add_filter('the_content', 'sts_optimize_content_images');
 
+/**
+ * Injeção Nativa do Banner do WhatsApp (Após o 2º Parágrafo)
+ */
+function sts_insert_whatsapp_banner($content) {
+    if (!is_singular('post') || is_admin()) return $content;
+
+    $closing_p = '</p>';
+    $paragraphs = explode($closing_p, $content);
+    
+    // Inserir após o 2º parágrafo (se houver parágrafos suficientes)
+    if (count($paragraphs) >= 3) {
+        ob_start();
+        get_template_part('template-parts/whatsapp-mid-post');
+        $banner_html = ob_get_clean();
+
+        foreach ($paragraphs as $index => $paragraph) {
+            if (trim($paragraph)) {
+                $paragraphs[$index] .= $closing_p;
+            }
+            if ($index === 1) { // 0 é o 1º, 1 é o 2º
+                $paragraphs[$index] .= $banner_html;
+            }
+        }
+        $content = implode('', $paragraphs);
+    }
+    
+    return $content;
+}
+add_filter('the_content', 'sts_insert_whatsapp_banner', 15);
+
 // Adicionar atributos async/defer ao JS para otimizar o INP
 function add_async_defer_attributes($tag, $handle, $src) {
     if (is_admin()) return $tag;

@@ -1,6 +1,5 @@
-<!-- LGPD Consent Banner -->
 <div id="lgpd-banner" role="region" aria-label="Aviso de Privacidade e Cookies"
-     class="fixed bottom-0 left-0 right-0 z-[9999] p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 shadow-[0_-5px_30px_rgba(0,0,0,0.1)] translate-y-full transition-transform duration-700 ease-in-out">
+     class="fixed bottom-0 left-0 right-0 z-[10000] p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 shadow-[0_-5px_30px_rgba(0,0,0,0.1)] translate-y-full transition-transform duration-700 ease-in-out">
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
         
         <!-- Info Section -->

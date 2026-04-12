@@ -397,7 +397,10 @@ document.addEventListener('DOMContentLoaded', function() {
     if (lgpdBanner) {
         const consent = localStorage.getItem(LGPD_KEY);
         if (!consent) {
-            setTimeout(() => lgpdBanner.classList.add('show'), 1500);
+            setTimeout(() => {
+                lgpdBanner.classList.add('show');
+                document.body.classList.add('lgpd-active'); // Adiciona classe ao body para o WhatsApp subir
+            }, 1500);
         } else {
             lgpdBanner.remove(); 
         }
@@ -409,6 +412,7 @@ document.addEventListener('DOMContentLoaded', function() {
             lgpdAccept.addEventListener('click', function() {
                 localStorage.setItem(LGPD_KEY, 'accepted');
                 lgpdBanner.classList.remove('show');
+                document.body.classList.remove('lgpd-active');
                 setTimeout(() => lgpdBanner.remove(), 700);
             });
         }
@@ -417,6 +421,7 @@ document.addEventListener('DOMContentLoaded', function() {
             lgpdDecline.addEventListener('click', function() {
                 localStorage.setItem(LGPD_KEY, 'declined');
                 lgpdBanner.classList.remove('show');
+                document.body.classList.remove('lgpd-active');
                 setTimeout(() => lgpdBanner.remove(), 700);
             });
         }
@@ -428,21 +433,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (wppBanner) {
         let wppHasShown = false;
-        const WPP_KEY = 'sts_whatsapp_invite_hidden';
         const wppIsHidden = localStorage.getItem(WPP_KEY);
 
         if (!wppIsHidden) {
             window.addEventListener('scroll', function() {
-                // Cálculo de Porcentagem de Scroll (Ultra Preciso)
                 const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
                 const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
                 const scrolled = (winScroll / height) * 100;
 
-                // Debug: console.log('Scroll:', scrolled.toFixed(2) + '%'); 
-
                 if (!wppHasShown && scrolled >= 65) {
                     wppHasShown = true;
-                    // console.log('✅ Disparando Banner WhatsApp 65%');
+                    // Remove bloqueios de interatividade antes de mostrar
+                    wppBanner.classList.remove('invisible', 'pointer-events-none');
                     wppBanner.classList.add('show');
                 }
             });
@@ -452,6 +454,10 @@ document.addEventListener('DOMContentLoaded', function() {
         if (closeWpp) {
             closeWpp.addEventListener('click', () => {
                 wppBanner.classList.remove('show');
+                // Readiciona bloqueio após fechar para evitar cliques fantasmas na transição
+                setTimeout(() => {
+                    wppBanner.classList.add('invisible', 'pointer-events-none');
+                }, 700);
                 localStorage.setItem(WPP_KEY, 'true');
             });
         }
