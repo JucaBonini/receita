@@ -173,7 +173,7 @@
 
     <!-- Ad: Billboard Top (Native Manager) -->
     <div class="max-w-7xl mx-auto px-4 mt-6">
-        <?php if(function_exists('sts_show_ad_slot')) sts_show_ad_slot('ad_top_billboard'); ?>
+        <?php if(function_exists('sts_show_ad_slot')) sts_show_ad_slot('ad_top_billboard', false); ?>
     </div>
 
     <!-- Mobile Menu -->

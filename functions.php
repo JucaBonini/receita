@@ -864,9 +864,22 @@ function sts_sanitize_html_raw($input) {
 /**
  * Função para exibir o slot de anúncio com Lazy Loading
  */
-function sts_show_ad_slot($slot_id) {
+function sts_show_ad_slot($slot_id, $lazy = true) {
     $ad_code = get_theme_mod($slot_id);
     if (empty($ad_code)) return;
+    
+    // Se for carregamento imediato (eager), não usamos a classe de loader nem base64
+    if (!$lazy) {
+        ?>
+        <div class="sts-ad-container my-10 flex flex-col items-center overflow-hidden">
+            <span class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 opacity-50">Publicidade</span>
+            <div class="sts-ad-inner flex justify-center w-full">
+                <?php echo $ad_code; ?>
+            </div>
+        </div>
+        <?php
+        return;
+    }
     ?>
     <div class="sts-ad-container my-10 flex flex-col items-center overflow-hidden">
         <span class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 opacity-50">Publicidade</span>
