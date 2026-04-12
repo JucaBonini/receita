@@ -303,58 +303,86 @@ if (have_posts()) : while (have_posts()) : the_post();
                     <input type="hidden" id="rating_post_id" value="<?php echo $post_id; ?>">
                 </section>
 
-                <!-- 🛍️ Vitrine de Indicações (Afiliados Mary) -->
+                <!-- 🛍️ Vitrine de Indicações Premium (Afiliados Mary) -->
                 <?php
                 $indicacoes_query = new WP_Query(array(
                     'post_type'      => 'sts_indicacoes',
-                    'posts_per_page' => 4,
+                    'posts_per_page' => 6,
                     'orderby'        => 'rand'
                 ));
 
                 if ($indicacoes_query->have_posts()) : ?>
-                <section class="mt-16 mb-12 py-12 border-t border-slate-100 dark:border-slate-800">
-                    <div class="flex flex-col sm:flex-row justify-between items-end gap-4 mb-8">
-                        <div>
-                            <span class="text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-2 block">Loja de Afiliados</span>
-                            <h3 class="text-3xl font-black text-slate-900 dark:text-white leading-tight">Utensílios para sua <span class="text-primary italic">Cozinha</span></h3>
-                            <p class="text-sm text-slate-500 mt-2">Selecionamos os melhores produtos que usamos e recomendamos para preparar esta e outras receitas.</p>
+                <section class="mt-20 mb-16 py-16 border-t border-slate-100 dark:border-slate-800">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
+                        <div class="max-w-2xl">
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="size-2 bg-primary rounded-full animate-pulse"></span>
+                                <span class="text-[11px] font-black text-primary uppercase tracking-[0.4em]">Curadoria Exclusiva</span>
+                            </div>
+                            <h3 class="text-3xl md:text-4xl font-black text-slate-900 dark:text-white leading-none">Utensílios para sua <span class="text-primary italic">Cozinha</span></h3>
+                            <p class="text-base text-slate-500 mt-4 leading-relaxed">Equipamentos e acessórios que <span class="font-bold text-slate-700 dark:text-slate-300">eu utilizo pessoalmente</span> e recomendo para garantir o melhor resultado nas suas receitas.</p>
                         </div>
-                        <a href="<?php echo home_url('/loja'); ?>" class="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest flex items-center gap-2 hover:text-primary transition-colors pb-1">
-                            Ver vitrine completa <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        <a href="<?php echo home_url('/loja'); ?>" class="group/all flex items-center gap-3 px-6 py-3 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all duration-300 shadow-sm">
+                            Ver vitrine completa 
+                            <span class="material-symbols-outlined text-sm transition-transform group-hover/all:translate-x-1">arrow_forward</span>
                         </a>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                         <?php while ($indicacoes_query->have_posts()) : $indicacoes_query->the_post(); 
                             $url = get_post_meta(get_the_ID(), '_sts_product_url', true);
                             $price = get_post_meta(get_the_ID(), '_sts_product_price', true);
                             $marketplace = get_post_meta(get_the_ID(), '_sts_marketplace', true);
                             
-                            $btn_text = 'COMPRE AGORA';
-                            if ($marketplace === 'shopee') $btn_text = 'Compre na Shopee';
-                            elseif ($marketplace === 'amazon') $btn_text = 'Compre na Amazon';
-                            elseif ($marketplace === 'mercado_livre') $btn_text = 'Compre no ML';
+                            // Configuração Dinâmica de Cores e Textos
+                            $btn_style = 'bg-slate-900 hover:bg-black';
+                            $btn_text = 'VER OFERTA';
+                            $mkt_label = 'Loja Oficial';
+                            
+                            if ($marketplace === 'shopee') {
+                                $btn_style = 'bg-[#ee4d2d] hover:bg-[#d73211] shadow-lg shadow-[#ee4d2d]/20 text-white';
+                                $btn_text = 'Compre na Shopee';
+                                $mkt_label = 'Shopee';
+                            } elseif ($marketplace === 'amazon') {
+                                $btn_style = 'bg-[#FF9900] hover:bg-[#e68a00] shadow-lg shadow-[#FF9900]/20 text-black';
+                                $btn_text = 'Compre na Amazon';
+                                $mkt_label = 'Amazon';
+                            } elseif ($marketplace === 'mercado_livre') {
+                                $btn_style = 'bg-[#FFE600] hover:bg-[#e6cf00] shadow-lg shadow-[#FFE600]/20 text-[#2d3277]';
+                                $btn_text = 'Compre no Mercado Livre';
+                                $mkt_label = 'Mercado Livre';
+                            }
                         ?>
-                        <div class="bg-white dark:bg-slate-800 rounded-[32px] p-4 shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-2xl hover:scale-[1.02] transition-all flex flex-col group">
-                            <div class="aspect-square rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-900 mb-4 relative">
+                        <div class="bg-white dark:bg-slate-800 rounded-[40px] p-5 shadow-[0_10px_40px_rgba(0,0,0,0.04)] border border-slate-100 dark:border-slate-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 flex flex-col group/card relative overflow-hidden">
+                            
+                            <!-- Imagem com Preço Flutuante -->
+                            <div class="aspect-[4/5] rounded-[30px] overflow-hidden bg-slate-50 dark:bg-slate-900 mb-6 relative">
                                 <?php if (has_post_thumbnail()) : ?>
-                                    <?php the_post_thumbnail('medium', ['class' => 'w-full h-full object-cover group-hover:scale-110 transition-transform duration-500']); ?>
+                                    <?php the_post_thumbnail('large', ['class' => 'w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110']); ?>
                                 <?php endif; ?>
+                                
+                                <!-- Badge de Marketplace -->
+                                <div class="absolute top-4 left-4 px-4 py-2 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-2xl text-[9px] font-black text-slate-500 uppercase tracking-widest shadow-sm">
+                                    <?php echo $mkt_label; ?>
+                                </div>
+
+                                <!-- Preço em Destaque -->
                                 <?php if ($price) : ?>
-                                    <div class="absolute bottom-2 left-2 bg-white/90 dark:bg-slate-900/90 backdrop-blur px-3 py-1 rounded-full text-[9px] font-black text-primary">
+                                    <div class="absolute bottom-4 right-4 bg-primary text-white px-5 py-2 rounded-2xl text-xs font-black shadow-xl animate-bounce-slow">
                                         <?php echo $price; ?>
                                     </div>
                                 <?php endif; ?>
                             </div>
                             
-                            <h4 class="text-xs font-black text-slate-900 dark:text-white uppercase tracking-tight line-clamp-2 mb-4 h-8">
+                            <h4 class="px-2 text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight line-clamp-2 mb-6 h-10 leading-tight">
                                 <?php the_title(); ?>
                             </h4>
 
+                            <!-- Botão Customizado -->
                             <a href="<?php echo esc_url($url); ?>" target="_blank" rel="noopener nofollow" 
-                               class="mt-auto flex items-center justify-center gap-2 py-3 bg-slate-900 dark:bg-slate-700 text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-primary transition-all shadow-lg shadow-slate-900/10">
-                                <?php echo $btn_text; ?>
-                                <span class="material-symbols-outlined text-sm">shopping_cart</span>
+                               class="w-full flex items-center justify-center gap-3 py-5 px-4 <?php echo $btn_style; ?> rounded-[24px] text-xs font-black uppercase tracking-widest transition-all duration-300 group/btn">
+                                <span><?php echo $btn_text; ?></span>
+                                <span class="material-symbols-outlined text-lg transition-transform group-hover/btn:translate-x-1">shopping_bag</span>
                             </a>
                         </div>
                         <?php endwhile; wp_reset_postdata(); ?>
