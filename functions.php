@@ -240,6 +240,25 @@ add_filter('image_size_names_choose', function($sizes) {
     ));
 });
 
+/**
+ * Filtros para permitir classes personalizadas no wp_nav_menu
+ */
+function sts_add_additional_class_on_li($classes, $item, $args) {
+    if(isset($args->add_li_class)) {
+        $classes[] = $args->add_li_class;
+    }
+    return $classes;
+}
+add_filter('nav_menu_css_class', 'sts_add_additional_class_on_li', 1, 3);
+
+function sts_add_additional_class_on_a($attr, $item, $args) {
+    if(isset($args->add_li_class)) {
+        $attr['class'] = $args->add_li_class;
+    }
+    return $attr;
+}
+add_filter('nav_menu_link_attributes', 'sts_add_additional_class_on_a', 1, 3);
+
 // Limpeza do Cabeçalho (SEO & Performance)
 function dr_limpeza_head_completa() {
     remove_action('wp_head', 'wp_generator');
