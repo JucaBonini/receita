@@ -18,8 +18,8 @@ function sts_render_pwa_smart_banner() {
     }
     ?>
     <!-- Smart PWA Banner -->
-    <div id="pwa-smart-banner" class="fixed top-0 left-0 w-full z-[30000] -translate-y-full transition-transform duration-700 ease-in-out hidden mb-0">
-        <div class="bg-white dark:bg-slate-900 border-b-2 border-primary/20 shadow-2xl px-4 py-3 md:py-4">
+    <div id="pwa-smart-banner" class="relative w-full z-[30001] bg-white dark:bg-slate-900 border-b-2 border-primary/20 shadow-lg hidden">
+        <div class="px-4 py-3 md:py-4">
             <div class="max-w-6xl mx-auto flex items-center justify-between gap-3">
                 
                 <!-- Info -->
@@ -48,16 +48,13 @@ function sts_render_pwa_smart_banner() {
     </div>
 
     <style>
-        body.pwa-banner-active {
-            padding-top: 76px !important;
-            transition: padding-top 0.7s ease-in-out;
-        }
-        @media (min-width: 768px) {
-            body.pwa-banner-active { padding-top: 88px !important; }
-        }
         #pwa-smart-banner.show {
-            transform: translateY(0);
             display: block;
+            animation: slideDown 0.5s ease-out;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 
@@ -84,13 +81,7 @@ function sts_render_pwa_smart_banner() {
         function showPWABanner() {
             if (banner && deferredPrompt) {
                 banner.classList.remove('hidden');
-                setTimeout(() => {
-                    banner.classList.add('show');
-                    document.body.classList.add('pwa-banner-active');
-                    // Ajusta o topo do Header grudado
-                    const bannerHeight = banner.offsetHeight || 76;
-                    document.documentElement.style.setProperty('--header-top', bannerHeight + 'px');
-                }, 100);
+                banner.classList.add('show');
             }
         }
 
@@ -98,16 +89,12 @@ function sts_render_pwa_smart_banner() {
         if (installBtn) {
             installBtn.addEventListener('click', async () => {
                 if (!deferredPrompt) return;
-                
-                banner.classList.remove('show');
-                document.body.classList.remove('pwa-banner-active');
-                document.documentElement.style.setProperty('--header-top', '0px');
+                banner.style.display = 'none';
                 
                 deferredPrompt.prompt();
                 const { outcome } = await deferredPrompt.userChoice;
                 
                 if (outcome === 'accepted') {
-                    console.log('User accepted the PWA install');
                     localStorage.setItem(STORAGE_KEY, 'installed');
                 }
                 deferredPrompt = null;
@@ -117,15 +104,11 @@ function sts_render_pwa_smart_banner() {
         // 3. Lógica de Fechar (Rejeitar por 7 dias)
         if (closeBtn) {
             closeBtn.addEventListener('click', () => {
-                banner.classList.remove('show');
-                document.body.classList.remove('pwa-banner-active');
-                document.documentElement.style.setProperty('--header-top', '0px');
+                banner.style.display = 'none';
                 
                 // Salva o timestamp da rejeição
                 const expireDate = new Date().getTime() + (7 * 24 * 60 * 60 * 1000);
                 localStorage.setItem(STORAGE_KEY, expireDate);
-                
-                setTimeout(() => banner.classList.add('hidden'), 700);
             });
         }
 
