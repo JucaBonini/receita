@@ -77,26 +77,57 @@ add_action('save_post', 'sts_save_indicacoes_meta');
  * Adiciona Coluna na Listagem do Admin
  */
 function sts_set_indicacoes_columns($columns) {
-    $new_columns = array();
-    foreach($columns as $key => $title) {
-        if ($key === 'date') {
-            $new_columns['marketplace'] = 'Marketplace';
-        }
-        $new_columns[$key] = $title;
-    }
-    return $new_columns;
+    $columns['sts_price'] = 'Preço';
+    $columns['sts_marketplace'] = 'Marketplace';
+    $columns['sts_impressions'] = 'Visualizações';
+    $columns['date'] = 'Data';
+    return $columns;
 }
 add_filter('manage_sts_indicacoes_posts_columns', 'sts_set_indicacoes_columns');
 
-function sts_fill_indicacoes_columns($column, $post_id) {
-    if ($column === 'marketplace') {
-        $mkt = get_post_meta($post_id, '_sts_marketplace', true);
-        switch ($mkt) {
-            case 'shopee': echo '<span class="dashicons dashicons-cart" style="color: #ee4d2d;"></span> Shopee'; break;
-            case 'amazon': echo '<span class="dashicons dashicons-amazon" style="color: #ff9900;"></span> Amazon'; break;
-            case 'mercado_livre': echo '<span class="dashicons dashicons-store" style="color: #ffe600; background: #2d3277; padding: 2px 5px; border-radius: 4px;"></span> ML'; break;
-            default: echo 'Outros'; break;
-        }
+/**
+ * Exibir dados nas colunas customizadas
+ */
+function sts_custom_indicacoes_column($column, $post_id) {
+    switch ($column) {
+        case 'sts_price':
+            $price = get_post_meta($post_id, '_sts_product_price', true);
+            echo $price ? esc_html($price) : '—';
+            break;
+            
+        case 'sts_marketplace':
+            $mkt = get_post_meta($post_id, '_sts_marketplace', true);
+            $icons = array(
+                'shopee' => '<span style="color:#D73211; font-weight:bold;">🛍️ Shopee</span>',
+                'amazon' => '<span style="color:#FF9900; font-weight:bold;">📦 Amazon</span>',
+                'mercado_livre' => '<span style="color:#000000; font-weight:bold;">🤝 M. Livre</span>'
+            );
+            echo isset($icons[$mkt]) ? $icons[$mkt] : '<span style="color:#94a3b8;">Outros</span>';
+            break;
+
+        case 'sts_impressions':
+            $views = get_post_meta($post_id, '_sts_impressions', true);
+            echo '<strong>' . ($views ? number_format($views, 0, ',', '.') : '0') . '</strong>';
+            break;
     }
 }
-add_action('manage_sts_indicacoes_posts_custom_column', 'sts_fill_indicacoes_columns', 10, 2);
+add_action('manage_sts_indicacoes_posts_custom_column', 'sts_custom_indicacoes_column', 10, 2);
+
+/**
+ * Tornar a coluna de visualizações ordenável
+ */
+function sts_impressions_column_sortable($columns) {
+    $columns['sts_impressions'] = 'sts_impressions';
+    return $columns;
+}
+add_filter('manage_edit-sts_indicacoes_sortable_columns', 'sts_impressions_column_sortable');
+
+/**
+ * Função para registrar visualização do produto
+ */
+function sts_track_product_impression($post_id) {
+    if (empty($post_id)) return;
+    $views = get_post_meta($post_id, '_sts_impressions', true);
+    $views = $views ? (int)$views + 1 : 1;
+    update_post_meta($post_id, '_sts_impressions', $views);
+}

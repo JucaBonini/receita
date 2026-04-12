@@ -83,6 +83,9 @@ get_header(); ?>
                         $price = get_post_meta(get_the_ID(), '_sts_product_price', true);
                         $mkt = get_post_meta(get_the_ID(), '_sts_marketplace', true);
                         
+                        // Rastrear Visualização (Dashboard Admin)
+                        sts_track_product_impression(get_the_ID());
+
                         $count_lcp = ($count <= 4 && $paged === 1);
 
                         // Cores Blindadas via HEX (Garante que apareça independente do CSS)

@@ -334,6 +334,9 @@ if (have_posts()) : while (have_posts()) : the_post();
                             $price = get_post_meta(get_the_ID(), '_sts_product_price', true);
                             $marketplace = get_post_meta(get_the_ID(), '_sts_marketplace', true);
                             
+                            // Rastrear Visualização (Dashboard Admin)
+                            sts_track_product_impression(get_the_ID());
+
                             // Cores Blindadas via HEX (Sincronizado com a Loja)
                             $mkt_hex = '#0f172a'; // Slate-900 (Default)
                             $txt_hex = '#ffffff';
