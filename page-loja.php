@@ -85,14 +85,23 @@ get_header(); ?>
                         
                         $count_lcp = ($count <= 4 && $paged === 1);
 
-                        // Configuração Estética Acessível
-                        $btn_config = array(
-                            'shopee' => ['bg' => 'bg-[#D73211]', 'text' => 'text-white', 'label' => 'Na Shopee'],
-                            'amazon' => ['bg' => 'bg-[#FF9900]', 'text' => 'text-black', 'label' => 'Na Amazon'],
-                            'mercado_livre' => ['bg' => 'bg-[#FFE600]', 'text' => 'text-[#2d3277]', 'label' => 'No ML'],
-                            'default' => ['bg' => 'bg-slate-900', 'text' => 'text-white', 'label' => 'Ver Oferta']
-                        );
-                        $config = $btn_config[$mkt] ?? $btn_config['default'];
+                        // Configuração Estética Blindada (Garante que o botão NUNCA suma)
+                        $btn_bg = 'bg-slate-900 dark:bg-slate-700';
+                        $btn_text_color = 'text-white';
+                        $btn_label = 'Ver Oferta';
+                        
+                        if ($mkt === 'shopee') {
+                            $btn_bg = 'bg-[#D73211] shadow-lg shadow-[#D73211]/20';
+                            $btn_label = 'Ir para Shopee';
+                        } elseif ($mkt === 'amazon') {
+                            $btn_bg = 'bg-[#FF9900] shadow-lg shadow-[#FF9900]/20';
+                            $btn_text_color = 'text-black';
+                            $btn_label = 'Ir para Amazon';
+                        } elseif ($mkt === 'mercado_livre') {
+                            $btn_bg = 'bg-[#FFE600] shadow-lg shadow-[#FFE600]/20';
+                            $btn_text_color = 'text-[#2d3277]';
+                            $btn_label = 'Ir para M. Livre';
+                        }
                     ?>
                     <article class="bg-white dark:bg-slate-800 rounded-[32px] md:rounded-[48px] p-4 md:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 dark:border-slate-700 flex flex-col group transition-all duration-500 hover:shadow-2xl hover:-translate-y-2">
                         <div class="aspect-square rounded-[24px] md:rounded-[36px] overflow-hidden bg-slate-50 dark:bg-slate-900 mb-6 md:mb-8 relative border border-slate-100 dark:border-slate-800">
@@ -111,13 +120,13 @@ get_header(); ?>
                             <?php endif; ?>
                         </div>
 
-                        <h2 class="px-2 text-xs md:text-base font-black text-slate-900 dark:text-white uppercase tracking-tight line-clamp-2 mb-6 md:mb-10 h-10 md:h-12 leading-tight">
+                        <h2 class="px-2 text-xs md:text-base font-black text-slate-900 dark:text-white uppercase tracking-tight line-clamp-2 mb-6 md:mb-8 h-10 md:h-12 leading-tight">
                             <?php the_title(); ?>
                         </h2>
 
-                        <a href="<?php echo esc_url($url); ?>" target="_blank" rel="noopener nofollow" 
-                           class="mt-auto w-full flex items-center justify-center gap-2 py-5 px-4 <?php echo $config['bg']; ?> <?php echo $config['text']; ?> rounded-[20px] md:rounded-[28px] text-[10px] md:text-xs font-black uppercase tracking-widest transition-all hover:brightness-110 shadow-lg shadow-black/5">
-                            <?php echo $config['label']; ?>
+                        <a href="<?php echo $url ? esc_url($url) : '#'; ?>" target="_blank" rel="noopener nofollow" 
+                           class="mt-auto w-full flex items-center justify-center gap-2 py-4 md:py-6 px-4 <?php echo $btn_bg; ?> <?php echo $btn_text_color; ?> rounded-[20px] md:rounded-[28px] text-[10px] md:text-sm font-black uppercase tracking-widest transition-all hover:brightness-110 shadow-lg active:scale-95">
+                            <?php echo $btn_label; ?>
                             <span class="material-symbols-outlined text-sm md:text-xl">shopping_cart</span>
                         </a>
                     </article>
