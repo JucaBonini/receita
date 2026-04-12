@@ -22,6 +22,12 @@ add_action('wp_head', 'sts_track_all_views');
 
 // 2. Adicionar coluna nos Posts e Páginas
 function sts_add_views_column_to_admin($columns) {
+    // Evita duplicidade no CPT de Indicações Mary
+    $screen = get_current_screen();
+    if ($screen && $screen->post_type === 'sts_indicacoes') {
+        return $columns;
+    }
+
     // Adiciona antes da data
     $new_columns = array();
     foreach($columns as $key => $value) {
