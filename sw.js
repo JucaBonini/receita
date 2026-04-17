@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dr-pwa-v2.0'; // Atualizado para forçar atualização
+const CACHE_NAME = 'dr-pwa-v2.1'; // Atualizado para forçar atualização das correções de UI e Schema
 const OFFLINE_URL = 'offline.html';
 
 const ASSETS_TO_PRECACHE = [
