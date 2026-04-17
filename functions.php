@@ -42,12 +42,13 @@ function descomplicando_receitas_setup() {
 }
 add_action('after_setup_theme', 'descomplicando_receitas_setup');
 
-// Adicionar preconnect para Google Fonts
-function add_google_fonts_preconnect() {
+// Adicionar preconnect para Google Fonts e CDNs externas
+function add_external_resource_preconnects() {
     echo '<link rel="preconnect" href="https://fonts.googleapis.com">' . "\n";
     echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' . "\n";
+    echo '<link rel="preconnect" href="https://cdnjs.cloudflare.com">' . "\n";
 }
-add_action('wp_head', 'add_google_fonts_preconnect', 1);
+add_action('wp_head', 'add_external_resource_preconnects', 1);
 
 // Carregar estilos e scripts
 function descomplicando_receitas_scripts() {
@@ -831,6 +832,33 @@ function sts_minify_html_output($buffer) {
     );
     return preg_replace($search, $replace, $buffer);
 }
+
+/**
+ * Roteador Inteligente de Templates (Foco em SEO & Schema)
+ * Direciona posts para single.php (Receitas) ou single-default.php (Artigos)
+ * sem a necessidade de plugins ou alteração física no single.php
+ */
+function sts_smart_template_router($template) {
+    if (is_singular('post')) {
+        $post_id = get_the_ID();
+        
+        // Critério de identificação de Receita: Presença de Ingredientes ou Categoria Específica
+        $ingredientes = get_post_meta($post_id, '_ingredientes', true);
+        $is_recipe_cat = has_category('receitas', $post_id) || has_category('receita', $post_id);
+
+        // Se NÃO for receita, usamos o template de artigo padrão
+        if (empty($ingredientes) && !$is_recipe_cat) {
+            $default_template = locate_template('single-default.php');
+            if ($default_template) {
+                return $default_template;
+            }
+        }
+    }
+    
+    return $template;
+}
+add_filter('template_include', 'sts_smart_template_router', 99);
+
 
 // function sts_start_minification() {
 //     ob_start('sts_minify_html_output');

@@ -78,8 +78,8 @@
             <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
                 <p class="text-sm">© <?php echo date('Y'); ?> <?php bloginfo('name'); ?>. Todos os direitos reservados.</p>
                 <div class="flex gap-6 text-sm">
-                    <a class="hover:text-white transition-colors" href="#">Privacidade</a>
-                    <a class="hover:text-white transition-colors" href="#">Cookies</a>
+                    <a class="hover:text-white transition-colors" href="<?php echo get_privacy_policy_url(); ?>">Privacidade</a>
+                    <a class="hover:text-white transition-colors" href="<?php echo get_privacy_policy_url(); ?>">Cookies</a>
                 </div>
             </div>
         </div>
@@ -87,7 +87,29 @@
     </div>
 </footer>
 
-
+<!-- Auth Modal (Movido para o Footer para SEO/Performance) -->
+<div id="auth-modal" class="hidden fixed inset-0 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-all duration-300" style="z-index: 2147483647 !important;">
+    <div class="bg-white dark:bg-slate-800 w-full max-w-md rounded-[40px] shadow-[0_35px_120px_rgba(0,0,0,0.5)] p-10 relative transform transition-all" style="z-index: 2147483647 !important;">
+        <button onclick="document.getElementById('auth-modal').classList.add('hidden')" aria-label="Fechar" class="absolute top-6 right-6 text-slate-400 hover:text-primary transition-colors">
+            <span class="material-symbols-outlined text-2xl">close</span>
+        </button>
+        <h2 class="text-2xl font-black text-slate-900 dark:text-white mb-8 uppercase tracking-tighter text-center">Entrar na Cozinha</h2>
+        <form id="popup-login-form" class="space-y-5">
+            <div>
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Usuário ou E-mail</label>
+                <input type="text" name="log" placeholder="Seu usuário..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-2xl py-4 px-6 font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 transition-all outline-none" required />
+            </div>
+            <div>
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Sua Senha</label>
+                <input type="password" name="pwd" placeholder="••••••••" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-2xl py-4 px-6 font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 transition-all outline-none" required />
+            </div>
+            <button type="submit" class="w-full py-5 bg-primary text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 active:scale-95 transition-all">ACESSAR CONTA</button>
+            <p class="text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-4">
+                Não tem conta? <a href="<?php echo home_url('/cadastrar'); ?>" class="text-primary hover:underline">Cadastre-se</a>
+            </p>
+        </form>
+    </div>
+</div>
 <?php get_template_part('template-parts/lgpd-banner'); ?>
 <?php get_template_part('template-parts/whatsapp-banner'); ?>
 <?php get_template_part('template-parts/pwa-install-banner'); ?>

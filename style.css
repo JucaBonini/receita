@@ -3,7 +3,7 @@ Theme Name: Descomplicando Receitas
 Theme URI: https://descomplicandoreceitas.com.br
 Author: Juca Souza Bonini
 Description: Tema profissional de receitas otimizado para Google Discover e CWV.
-Version: 1.0.18  
+Version: 2.0.0
 Text Domain: sts-recipe-2
 */
 
@@ -117,14 +117,15 @@ Text Domain: sts-recipe-2
    ============================================================ */
 
 /* Active Menu State - Premium Indicator */
-.current-menu-item > a {
-    background-color: #ec5b13 !important; /* Cor Primária */
+.current-menu-item>a {
+    background-color: #ec5b13 !important;
+    /* Cor Primária */
     color: #ffffff !important;
     border-color: #ec5b13 !important;
     box-shadow: 0 4px 15px rgba(236, 91, 19, 0.25);
 }
 
-.dark .current-menu-item > a {
+.dark .current-menu-item>a {
     background-color: #ec5b13 !important;
     color: #ffffff !important;
     border-color: #ec5b13 !important;
@@ -132,14 +133,16 @@ Text Domain: sts-recipe-2
 
 /* Espaçamento e Distinção Visual Clara */
 nav ul li {
-    margin: 0 4px; /* Garante que os LIs nunca se encostem */
+    margin: 0 4px;
+    /* Garante que os LIs nunca se encostem */
 }
 
 nav ul li a {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 100px; /* Largura mínima para garantir clique fácil */
+    min-width: 100px;
+    /* Largura mínima para garantir clique fácil */
     text-align: center;
 }
 

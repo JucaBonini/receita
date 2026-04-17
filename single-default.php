@@ -39,64 +39,9 @@ if (have_posts()) : while (have_posts()) : the_post();
     }
 ?>
 
-<!-- 🟢 DYNAMIC SEO SCHEMA JSON-LD -->
-<script type="application/ld+json">
-<?php
-$schema = array(
-    "@context" => "https://schema.org",
-    "author" => array(
-        "@type" => "Person",
-        "name" => $autor_nome,
-        "jobTitle" => $autor_job,
-        "image" => $autor_avatar
-    ),
-    "headline" => get_the_title(),
-    "image" => get_the_post_thumbnail_url($post_id, 'full') ?: (get_template_directory_uri() . '/assets/images/default-image.webp'),
-    "datePublished" => $date_published,
-    "dateModified" => $date_modified,
-    "publisher" => array(
-        "@type" => "Organization",
-        "name" => get_bloginfo('name'),
-        "logo" => array(
-            "@type" => "ImageObject",
-            "url" => get_template_directory_uri() . '/assets/images/logo.png' 
-        )
-    )
-);
+<!-- 🟢 DYNAMIC SEO SCHEMA JSON-LD (Modular) -->
+<?php get_template_part('template-parts/schema-article'); ?>
 
-// Adaptive Schema Logic
-if ($is_glossario) {
-    $schema["@type"] = "DefinedTerm";
-    $schema["description"] = get_the_excerpt() ?: 'Definição culinária detalhada no Glossário Descomplicando Receitas.';
-    $schema["inDefinedTermSet"] = get_post_type_archive_link('glossario');
-} elseif ($is_faq) {
-    $schema["@type"] = "FAQPage";
-    $schema["mainEntity"] = array(
-        array(
-            "@type" => "Question",
-            "name" => get_the_title(),
-            "acceptedAnswer" => array(
-                "@type" => "Answer",
-                "text" => wp_strip_all_tags(get_the_content())
-            )
-        )
-    );
-} elseif ($is_achadinho || $is_review) {
-    $schema["@type"] = "Review";
-    $schema["reviewBody"] = get_the_excerpt() ?: get_the_title();
-    $schema["itemReviewed"] = array(
-        "@type" => "Product",
-        "name" => get_the_title(),
-        "image" => get_the_post_thumbnail_url($post_id, 'large')
-    );
-} else {
-    $schema["@type"] = "BlogPosting";
-    $schema["articleBody"] = wp_strip_all_tags(get_the_content());
-}
-
-echo json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-?>
-</script>
 
 <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10" role="main">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">

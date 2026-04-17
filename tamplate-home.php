@@ -164,7 +164,7 @@ get_header();
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <?php get_template_part('template-parts/pantry-filter'); ?>
     </div>
-
+<?php if (function_exists ('adinserter')) echo adinserter (1); ?>
     <!-- Anúncio Estratégico Display (Estratégia 2026) -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Espaço para Publicidade (Ad Inserter) -->

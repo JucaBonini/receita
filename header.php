@@ -5,7 +5,6 @@
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="max-image-preview:large">
-    <link rel="canonical" href="<?php echo get_permalink(); ?>" />
     
     <?php wp_head(); ?>
 
@@ -43,11 +42,15 @@
         @media screen and (max-width: 782px) { body.admin-bar header { top: 46px !important; } }
     </style>
 
-    <script>
-        window.themeConfig = {
-            homeUrl: '<?php echo esc_url(home_url('/')); ?>',
-            ajaxUrl: '<?php echo admin_url('admin-ajax.php'); ?>'
-        };
+    </script>
+    
+    <!-- Script Anti-FOUC (Dark Mode imediato) -->
+    <script id="dark-mode-fouc">
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
     </script>
 </head>
 
@@ -88,12 +91,12 @@
             </div>
 
             <!-- Main Navigation -->
-            <nav class="hidden lg:flex items-center gap-2" aria-label="Menu principal">
+            <nav class="hidden lg:flex items-center gap-4" aria-label="Menu principal">
                 <?php
                 wp_nav_menu(array(
                     'theme_location' => 'main-menu',
                     'container' => false,
-                    'menu_class' => 'flex items-center gap-1 xl:gap-2',
+                    'menu_class' => 'flex items-center gap-4 xl:gap-6',
                     'fallback_cb' => false,
                     'items_wrap' => '<ul class="%2$s">%3$s</ul>',
                     'add_li_class'  => 'px-5 py-2.5 text-[12px] font-bold text-slate-600 dark:text-slate-400 hover:text-primary transition-all uppercase tracking-[0.15em] rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 border border-transparent hover:border-slate-100 dark:hover:border-slate-700'
@@ -106,12 +109,15 @@
                 
                 <!-- Live Search -->
                 <div class="relative group hidden md:block">
-                    <div class="flex items-center bg-slate-100 dark:bg-slate-800 rounded-2xl px-4 py-2 border border-transparent focus-within:border-primary/20 w-48 xl:w-64 transition-all">
+                    <div class="flex items-center bg-slate-100 dark:bg-slate-800 rounded-2xl px-4 py-2 border border-transparent focus-within:border-primary/20 w-48 xl:w-64 transition-all" role="search">
                         <span class="material-symbols-outlined text-slate-400 text-xl mr-2" aria-hidden="true">search</span>
                         <input type="text" id="sts-live-search" placeholder="Buscar..." aria-label="Buscar receitas"
+                               aria-haspopup="listbox" aria-expanded="false" aria-controls="sts-live-results"
                                class="bg-transparent border-none p-0 text-xs font-black text-slate-800 dark:text-white placeholder:text-slate-400 focus:ring-0 w-full uppercase tracking-widest">
                     </div>
-                    <div id="sts-live-results" class="absolute top-full right-0 mt-3 w-80 bg-white dark:bg-slate-900 rounded-[32px] shadow-2xl border border-slate-100 dark:border-slate-800 hidden overflow-hidden z-[110]"></div>
+                    <div id="sts-live-results" 
+                         role="listbox" aria-live="polite"
+                         class="absolute top-full right-0 mt-3 w-80 bg-white dark:bg-slate-900 rounded-[32px] shadow-2xl border border-slate-100 dark:border-slate-800 hidden overflow-hidden z-[110]"></div>
                 </div>
 
                 <!-- Theme Toggle -->
@@ -137,25 +143,32 @@
                 <!-- User Profile -->
                 <div class="relative group">
                     <button id="user-profile-trigger" type="button" aria-label="Perfil do usuário"
-                            class="size-11 flex items-center justify-center rounded-2xl bg-slate-900 dark:bg-slate-800 text-white overflow-hidden transition-all">
+                            class="size-11 flex items-center justify-center rounded-2xl bg-slate-900 dark:bg-slate-800 text-white overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-lg shadow-slate-900/10">
                         <?php if (is_user_logged_in()) : 
                             echo get_avatar(get_current_user_id(), 44, '', '', ['class' => 'w-full h-full object-cover']);
                         else : ?>
                             <span class="material-symbols-outlined text-xl" aria-hidden="true">person</span>
                         <?php endif; ?>
                     </button>
-                    <div class="absolute top-full right-0 mt-4 w-60 bg-white dark:bg-slate-900 rounded-[32px] shadow-2xl border border-slate-100 dark:border-slate-800 invisible opacity-0 translate-y-4 group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 z-[110] p-2">
+                    
+                    <!-- Dropdown Menu -->
+                    <div class="absolute top-full right-0 mt-4 w-56 bg-white dark:bg-slate-900 rounded-[28px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-slate-100 dark:border-slate-800 invisible opacity-0 translate-y-4 group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 z-[110] p-2 overflow-hidden">
                         <?php if (is_user_logged_in()) : ?>
-                            <a href="<?php echo home_url('/perfil'); ?>" class="flex items-center gap-3 p-3 text-[10px] font-black text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-all uppercase tracking-widest leading-none">
-                                <span class="material-symbols-outlined text-lg" aria-hidden="true">account_circle</span> Perfil
+                            <div class="px-4 py-3 mb-2 border-b border-slate-50 dark:border-slate-800">
+                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Bem-vindo</p>
+                                <p class="text-xs font-black text-slate-900 dark:text-white truncate"><?php echo wp_get_current_user()->display_name; ?></p>
+                            </div>
+                            <a href="<?php echo home_url('/perfil'); ?>" class="flex items-center gap-3 p-3 text-[10px] font-black text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-all uppercase tracking-widest leading-none group/item">
+                                <span class="material-symbols-outlined text-lg group-hover/item:text-primary" aria-hidden="true">account_circle</span> Perfil
                             </a>
-                            <a href="<?php echo wp_logout_url(home_url()); ?>" class="flex items-center gap-3 p-3 text-[10px] font-black text-red-510 hover:bg-red-50 rounded-2xl transition-all uppercase tracking-widest leading-none">
+                            <a href="<?php echo wp_logout_url(home_url()); ?>" class="flex items-center gap-3 p-3 text-[10px] font-black text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-2xl transition-all uppercase tracking-widest leading-none">
                                 <span class="material-symbols-outlined text-lg" aria-hidden="true">logout</span> Sair
                             </a>
                         <?php else : ?>
                             <div class="p-4 text-center">
+                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Acesse sua conta</p>
                                 <button type="button" onclick="document.getElementById('auth-modal').classList.remove('hidden')" 
-                                        class="w-full py-3 bg-primary text-white text-[10px] font-black rounded-2xl uppercase tracking-widest">ENTRAR</button>
+                                        class="w-full py-3.5 bg-primary text-white text-[11px] font-black rounded-xl uppercase tracking-widest shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all">ENTRAR</button>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -177,28 +190,3 @@
             </nav>
         </div>
     </header>
-
-
-
-    <!-- Auth Modal -->
-    <div id="auth-modal" class="hidden fixed inset-0 z-[20001] flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-800 w-full max-w-md rounded-[40px] shadow-2xl p-10 relative">
-            <button onclick="document.getElementById('auth-modal').classList.add('hidden')" aria-label="Fechar" class="absolute top-6 right-6 text-slate-400">
-                <span class="material-symbols-outlined">close</span>
-            </button>
-            <h2 class="text-2xl font-black text-slate-900 dark:text-white mb-6 uppercase tracking-tighter">Entrar na Cozinha</h2>
-            <form id="popup-login-form" class="space-y-4">
-                <input type="text" name="log" placeholder="Usuário" class="w-full bg-slate-50 dark:bg-slate-900 border-none rounded-2xl py-4 px-6 font-bold" required />
-                <input type="password" name="pwd" placeholder="Senha" class="w-full bg-slate-50 dark:bg-slate-900 border-none rounded-2xl py-4 px-6 font-bold" required />
-                <button type="submit" class="w-full py-4 bg-primary text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20">ENTRAR</button>
-            </form>
-        </div>
-    </div>
-
-    <script id="dark-mode-fouc">
-        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-    </script>
