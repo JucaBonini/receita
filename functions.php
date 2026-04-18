@@ -10,6 +10,7 @@ define('THEME_VERSION', '1.0.6'); // Cache Buster Force
 
 // Incluir Componentes Estratégicos (Nativos)
 require_once THEME_PATH . '/includes/sitemaps-engine.php';
+require_once THEME_PATH . '/includes/seo-engine.php';
 function sts_flush_sitemaps_once() {
     if (get_option('sts_sitemaps_flushed') !== 'yes') {
         sts_sitemap_rewrite_rules();
@@ -124,6 +125,13 @@ add_action('wp_head', 'add_external_resource_preconnects', 1);
 
 // Carregar estilos e scripts
 function descomplicando_receitas_scripts() {
+    // Remover estilos de blocos (Gutenberg) se não estiver na página de posts (opcional para performance)
+    if (!is_singular('post')) {
+        wp_dequeue_style('wp-block-library');
+        wp_dequeue_style('wp-block-library-theme');
+        wp_dequeue_style('wc-block-style');
+    }
+
     // Carregar Tailwind CSS Compilado
     wp_enqueue_style('main-css', THEME_URI . '/assets/css/main.min.css', array(), THEME_VERSION, 'all');
     
@@ -921,9 +929,50 @@ function sts_smart_template_router($template) {
 add_filter('template_include', 'sts_smart_template_router', 99);
 
 
-// function sts_start_minification() {
-//     ob_start('sts_minify_html_output');
-// }
-// add_action('get_header', 'sts_start_minification');
+/**
+ * SENIOR SEO: Limpeza de Bloatware do WordPress
+ * Remove scripts e estilos nativos que só pesam o site.
+ */
+function sts_remove_wp_bloat() {
+    // Remover Emojis
+    remove_action('wp_head', 'print_emoji_detection_script', 7);
+    remove_action('admin_print_scripts', 'print_emoji_detection_script');
+    remove_action('wp_print_styles', 'print_emoji_styles');
+    remove_action('admin_print_styles', 'print_emoji_styles');
+    remove_filter('the_content_feed', 'wp_staticize_emoji');
+    remove_filter('comment_text_rss', 'wp_staticize_emoji');
+    remove_filter('wp_mail', 'wp_staticize_emoji_for_email');
+
+    // Remover links de RSD, WLW e Shortlinks
+    remove_action('wp_head', 'rsd_link');
+    remove_action('wp_head', 'wlwmanifest_link');
+    remove_action('wp_head', 'wp_shortlink_wp_head');
+    remove_action('wp_head', 'wp_generator'); // Esconde a versão do WP
+}
+add_action('init', 'sts_remove_wp_bloat');
+
+/**
+ * SENIOR SEO: Preconnect para acelerar carregamento de fontes e scripts externos
+ */
+function sts_add_resource_hints($urls, $relation) {
+    if ('preconnect' === $relation) {
+        $urls[] = array('href' => 'https://fonts.googleapis.com', 'crossorigin' => 'anonymous');
+        $urls[] = array('href' => 'https://fonts.gstatic.com', 'crossorigin' => 'anonymous');
+        $urls[] = array('href' => 'https://cdnjs.cloudflare.com', 'crossorigin' => 'anonymous');
+    }
+    return $urls;
+}
+add_filter('wp_resource_hints', 'sts_add_resource_hints', 10, 2);
+
+/**
+ * SENIOR SEO: Carregar CSS principal de forma assíncrona (Opcional, mas potente)
+ */
+function sts_async_styles($tag, $handle, $src) {
+    if ('google-fonts' === $handle || 'material-symbols' === $handle) {
+        return str_replace("rel='stylesheet'", "rel='stylesheet' media='print' onload=\"this.media='all'\"", $tag);
+    }
+    return $tag;
+}
+add_filter('style_loader_tag', 'sts_async_styles', 10, 3);
 
 

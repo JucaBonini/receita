@@ -5,6 +5,7 @@
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <?php sts_render_seo_meta(); ?>
     <?php wp_head(); ?>
 
     <!-- PWA: Configurações de Aplicativo (Tier 1) -->
