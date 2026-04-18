@@ -39,6 +39,22 @@ function sts_get_recipe_total_time($post_id = null) {
 }
 
 /**
+ * Otimização Dinâmica do robots.txt
+ * Avisa o Google sobre o novo endereço do Sitemap Nativo.
+ */
+function sts_custom_robots_txt($output, $public) {
+    $sitemap_url = home_url('/sitemap_index.xml');
+    $output .= "\nSitemap: $sitemap_url\n";
+    $output .= "User-agent: *\n";
+    $output .= "Disallow: /wp-admin/\n";
+    $output .= "Disallow: /wp-includes/\n";
+    $output .= "Allow: /wp-admin/admin-ajax.php\n";
+    
+    return $output;
+}
+add_filter('robots_txt', 'sts_custom_robots_txt', 10, 2);
+
+/**
  * Sistema Nativo de Visualizações (Substitui plugins pesados e ACF)
  * Registra e recupera o número de acessos de cada post.
  */
