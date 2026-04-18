@@ -6,8 +6,8 @@
 
 // 1. Registrar as Regras de Escrita (Rewrite Rules)
 function sts_sitemap_rewrite_rules() {
-    add_rewrite_rule('^sitemap_index\.xml$', 'index.php?sts_sitemap=index', 'top');
-    add_rewrite_rule('^sitemap-(.+)\.xml$', 'index.php?sts_sitemap=$matches[1]', 'top');
+    add_rewrite_rule('^sitemap_index\.xml/?$', 'index.php?sts_sitemap=index', 'top');
+    add_rewrite_rule('^sitemap-(.+)\.xml/?$', 'index.php?sts_sitemap=$matches[1]', 'top');
 }
 add_action('init', 'sts_sitemap_rewrite_rules');
 
