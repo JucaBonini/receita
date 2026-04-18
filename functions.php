@@ -6,7 +6,52 @@
 // Definir constantes do tema NO TOPO
 define('THEME_PATH', get_template_directory());
 define('THEME_URI', get_template_directory_uri());
-define('THEME_VERSION', '1.0.5'); // Cache Buster Force
+define('THEME_VERSION', '1.0.6'); // Cache Buster Force
+
+/**
+ * Função Mestra: Retorna o Tempo Total formatado (XX MIN)
+ * Centraliza a lógica para evitar inconsistências no site.
+ */
+function sts_get_recipe_total_time($post_id = null) {
+    if (!$post_id) $post_id = get_the_ID();
+    
+    $total = get_post_meta($post_id, '_total_time', true);
+    
+    // Fallback se o tempo total não estiver calculado (posts antigos)
+    if (!$total) {
+        $prep = (int)get_post_meta($post_id, '_tempo_preparo', true) ?: (int)get_post_meta($post_id, 'tempo', true);
+        $cook = (int)get_post_meta($post_id, '_tempo_cozimento', true);
+        $total = $prep + $cook;
+    }
+    
+    return ($total > 0) ? $total . ' MIN' : '20 MIN'; // 20 MIN é o fallback padrão
+}
+
+/**
+ * Sistema Nativo de Visualizações (Substitui plugins pesados e ACF)
+ * Registra e recupera o número de acessos de cada post.
+ */
+function sts_set_post_views($postID) {
+    if (is_admin()) return;
+    $count_key = 'post_views_count';
+    $count = get_post_meta($postID, $count_key, true);
+    if($count==''){
+        $count = 0;
+        delete_post_meta($postID, $count_key);
+        add_post_meta($postID, $count_key, '0');
+    }else{
+        $count++;
+        update_post_meta($postID, $count_key, $count);
+    }
+}
+function get_post_views($postID){
+    $count_key = 'post_views_count';
+    $count = get_post_meta($postID, $count_key, true);
+    if($count==''){
+        return "0";
+    }
+    return $count;
+}
 
 // Setup do tema
 function descomplicando_receitas_setup() {
@@ -347,6 +392,8 @@ $rating_value = get_post_meta(get_the_ID(), 'review_rating', true); // Mude 'rev
 $review_author = get_post_meta(get_the_ID(), 'review_author', true); // Mude 'review_author' para o nome do seu campo
 // AJAX: Buscar detalhes das receitas favoritas (para o dropdown)
 function sts_get_favorites_details() {
+    check_ajax_referer('theme_nonce', 'nonce');
+    
     $ids = isset($_POST['ids']) ? array_map('intval', $_POST['ids']) : [];
     
     if (empty($ids)) {
@@ -379,6 +426,8 @@ add_action('wp_ajax_get_fav_details', 'sts_get_favorites_details');
 add_action('wp_ajax_nopriv_get_fav_details', 'sts_get_favorites_details');
 // AJAX: Submissão de Receita pelo Usuário (via Dashboard)
 function sts_handle_recipe_submission() {
+    check_ajax_referer('theme_nonce', 'nonce');
+
     if (!is_user_logged_in()) {
         wp_send_json_error('Acesso negado.');
     }
@@ -433,6 +482,8 @@ function sts_handle_recipe_submission() {
 add_action('wp_ajax_sts_submit_recipe', 'sts_handle_recipe_submission');
 // AJAX: Ações de Moderação (Aprovar/Excluir) - Apenas Admins
 function sts_handle_admin_actions() {
+    check_ajax_referer('theme_nonce', 'nonce');
+
     if (!current_user_can('manage_options')) {
         wp_send_json_error('Permissão insuficiente.');
     }
@@ -461,6 +512,8 @@ add_action('wp_ajax_sts_admin_action', 'sts_handle_admin_actions');
 
 // AJAX: Login Personalizado
 function sts_ajax_login_handler() {
+    check_ajax_referer('theme_nonce', 'nonce');
+
     $info = array();
     $info['user_login'] = isset($_POST['log']) ? sanitize_user($_POST['log']) : '';
     $info['user_password'] = isset($_POST['pwd']) ? $_POST['pwd'] : '';
@@ -482,6 +535,8 @@ add_action('wp_ajax_nopriv_sts_ajax_login', 'sts_ajax_login_handler');
 
 // AJAX: Cadastro Personalizado
 function sts_ajax_register_handler() {
+    check_ajax_referer('theme_nonce', 'nonce');
+
     $name = isset($_POST['user_name']) ? sanitize_text_field($_POST['user_name']) : '';
     $email = isset($_POST['user_email']) ? sanitize_email($_POST['user_email']) : '';
     $pass = isset($_POST['user_pass']) ? $_POST['user_pass'] : '';
@@ -527,6 +582,8 @@ add_action('wp_ajax_nopriv_sts_ajax_register', 'sts_ajax_register_handler');
 
 // AJAX: Atualizar Perfil Completo (Nova Página)
 function sts_handle_full_profile_update() {
+    check_ajax_referer('theme_nonce', 'nonce');
+    
     if (!is_user_logged_in()) wp_send_json_error('Acesso negado.');
 
     $user_id = get_current_user_id();
@@ -649,6 +706,8 @@ function sts_get_user_avatar_url($user_id, $size = 96) {
 
 // AJAX: Avaliação de Receitas
 function sts_ajax_recipe_rating_handler() {
+    check_ajax_referer('theme_nonce', 'nonce');
+
     $post_id = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
     $rating  = isset($_POST['rating']) ? intval($_POST['rating']) : 0;
     

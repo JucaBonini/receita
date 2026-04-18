@@ -21,11 +21,19 @@ add_action('add_meta_boxes', 'adicionar_metabox_receita');
 function renderizar_metabox_receita($post) {
     wp_nonce_field('salvar_receita_meta', 'receita_nonce');
     
-    // Recuperação dos valores
+    // Recuperação dos valores com Fallback Inteligente (Sincronização 2026)
+    // Se o campo novo estiver vazio, tentamos buscar no campo antigo do ACF
     $tempo_preparo   = get_post_meta($post->ID, '_tempo_preparo', true);
+    if (empty($tempo_preparo)) $tempo_preparo = get_post_meta($post->ID, 'tempo', true);
+    
     $tempo_cozimento = get_post_meta($post->ID, '_tempo_cozimento', true);
+    
     $porcoes         = get_post_meta($post->ID, '_porcoes', true);
+    if (empty($porcoes)) $porcoes = get_post_meta($post->ID, 'rendimento', true);
+    
     $dificuldade     = get_post_meta($post->ID, '_dificuldade', true);
+    if (empty($dificuldade)) $dificuldade = get_post_meta($post->ID, 'dificuldade', true);
+
     $recipe_cuisine  = get_post_meta($post->ID, '_recipe_cuisine', true) ?: 'Brasileira';
     
     $video_url       = get_post_meta($post->ID, '_video_url', true);
@@ -45,6 +53,19 @@ function renderizar_metabox_receita($post) {
     $utensilios_text        = get_post_meta($post->ID, '_utensilios', true);
     ?>
     
+    <script>
+    // Esconder o Meta Box redundante do ACF via CSS no Admin
+    jQuery(document).ready(function($) {
+        // Procuramos pelo box do ACF que contém "Rendimento" ou "Dificuldade"
+        $('.postbox').each(function() {
+            var title = $(this).find('h2 span').text();
+            if (title.includes('Rendimento') || title.includes('Tempo') || title.includes('Dificuldade')) {
+                $(this).hide();
+            }
+        });
+    });
+    </script>
+    
     <div class="receita-metabox">
         
         <div class="metabox-section">
@@ -52,11 +73,15 @@ function renderizar_metabox_receita($post) {
             <div class="metabox-grid">
                 <p>
                     <label><strong>Tempo de Preparo (min):</strong></label>
-                    <input type="number" name="tempo_preparo" value="<?php echo esc_attr($tempo_preparo); ?>" style="width:100%">
+                    <input type="number" name="tempo_preparo" id="sts_prep_time" value="<?php echo esc_attr($tempo_preparo); ?>" style="width:100%">
                 </p>
                 <p>
                     <label><strong>Tempo de Cozimento (min):</strong></label>
-                    <input type="number" name="tempo_cozimento" value="<?php echo esc_attr($tempo_cozimento); ?>" style="width:100%">
+                    <input type="number" name="tempo_cozimento" id="sts_cook_time" value="<?php echo esc_attr($tempo_cozimento); ?>" style="width:100%">
+                </p>
+                <p>
+                    <label><strong>Tempo Total (Soma):</strong></label>
+                    <input type="number" name="total_time" id="sts_total_time" value="<?php echo esc_attr(get_post_meta($post->ID, '_total_time', true)); ?>" style="width:100%; background:#f0f0f0;" readonly>
                 </p>
                 <p>
                     <label><strong>Culinária:</strong></label>
@@ -171,6 +196,15 @@ function renderizar_metabox_receita($post) {
             $('#instrucoes-container').append('<div class="instrucao-item"><label>Passo ' + count + '</label><textarea name="instrucoes[]"></textarea><button type="button" class="remove-item">× Remover</button></div>');
         });
         $(document).on('click', '.remove-item', function() { $(this).parent().remove(); });
+
+        // Cálculo Automático de Tempo Total
+        function calcularTempoTotal() {
+            var prep = parseInt($('#sts_prep_time').val()) || 0;
+            var cook = parseInt($('#sts_cook_time').val()) || 0;
+            $('#sts_total_time').val(prep + cook);
+        }
+        $('#sts_prep_time, #sts_cook_time').on('input change', calcularTempoTotal);
+        calcularTempoTotal(); // Executar ao carregar
     });
     </script>
     <?php
@@ -185,7 +219,7 @@ function salvar_metabox_receita($post_id) {
     if (!current_user_can('edit_post', $post_id)) return;
 
     $campos = [
-        'tempo_preparo', 'tempo_cozimento', 'porcoes', 'dificuldade', 
+        'tempo_preparo', 'tempo_cozimento', 'total_time', 'porcoes', 'dificuldade', 
         'calorias', 'carboidratos', 'proteinas', 'gorduras', 
         'nutri_serving', 'nutri_source', 'recipe_cuisine', 'video_url', 'diet_type'
     ];

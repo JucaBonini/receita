@@ -6,12 +6,13 @@ get_header();
 
 if (have_posts()) : while (have_posts()) : the_post();
     $post_id = get_the_ID();
+    sts_set_post_views($post_id); // Contabilizar visualização
 
-    // 1. Coleta de Dados (Compatibilidade Multi-Campos)
-    $tempo_preparo    = get_field('tempo') ?: (get_post_meta($post_id, '_tempo_preparo', true) ?: get_post_meta($post_id, 'tempo', true)); 
+    // 1. Coleta de Dados (Independência do ACF - Sincronização 2026)
+    $tempo_preparo    = get_post_meta($post_id, '_tempo_preparo', true) ?: get_post_meta($post_id, 'tempo', true); 
     $tempo_cozimento  = get_post_meta($post_id, '_tempo_cozimento', true) ?: get_post_meta($post_id, 'tempo_cozimento', true);
-    $porcoes_meta     = get_field('rendimento') ?: (get_post_meta($post_id, '_porcoes', true) ?: get_post_meta($post_id, 'porcoes', true));
-    $dificuldade      = get_field('dificuldade') ?: (get_post_meta($post_id, '_dificuldade', true) ?: get_post_meta($post_id, 'dificuldade', true));
+    $porcoes_meta     = get_post_meta($post_id, '_porcoes', true) ?: get_post_meta($post_id, 'rendimento', true);
+    $dificuldade      = get_post_meta($post_id, '_dificuldade', true) ?: get_post_meta($post_id, 'dificuldade', true);
     $cuisine_meta     = get_post_meta($post_id, '_recipe_cuisine', true) ?: (get_post_meta($post_id, 'recipe_cuisine', true) ?: 'Brasileira'); 
 
     $calorias         = get_post_meta($post_id, '_calorias', true);
@@ -77,7 +78,7 @@ if (have_posts()) : while (have_posts()) : the_post();
                 </div>
                 <div class="flex items-center gap-1">
                     <span class="material-symbols-outlined text-slate-400 text-xl">schedule</span>
-                    <span>Atualizado em <?php the_modified_date('d/m/Y'); ?></span>
+                    <span><?php the_modified_date('d/m/Y'); ?></span>
                 </div>
                 <div class="flex items-center gap-1.5 px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-full text-xs font-bold border border-slate-200 dark:border-slate-700">
                     <span class="material-symbols-outlined text-lg">visibility</span>
@@ -129,6 +130,11 @@ if (have_posts()) : while (have_posts()) : the_post();
                 <span class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Cozimento</span>
                 <span class="text-base sm:text-xl font-bold"><?php echo $tempo_cozimento ?: '30'; ?>m</span>
             </div>
+            <div class="bg-primary/20 border-2 border-primary/40 p-4 sm:p-5 rounded-2xl flex flex-col items-center text-center shadow-lg shadow-primary/10">
+                <span class="material-symbols-outlined text-primary mb-2">schedule</span>
+                <span class="text-[10px] uppercase tracking-wider text-primary font-black mb-1">Tempo Total</span>
+                <span class="text-base sm:text-2xl font-black text-primary italic"><?php echo sts_get_recipe_total_time($post_id); ?></span>
+            </div>
             <div class="bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
                 <span class="material-symbols-outlined text-primary mb-2">restaurant</span>
                 <span class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Rendimento</span>
@@ -139,13 +145,8 @@ if (have_posts()) : while (have_posts()) : the_post();
                 <span class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Dificuldade</span>
                 <span class="text-base sm:text-xl font-bold"><?php echo $dificuldade ?: 'Fácil'; ?></span>
             </div>
-            <div class="bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
-                <span class="material-symbols-outlined text-primary mb-2">health_and_safety</span>
-                <span class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Dieta</span>
-                <span class="text-base sm:text-xl font-bold truncate w-full text-slate-800 dark:text-slate-100"><?php echo $diet_type ?: 'Padrão'; ?></span>
-            </div>
-            <!-- Botão Salvar em PDF (6º Card) -->
-            <button onclick="window.print()" class="bg-primary/5 hover:bg-primary text-primary hover:text-white p-4 sm:p-5 rounded-2xl border border-primary/20 flex flex-col items-center text-center transition-all group">
+            <!-- Botão Salvar em PDF (4º Card) -->
+            <button onclick="window.print()" class="bg-slate-50 dark:bg-slate-800/10 hover:bg-primary text-slate-900 dark:text-white hover:text-white p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-col items-center text-center transition-all group">
                 <span class="material-symbols-outlined mb-2 group-hover:scale-110 transition-transform">picture_as_pdf</span>
                 <span class="text-[10px] uppercase tracking-wider font-bold mb-1">Salvar</span>
                 <span class="text-base sm:text-xl font-bold">PDF</span>
@@ -553,7 +554,7 @@ if (have_posts()) : while (have_posts()) : the_post();
                             </div>
                             <div>
                                 <h5 class="font-bold text-sm group-hover:text-primary transition-colors line-clamp-2"><?php the_title(); ?></h5>
-                                <p class="text-xs text-slate-500"><?php echo get_post_meta(get_the_ID(), '_tempo_preparo', true) ?: '20'; ?> min • <?php echo get_post_meta(get_the_ID(), '_dificuldade', true) ?: 'Fácil'; ?></p>
+                                <p class="text-xs text-slate-500"><?php echo sts_get_recipe_total_time(); ?> • <?php echo get_post_meta(get_the_ID(), '_dificuldade', true) ?: 'Fácil'; ?></p>
                             </div>
                         </a>
                         <?php endwhile; wp_reset_postdata(); endif; ?>

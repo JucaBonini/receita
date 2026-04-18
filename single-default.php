@@ -17,8 +17,8 @@ if (have_posts()) : while (have_posts()) : the_post();
     $is_faq = $post_type === 'faqs';
     $is_glossario = $post_type === 'glossario';
     
-    // Meta informações
-    $tempo_leitura = get_field('tempo_leitura') ?: '5';
+    // Meta informações (Nativo 2026 - Independente de Plugins)
+    $tempo_leitura = get_post_meta($post_id, 'tempo_leitura', true) ?: '5';
     $autor_id = get_the_author_meta('ID');
     $autor_nome = get_the_author();
     $autor_job = get_the_author_meta('job_title', $autor_id) ?: 'Especialista em Culinária';

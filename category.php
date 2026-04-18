@@ -72,8 +72,9 @@ $category_image = get_term_meta($category_id, 'category_image', true);
                 <?php if (have_posts()) : ?>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <?php while (have_posts()) : the_post(); 
-                            $tempo = get_post_meta(get_the_ID(), '_tempo_preparo', true) ?: '20 min';
-                            $dif = get_post_meta(get_the_ID(), '_dificuldade', true) ?: 'Fácil';
+                            $dif_raw = get_post_meta(get_the_ID(), '_dificuldade', true) ?: get_post_meta(get_the_ID(), 'dificuldade', true);
+                            // Filtro para não deixar aparecer o código "field_"
+                            $dif = (strpos($dif_raw, 'field_') === false && !empty($dif_raw)) ? $dif_raw : 'Fácil';
                         ?>
                         <article class="bg-white dark:bg-slate-800 rounded-[40px] overflow-hidden border border-slate-100 dark:border-slate-700/50 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500 group flex flex-col h-full">
                             <!-- Imagem principal com Zoom no Hover -->
@@ -87,9 +88,11 @@ $category_image = get_term_meta($category_id, 'category_image', true);
                                         </div>
                                     <?php endif; ?>
                                 </a>
-                                <!-- Badge de Dificuldade -->
-                                <div class="absolute top-4 left-4 bg-white/60 dark:bg-slate-900/60 backdrop-blur-md px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-white shadow-sm border border-white/20">
-                                    <?php echo esc_html($dif); ?>
+                                <!-- Badge de Dificuldade Premium (Lugar do 'DO CHEF') -->
+                                <div class="absolute top-4 left-4 px-4 py-2 bg-white dark:bg-slate-900 rounded-xl shadow-lg z-10 border border-slate-100 dark:border-slate-800">
+                                    <span class="text-[10px] font-black text-primary uppercase tracking-widest">
+                                        <?php echo esc_html($dif); ?>
+                                    </span>
                                 </div>
                             </div>
 
@@ -103,11 +106,11 @@ $category_image = get_term_meta($category_id, 'category_image', true);
                                 <div class="flex items-center gap-2 mb-6">
                                     <div class="flex items-center gap-1.5 px-3 py-1 bg-primary/5 text-primary rounded-full">
                                         <span class="material-symbols-outlined text-sm">schedule</span>
-                                        <span class="text-xs font-bold uppercase tracking-tight"><?php echo esc_html($tempo); ?></span>
+                                        <span class="text-xs font-bold uppercase tracking-tight"><?php echo sts_get_recipe_total_time(); ?></span>
                                     </div>
                                     <div class="flex items-center gap-1.5 px-3 py-1 bg-slate-100 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 rounded-full">
                                         <span class="material-symbols-outlined text-sm">visibility</span>
-                                        <span class="text-xs font-bold uppercase tracking-tight"><?php echo get_post_views(get_the_ID()); ?> vistas</span>
+                                        <span class="text-xs font-bold uppercase tracking-tight"><?php echo get_post_views(get_the_ID()); ?></span>
                                     </div>
                                 </div>
 

@@ -45,21 +45,11 @@ function featured_recipes_shortcode($atts) {
         while ($featured_recipes->have_posts()) {
             $featured_recipes->the_post();
             
-            // Pega os campos do ACF
-            $tempo_preparo = get_field('tempo');
-            $rendimento = get_field('rendimento');
-            $dificuldade = get_field('dificuldade');
-            
-            // Fallback para meta antigos se ACF estiver vazio
-            if (!$tempo_preparo) {
-                $tempo_preparo = get_post_meta(get_the_ID(), 'tempo', true);
-            }
-            if (!$rendimento) {
-                $rendimento = get_post_meta(get_the_ID(), 'porcoes', true);
-            }
-            if (!$dificuldade) {
-                $dificuldade = get_post_meta(get_the_ID(), 'dificuldade', true);
-            }
+            // Coleta de Dados Nativa (Prioridade para Motor 2026)
+            $post_id = get_the_ID();
+            $tempo_preparo = get_post_meta($post_id, '_tempo_preparo', true) ?: get_post_meta($post_id, 'tempo', true);
+            $rendimento    = get_post_meta($post_id, '_porcoes', true) ?: get_post_meta($post_id, 'rendimento', true);
+            $dificuldade   = get_post_meta($post_id, '_dificuldade', true) ?: get_post_meta($post_id, 'dificuldade', true);
             
             $imagem_destaque = get_the_post_thumbnail_url(get_the_ID(), 'large');
             
@@ -87,7 +77,7 @@ function featured_recipes_shortcode($atts) {
             $output .= '
                 <div class="recipe-card">
                     <div class="recipe-img" style="background-image: url(\'' . esc_url($imagem_destaque) . '\');">
-                        ' . ($tempo_preparo ? '<div class="recipe-time">' . esc_html($tempo_preparo) . ' </div>' : '') . '
+                        <div class="recipe-time">' . sts_get_recipe_total_time() . '</div>
                     </div>
                     <div class="recipe-content">
                         <h3>' . get_the_title() . '</h3>

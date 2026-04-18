@@ -144,8 +144,17 @@ get_header();
                                     <h3 class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-primary transition-colors line-clamp-2 leading-tight">
                                         <?php the_title(); ?>
                                     </h3>
+                                    <?php 
+                                    $categories = get_the_category();
+                                    if (!empty($categories)) : ?>
+                                        <div class="absolute top-4 left-4 px-3 py-1.5 bg-white dark:bg-slate-900 rounded-lg shadow-md z-10 border border-slate-100/50 dark:border-slate-800/50">
+                                            <span class="text-[10px] font-black text-primary uppercase tracking-wider">
+                                                <?php echo esc_html($categories[0]->name); ?>
+                                            </span>
+                                        </div>
+                                    <?php endif; ?>
                                     <div class="flex items-center gap-2 mt-2 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                        <span class="flex items-center gap-1"><span class="material-symbols-outlined text-xs">schedule</span> <?php echo get_post_meta(get_the_ID(), '_tempo_preparo', true) ?: '20 min'; ?></span>
+                                        <span class="flex items-center gap-1"><span class="material-symbols-outlined text-xs">schedule</span> <?php echo sts_get_recipe_total_time(); ?> MIN</span>
                                         <span class="w-1 h-1 bg-slate-300 rounded-full"></span>
                                         <span class="text-primary"><?php echo get_the_date(); ?></span>
                                     </div>
@@ -286,8 +295,8 @@ get_header();
                 </div>
                 <div class="p-6 flex flex-col flex-1">
                     <div class="flex items-center gap-4 text-xs font-bold text-slate-500 dark:text-slate-400 mb-3">
-                        <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">schedule</span> <?php echo $tempo; ?></span>
-                        <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">bar_chart</span> <?php echo $dif; ?></span>
+                        <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">schedule</span> <?php echo sts_get_recipe_total_time(); ?></span>
+                        <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">bar_chart</span> <?php echo get_post_meta(get_the_ID(), '_dificuldade', true) ?: 'Fácil'; ?></span>
                     </div>
                     <h3 class="text-xl font-bold mb-2 group-hover:text-primary transition-colors">
                         <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
@@ -334,7 +343,7 @@ get_header();
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 scroll-mt-24">
         <div class="flex items-center justify-between mb-10 border-b border-slate-100 dark:border-slate-800 pb-6">
             <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center shadow-sm">
+                <div class="w-12 h-12 rounded-2xl bg-white dark:bg-slate-800 flex items-center justify-center shadow-md border border-slate-100 dark:border-slate-700">
                     <span class="material-symbols-outlined <?php echo $cat_info['color']; ?> text-3xl"><?php echo $cat_info['icon']; ?></span>
                 </div>
                 <h2 class="text-3xl font-black text-slate-900 dark:text-white"><?php echo $term->name; ?></h2>
@@ -349,9 +358,9 @@ get_header();
                 $count = 0;
                 while ($cat_query->have_posts()) : $cat_query->the_post();
                     $count++;
-                    $tempo = get_post_meta(get_the_ID(), '_tempo_preparo', true) ?: '30 min';
+                    $tempo_total = sts_get_recipe_total_time();
                     
-                    if ($count === 1) : // O Destaque (Fica no topo ou ocupa mais espaço)
+                    if ($count === 1) : // O Destaque
             ?>
                 <!-- Card de Destaque -->
                 <article class="md:col-span-2 lg:col-span-3 group relative h-[400px] sm:h-[500px] rounded-[32px] overflow-hidden shadow-2xl mb-4">
@@ -373,7 +382,7 @@ get_header();
                             <a href="<?php the_permalink(); ?>" class="hover:text-primary transition-colors"><?php the_title(); ?></a>
                         </h3>
                         <div class="flex flex-wrap items-center gap-6 text-sm font-bold opacity-90">
-                            <span class="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full"><span class="material-symbols-outlined text-sm">schedule</span> <?php echo $tempo; ?></span>
+                            <span class="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full"><span class="material-symbols-outlined text-sm">schedule</span> <?php echo $tempo_total; ?></span>
                             <span class="flex items-center gap-2"><span class="material-symbols-outlined text-sm">person</span> Por <?php the_author(); ?></span>
                             <span class="hidden sm:inline-block opacity-40">|</span>
                             <span><?php echo get_the_date(); ?></span>
@@ -396,7 +405,7 @@ get_header();
                         </a>
                         <div class="absolute top-4 left-4">
                              <div class="bg-white/90 dark:bg-slate-900/90 backdrop-blur px-3 py-1 rounded-lg shadow-sm text-[10px] font-black uppercase text-primary flex items-center gap-1">
-                                <span class="material-symbols-outlined text-xs">schedule</span> <?php echo $tempo; ?>
+                                <span class="material-symbols-outlined text-xs">schedule</span> <?php echo $tempo_total; ?>
                              </div>
                         </div>
                     </div>

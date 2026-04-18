@@ -88,7 +88,7 @@ get_header(); ?>
                             </div>
                             <div class="p-6 flex flex-col flex-1">
                                 <div class="flex items-center gap-4 text-xs font-bold text-slate-500 dark:text-slate-400 mb-3">
-                                    <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">schedule</span> <?php echo $tempo; ?></span>
+                                    <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">schedule</span> <?php echo sts_get_recipe_total_time(); ?></span>
                                     <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">bar_chart</span> <?php echo $dif; ?></span>
                                 </div>
                                 <h3 class="text-xl font-bold mb-2 group-hover:text-primary transition-colors">
