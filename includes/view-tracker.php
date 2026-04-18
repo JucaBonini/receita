@@ -4,21 +4,34 @@
  * Monitora Posts, Páginas e CPTs.
  */
 
-// 1. Rastrear a visualização quando a página é carregada
-function sts_track_all_views() {
-    // Apenas em posts, páginas ou CPTs individuais, e não para usuários logados com poder de edição (evita inflar dados)
-    if ( !is_singular() ) return;
+// 1. AJAX Handler para contar visualizações (Assíncrono para Performance)
+function sts_ajax_track_view() {
+    $post_id = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
     
-    // Opcional: Descomente a linha abaixo se quiser ignorar as suas próprias visitas
-    // if ( is_user_logged_in() && current_user_can('edit_posts') ) return;
+    if (!$post_id) wp_send_json_error('Invalid ID');
 
-    global $post;
-    $post_id = $post->ID;
+    // Ignorar admin para não inflar dados (Opcional)
+    // if (current_user_can('edit_posts')) wp_send_json_success('Admin ignored');
+
     $views = get_post_meta($post_id, '_sts_post_views', true);
     $views = $views ? (int)$views + 1 : 1;
     update_post_meta($post_id, '_sts_post_views', $views);
+    
+    // Atualiza também a chave secundária se existir por compatibilidade
+    update_post_meta($post_id, 'post_views_count', $views);
+
+    wp_send_json_success($views);
 }
-add_action('wp_head', 'sts_track_all_views');
+add_action('wp_ajax_sts_track_view', 'sts_ajax_track_view');
+add_action('wp_ajax_nopriv_sts_track_view', 'sts_ajax_track_view');
+
+// 2. Injetar o ID do post no cabeçalho para o JS capturar
+function sts_inject_view_tracking_data() {
+    if (is_singular()) {
+        echo '<meta name="sts-post-id" content="' . get_the_ID() . '">' . "\n";
+    }
+}
+add_action('wp_head', 'sts_inject_view_tracking_data');
 
 // 2. Adicionar coluna nos Posts e Páginas
 function sts_add_views_column_to_admin($columns) {

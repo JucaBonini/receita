@@ -95,26 +95,32 @@ get_header();
                             <span class="material-symbols-outlined text-primary text-2xl sm:text-3xl">local_fire_department</span>
                             Tendências da <span class="text-primary italic">Semana</span>
                         </h2>
-                        
                         <div class="space-y-6">
                             <?php
-                            // Lógica de Sorteio Semanal (Muda a cada Segunda-feira)
-                            $week_seed = (int)date('W') + (int)date('Y'); // Semente única por semana/ano
-                            
-                            $pool_ids = get_posts(array(
-                                'post_type' => 'post',
-                                'posts_per_page' => 20,
-                                'fields' => 'ids',
-                                'post__not_in' => isset($hero_post_id) ? array($hero_post_id) : array()
-                            ));
+                            // Lógica de Sorteio Semanal com Cache (Transient API)
+                            $trends_ids = get_transient('sts_weekly_trends');
 
-                            if (!empty($pool_ids)) {
-                                // Sorteio determinístico baseado na semana
-                                mt_srand($week_seed);
-                                shuffle($pool_ids);
-                                $trends_ids = array_slice($pool_ids, 0, 3);
-                            } else {
-                                $trends_ids = array();
+                            if (false === $trends_ids) {
+                                $week_seed = (int)date('W') + (int)date('Y'); // Semente única por semana/ano
+                                
+                                $pool_ids = get_posts(array(
+                                    'post_type' => 'post',
+                                    'posts_per_page' => 30, // Pool maior para sorteio
+                                    'fields' => 'ids',
+                                    'post__not_in' => isset($hero_post_id) ? array($hero_post_id) : array()
+                                ));
+
+                                if (!empty($pool_ids)) {
+                                    // Sorteio determinístico baseado na semana
+                                    mt_srand($week_seed);
+                                    shuffle($pool_ids);
+                                    $trends_ids = array_slice($pool_ids, 0, 3);
+                                    
+                                    // Salva por 12 horas (720 * MINUTE_IN_SECONDS)
+                                    set_transient('sts_weekly_trends', $trends_ids, 12 * HOUR_IN_SECONDS);
+                                } else {
+                                    $trends_ids = array();
+                                }
                             }
 
                             if (!empty($trends_ids)) {

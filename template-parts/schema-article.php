@@ -82,11 +82,19 @@ if ($is_review) {
         "name" => get_the_title(),
         "image" => get_the_post_thumbnail_url($post_id, 'large')
     ];
-    $schema["reviewRating"] = [
-        "@type" => "Rating",
-        "ratingValue" => "5",
-        "bestRating" => "5"
-    ];
+    // Dynamic Rating Logic: Only show if there are real ratings
+    $rating_avg = get_post_meta($post_id, '_rating_avg', true);
+    $rating_count = get_post_meta($post_id, '_rating_count', true);
+
+    if ($rating_avg && $rating_count) {
+        $schema["aggregateRating"] = [
+            "@type" => "AggregateRating",
+            "ratingValue" => $rating_avg,
+            "reviewCount" => $rating_count,
+            "bestRating" => "5",
+            "worstRating" => "1"
+        ];
+    }
 }
 
 echo '<script type="application/ld+json">' . json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . '</script>';

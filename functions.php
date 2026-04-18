@@ -72,9 +72,10 @@ function descomplicando_receitas_scripts() {
     
     wp_enqueue_script('achadinhos-js', THEME_URI . '/assets/js/achadinhos.js', array('jquery'), THEME_VERSION, true);
     
-    // Localize script para AJAX (se necessário)
-    wp_localize_script('main-js', 'theme_ajax', array(
-        'ajax_url' => admin_url('admin-ajax.php'),
+    // Localize script para AJAX e Configurações Globais
+    wp_localize_script('main-js', 'themeConfig', array(
+        'ajaxUrl' => admin_url('admin-ajax.php'),
+        'homeUrl' => home_url('/'),
         'nonce' => wp_create_nonce('theme_nonce')
     ));
 }
@@ -275,26 +276,8 @@ add_action('init', 'dr_limpeza_head_completa');
 // Remover versão do WordPress por segurança
 add_filter('the_generator', '__return_empty_string');
 
-// Função para contar visualizações de posts
-function set_post_views($post_id) {
-    $count_key = 'post_views_count';
-    $count = get_post_meta($post_id, $count_key, true);
-    
-    if ($count == '') {
-        $count = 0;
-        delete_post_meta($post_id, $count_key);
-        add_post_meta($post_id, $count_key, '1');
-    } else {
-        $count++;
-        update_post_meta($post_id, $count_key, $count);
-    }
-}
+// As funções de visualização foram movidas/consolidadas no includes/view-tracker.php para performance
 
-// Função para obter visualizações
-function get_post_views($post_id) {
-    $count = get_post_meta($post_id, 'post_views_count', true);
-    return $count ? $count : '0';
-}
 
 // Adicionar campo de Expertise/Credenciais ao perfil do usuário (E-E-A-T)
 function add_user_expertise_field($user) {
@@ -356,16 +339,8 @@ function save_user_expertise_field($user_id) {
 add_action('personal_options_update', 'save_user_expertise_field');
 add_action('edit_user_profile_update', 'save_user_expertise_field');
 
-// Track post views
-function track_post_views($post_id) {
-    if (!is_single()) return;
-    if (empty($post_id)) {
-        global $post;
-        $post_id = $post->ID;
-    }
-    set_post_views($post_id);
-}
-add_action('wp_head', 'track_post_views');
+// O rastreamento agora é feito via AJAX em includes/view-tracker.php
+
 
 // Linhas no functions.php (aproximadamente 268 e 269)
 $rating_value = get_post_meta(get_the_ID(), 'review_rating', true); // Mude 'review_rating' para o nome do seu campo

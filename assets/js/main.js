@@ -745,4 +745,27 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     }
+
+    // 11. Rastreamento Assíncrono de Views (Performance & Anti-Bounce)
+    const trackView = () => {
+        const postIdMeta = document.querySelector('meta[name="sts-post-id"]');
+        if (!postIdMeta || !window.themeConfig) return;
+
+        const postId = postIdMeta.getAttribute('content');
+        
+        // Espera 5 segundos de leitura real antes de contar a view
+        setTimeout(() => {
+            const data = new FormData();
+            data.append('action', 'sts_track_view');
+            data.append('post_id', postId);
+
+            fetch(window.themeConfig.ajaxUrl, {
+                method: 'POST',
+                body: data,
+                keepalive: true
+            });
+        }, 5000);
+    };
+
+    trackView();
 });

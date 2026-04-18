@@ -4,8 +4,7 @@
 <head>
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="robots" content="max-image-preview:large">
-    
+
     <?php wp_head(); ?>
 
     <!-- PWA: Configurações de Aplicativo (Tier 1) -->
@@ -42,7 +41,7 @@
         @media screen and (max-width: 782px) { body.admin-bar header { top: 46px !important; } }
     </style>
 
-    </script>
+
     
     <!-- Script Anti-FOUC (Dark Mode imediato) -->
     <script id="dark-mode-fouc">

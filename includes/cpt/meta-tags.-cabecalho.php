@@ -18,7 +18,7 @@ function dr_configurar_meta_tags_completas() {
         $og_description = 'Descomplicando Receitas é o seu guia na cozinha! Receitas práticas, testadas e aprovadas.';
     } elseif (is_singular() || is_page()) {
         $og_title = get_the_title();
-        $og_description = has_excerpt() ? get_the_excerpt() : wp_trim_words(get_the_content(), 30);
+        $og_description = has_excerpt() ? get_the_excerpt() : wp_trim_words(strip_shortcodes(wp_strip_all_tags(get_the_content())), 30);
     } elseif (is_category()) {
         $og_title = single_cat_title('', false) . ' - ' . get_bloginfo('name');
         $og_description = category_description() ?: 'Categoria de receitas no ' . $site_name;
@@ -70,12 +70,8 @@ function dr_configurar_meta_tags_completas() {
     echo '<meta name="p:domain_verify" content="645852f757b84ed974209acf2794c0cd" />' . "\n";   
     echo '<meta name="msvalidate.01" content="E3BEF536136496E86D4C035E2C36E401" />' . "\n";
     
-    // 4. GEO LOCATION (Regional SEO)
-    echo '<!-- Geo Location -->' . "\n";
-    echo '<meta name="geo.region" content="BR" />' . "\n";
-    echo '<meta name="geo.placename" content="Brasil" />' . "\n";
-    echo '<meta name="geo.position" content="-14.235;-51.9253" />' . "\n";
-    echo '<meta name="ICBM" content="-14.235, -51.9253" />' . "\n";
+    // 4. GEO LOCATION Removed (Optional for global reach)
+
     
     // 5. META TAGS GERAIS
     echo '<meta name="description" content="' . esc_attr($og_description) . '" />' . "\n";
