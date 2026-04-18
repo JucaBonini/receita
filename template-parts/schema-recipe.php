@@ -77,7 +77,7 @@ $schema = [
             "cookTime" => $cook_iso,
             "totalTime" => $total_iso,
             "recipeYield" => $porcoes_meta ?: "4 porções",
-            "recipeCategory" => !empty($main_cat) ? $main_cat->name : "Receitas",
+            "recipeCategory" => !empty($main_cat) ? $main_cat->name : "Prato Principal",
             "recipeCuisine" => $cuisine_meta ?: "Brasileira",
             "keywords" => get_the_tag_list('', ', ', '', $post_id) ?: "receita, culinária",
             "publisher" => [ "@id" => home_url('/#organization') ],

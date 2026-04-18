@@ -5,6 +5,11 @@
  */
 
 if (!isset($post_id)) $post_id = get_the_ID();
+
+// Se já tiver ingredientes ou for explicitamente uma receita, não gera o Schema de Artigo
+$has_ingredients = get_post_meta($post_id, '_ingredientes', true);
+if (!empty($has_ingredients)) return;
+
 $post_type = get_post_type($post_id);
 $categories = get_the_category($post_id);
 $cat_slugs = !empty($categories) ? wp_list_pluck($categories, 'slug') : [];
