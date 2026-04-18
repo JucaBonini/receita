@@ -8,6 +8,17 @@ define('THEME_PATH', get_template_directory());
 define('THEME_URI', get_template_directory_uri());
 define('THEME_VERSION', '1.0.6'); // Cache Buster Force
 
+// Incluir Componentes Estratégicos (Nativos)
+require_once THEME_PATH . '/includes/sitemaps-engine.php';
+function sts_flush_sitemaps_once() {
+    if (get_option('sts_sitemaps_flushed') !== 'yes') {
+        sts_sitemap_rewrite_rules();
+        flush_rewrite_rules();
+        update_option('sts_sitemaps_flushed', 'yes');
+    }
+}
+add_action('after_setup_theme', 'sts_flush_sitemaps_once');
+
 /**
  * Função Mestra: Retorna o Tempo Total formatado (XX MIN)
  * Centraliza a lógica para evitar inconsistências no site.

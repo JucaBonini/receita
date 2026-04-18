@@ -144,17 +144,8 @@ get_header();
                                     <h3 class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-primary transition-colors line-clamp-2 leading-tight">
                                         <?php the_title(); ?>
                                     </h3>
-                                    <?php 
-                                    $categories = get_the_category();
-                                    if (!empty($categories)) : ?>
-                                        <div class="absolute top-4 left-4 px-3 py-1.5 bg-white dark:bg-slate-900 rounded-lg shadow-md z-10 border border-slate-100/50 dark:border-slate-800/50">
-                                            <span class="text-[10px] font-black text-primary uppercase tracking-wider">
-                                                <?php echo esc_html($categories[0]->name); ?>
-                                            </span>
-                                        </div>
-                                    <?php endif; ?>
                                     <div class="flex items-center gap-2 mt-2 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                        <span class="flex items-center gap-1"><span class="material-symbols-outlined text-xs">schedule</span> <?php echo sts_get_recipe_total_time(); ?> MIN</span>
+                                        <span class="flex items-center gap-1"><span class="material-symbols-outlined text-xs">schedule</span> <?php echo sts_get_recipe_total_time(); ?></span>
                                         <span class="w-1 h-1 bg-slate-300 rounded-full"></span>
                                         <span class="text-primary"><?php echo get_the_date(); ?></span>
                                     </div>
