@@ -1,8 +1,7 @@
 <?php
 /**
- * Componente SEO: Schema.org Article / NewsArticle / FAQ / Review
- * Versão: 2.5 (Foco em E-E-A-T & Google Discover 2026)
- * Redireciona logicamente posts que não são receitas para o Schema ideal.
+ * Componente SEO Senior: Schema.org Article / NewsArticle / FAQ 
+ * Foco total em E-E-A-T & Google Discover 2026
  */
 
 if (!isset($post_id)) $post_id = get_the_ID();
@@ -10,56 +9,75 @@ $post_type = get_post_type($post_id);
 $categories = get_the_category($post_id);
 $cat_slugs = !empty($categories) ? wp_list_pluck($categories, 'slug') : [];
 
-// Identificação do Tipo de Schema
-$is_faq    = in_array('faq', $cat_slugs) || in_array('perguntas-frequentes', $cat_slugs) || $post_type === 'faqs';
-$is_review = in_array('review', $cat_slugs) || in_array('analise', $cat_slugs) || $post_type === 'reviews';
-$is_news   = in_array('noticias', $cat_slugs) || in_array('news', $cat_slugs);
-
-// Configuração Base (Article/NewsArticle)
+// Identificação Inteligente do Tipo
+$is_faq = in_array('faq', $cat_slugs) || $post_type === 'faqs';
+$is_news = in_array('noticias', $cat_slugs) || in_array('news', $cat_slugs);
 $schema_type = $is_news ? "NewsArticle" : "Article";
 
-// Author Social Profiles (EEAT)
+// Dados do Autor (EEAT)
 $author_id = get_the_author_meta('ID');
-$social_links = [
+$author_name = get_the_author() ?: 'Redação Descomplicando Receitas';
+$author_job = get_the_author_meta('job_title', $author_id) ?: 'Chef e Especialista Culinar';
+$author_url = get_author_posts_url($author_id);
+$author_avatar = get_avatar_url($author_id, ['size' => 120]);
+
+$social_profiles = [
     "https://www.instagram.com/descomplicandoreceitas",
-    "https://www.facebook.com/descomplicandoreceitas"
+    "https://www.facebook.com/descomplicandoreceitas",
+    "https://www.youtube.com/@descomplicandoreceitas",
+    "https://www.pinterest.com/descomplicandoreceitas"
 ];
 
 $schema = [
-    "@context" => "https://schema.org",
-    "@type" => $schema_type,
-    "headline" => get_the_title(),
-    "description" => get_the_excerpt() ?: wp_trim_words(get_the_content(), 40),
-    "image" => [
-        get_the_post_thumbnail_url($post_id, 'full') ?: get_template_directory_uri() . '/assets/images/default-image.webp'
-    ],
-    "datePublished" => get_the_date('c'),
-    "dateModified" => get_the_modified_date('c'),
-    "author" => [
-        "@type" => "Person",
-        "name" => get_the_author(),
-        "url" => get_author_posts_url($author_id),
-        "jobTitle" => get_the_author_meta('job_title', $author_id) ?: "Especialista em Gastronomia",
-        "sameAs" => $social_links
-    ],
-    "publisher" => [
-        "@type" => "Organization",
-        "name" => get_bloginfo('name'),
-        "logo" => [
-            "@type" => "ImageObject",
-            "url" => get_template_directory_uri() . '/assets/images/logotipo-descomplicando_receitas300x300.png'
+    "@context" => "https://schema.org/",
+    "@graph" => [
+        // 1. Organização
+        [
+            "@type" => "Organization",
+            "@id" => home_url('/#organization'),
+            "name" => get_bloginfo('name'),
+            "url" => home_url('/'),
+            "logo" => [
+                "@type" => "ImageObject",
+                "url" => get_template_directory_uri() . '/assets/images/logotipo-descomplicando_receitas300x300.png',
+                "width" => 300,
+                "height" => 300
+            ],
+            "sameAs" => $social_profiles
+        ],
+        // 2. Pessoa (Autor)
+        [
+            "@type" => "Person",
+            "@id" => $author_url . '#person',
+            "name" => $author_name,
+            "jobTitle" => $author_job,
+            "url" => $author_url,
+            "image" => [
+                "@type" => "ImageObject",
+                "url" => $author_avatar
+            ]
+        ],
+        // 3. O Conteúdo
+        [
+            "@type" => $schema_type,
+            "headline" => get_the_title(),
+            "description" => get_the_excerpt() ?: wp_trim_words(get_the_content(), 40),
+            "image" => [ get_the_post_thumbnail_url($post_id, 'full') ?: '' ],
+            "datePublished" => get_the_date('c'),
+            "dateModified" => get_the_modified_date('c'),
+            "author" => [ "@id" => $author_url . '#person' ],
+            "publisher" => [ "@id" => home_url('/#organization') ],
+            "mainEntityOfPage" => [
+                "@type" => "WebPage",
+                "@id" => get_permalink()
+            ]
         ]
-    ],
-    "mainEntityOfPage" => [
-        "@type" => "WebPage",
-        "@id" => get_permalink()
     ]
 ];
 
-// Adaptive Logic: FAQPage
+// Inserir FAQ se necessário
 if ($is_faq) {
-    $schema = [
-        "@context" => "https://schema.org",
+    $schema["@graph"][] = [
         "@type" => "FAQPage",
         "mainEntity" => [[
             "@type" => "Question",
@@ -70,31 +88,6 @@ if ($is_faq) {
             ]
         ]]
     ];
-}
-
-// Adaptive Logic: Review
-if ($is_review) {
-    $schema["@type"] = "Review";
-    $schema["reviewAspect"] = "Culinária e Utensílios";
-    $schema["reviewBody"] = get_the_excerpt() ?: get_the_title();
-    $schema["itemReviewed"] = [
-        "@type" => "Product",
-        "name" => get_the_title(),
-        "image" => get_the_post_thumbnail_url($post_id, 'large')
-    ];
-    // Dynamic Rating Logic: Only show if there are real ratings
-    $rating_avg = get_post_meta($post_id, '_rating_avg', true);
-    $rating_count = get_post_meta($post_id, '_rating_count', true);
-
-    if ($rating_avg && $rating_count) {
-        $schema["aggregateRating"] = [
-            "@type" => "AggregateRating",
-            "ratingValue" => $rating_avg,
-            "reviewCount" => $rating_count,
-            "bestRating" => "5",
-            "worstRating" => "1"
-        ];
-    }
 }
 
 echo '<script type="application/ld+json">' . json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . '</script>';

@@ -1,3 +1,4 @@
+<?php
 /**
  * Componente de SEO Senior: Schema.org Recipe (JSON-LD)
  * Foco total em E-E-A-T & Google Search Console 2026
