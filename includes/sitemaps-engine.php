@@ -21,6 +21,16 @@ function sts_sitemap_trigger() {
 
     if (preg_match('/sitemap-([a-z0-9\-]+)\.xml/i', $uri, $matches)) {
         $type = $matches[1];
+        // Aliases para facilitar a vida do Google e do Usuário
+        $aliases = [
+            'webstories' => 'web-story',
+            'stories'    => 'web-story',
+            'posts'      => 'post',
+            'pages'      => 'page'
+        ];
+        if (isset($aliases[$type])) {
+            $type = $aliases[$type];
+        }
     } elseif (preg_match('/sitemap_index\.xml/i', $uri)) {
         $type = 'index';
     }
@@ -70,9 +80,15 @@ function sts_sitemap_trigger() {
  * Filtra tipos de post que NÃO devem ir para o Sitemap
  */
 function sts_get_sitemap_types() {
-    $types = get_post_types(['public' => true, 'exclude_from_search' => false], 'names');
+    $types = get_post_types(['public' => true], 'names');
+    
+    // Força a inclusão de Web Stories caso o plugin as tenha registrado como privadas na busca
+    if (post_type_exists('web-story')) {
+        $types['web-story'] = 'web-story';
+    }
+
     // Remove o que é lixo ou redundante
-    $exclude = ['attachment', 'revision', 'nav_menu_item', 'custom_css', 'customize_changeset', 'oembed_cache', 'user_request'];
+    $exclude = ['attachment', 'revision', 'nav_menu_item', 'custom_css', 'customize_changeset', 'oembed_cache', 'user_request', 'wp_block', 'wp_template', 'wp_template_part', 'wp_navigation'];
     return array_diff($types, $exclude);
 }
 
