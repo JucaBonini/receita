@@ -1003,7 +1003,15 @@ add_action('shutdown', 'sts_end_seo_buffer', 999);
 
 /**
  * SENIOR SEO: Desativa o Sitemap Nativo do WP para priorizar o nosso Motor de Alta Performance
+ * E redireciona o link antigo para o novo para evitar erros 404 no Google.
  */
 add_filter('wp_sitemaps_enabled', '__return_false');
+
+add_action('template_redirect', function() {
+    if (strpos($_SERVER['REQUEST_URI'], '/wp-sitemap.xml') !== false) {
+        wp_redirect(home_url('/sitemap_index.xml'), 301);
+        exit;
+    }
+});
 
 
