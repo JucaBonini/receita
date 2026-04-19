@@ -49,7 +49,7 @@ function sts_sitemap_trigger() {
     }
     exit;
 }
-add_action('template_redirect', 'sts_sitemap_trigger');
+add_action('template_redirect', 'sts_sitemap_trigger', 1);
 
 // --- RENDERIZADORES ---
 
