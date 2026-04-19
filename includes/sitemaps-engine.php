@@ -11,26 +11,30 @@ function sts_sitemap_rewrite_rules() {
 }
 add_action('init', 'sts_sitemap_rewrite_rules');
 
-// 2. Registrar as Variáveis do Sitemap
-function sts_sitemap_query_vars($vars) {
-    $vars[] = 'sts_sitemap';
-    return $vars;
-}
-add_filter('query_vars', 'sts_sitemap_query_vars');
+// 2. Registra o Roteamento do Sitemap
+add_action('init', 'sts_sitemap_trigger', 1);
 
-// 3. Roteador de Templates do Sitemap
 function sts_sitemap_trigger() {
-    $type = get_query_var('sts_sitemap');
+    // Detecta se é um pedido de sitemap via URL bruta (previne injeções de outros plugins)
+    $uri = $_SERVER['REQUEST_URI'];
+    $type = '';
+
+    if (preg_match('/sitemap-([a-z0-9\-]+)\.xml/i', $uri, $matches)) {
+        $type = $matches[1];
+    } elseif (preg_match('/sitemap_index\.xml/i', $uri)) {
+        $type = 'index';
+    }
+
     if (!$type) return;
 
-    // Limpeza Nuclear de Buffer: Garante que nada (scripts, avisos, etc) suje o XML
+    // LIMPEZA SUPREMA: Descarta qualquer CSS ou HTML injetado por plugins precoces
     while (ob_get_level()) {
         ob_end_clean();
     }
     ob_start();
 
     header('Content-Type: text/xml; charset=utf-8');
-    echo '<?xml version="1.0" encoding="UTF-8"?>';
+    echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 
     switch ($type) {
         case 'index':
@@ -44,17 +48,16 @@ function sts_sitemap_trigger() {
             if (in_array($type, $allowed_types)) {
                 sts_render_generic_sitemap($type);
             } else {
-                $wp_query = new WP_Query();
-                $wp_query->set_404();
                 status_header(404);
-                nocache_headers();
-                include(get_query_template('404'));
+                echo 'Sitemap not found';
             }
             break;
     }
+    
+    // Finaliza e garante que nada mais seja impresso
+    ob_end_flush();
     exit;
 }
-add_action('template_redirect', 'sts_sitemap_trigger', 1);
 
 // --- RENDERIZADORES ---
 
