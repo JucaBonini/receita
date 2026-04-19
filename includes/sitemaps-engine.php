@@ -23,9 +23,8 @@ function sts_sitemap_trigger() {
     $type = get_query_var('sts_sitemap');
     if (!$type) return;
 
-    header('Content-Type: application/xml; charset=utf-8');
+    header('Content-Type: text/xml; charset=utf-8');
     echo '<?xml version="1.0" encoding="UTF-8"?>';
-    echo '<?xml-stylesheet type="text/xsl" href="' . includes_url('css/main-sitemap.xsl') . '"?>';
 
     switch ($type) {
         case 'index':
@@ -41,10 +40,11 @@ function sts_sitemap_trigger() {
             sts_render_sitemap_categories();
             break;
         default:
-            global $wp_query;
+            $wp_query = new WP_Query(); // Reset dummy for 404
             $wp_query->set_404();
             status_header(404);
-            get_template_part(404);
+            nocache_headers();
+            include(get_query_template('404'));
             break;
     }
     exit;
@@ -54,19 +54,15 @@ add_action('template_redirect', 'sts_sitemap_trigger');
 // --- RENDERIZADORES ---
 
 function sts_render_sitemap_index() {
+    $sitemaps = ['posts', 'pages', 'categories'];
     ?>
     <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+        <?php foreach ($sitemaps as $s) : ?>
         <sitemap>
-            <loc><?php echo home_url('/sitemap-posts.xml'); ?></loc>
+            <loc><?php echo home_url("/sitemap-{$s}.xml/"); ?></loc>
             <lastmod><?php echo date('c'); ?></lastmod>
         </sitemap>
-        <sitemap>
-            <loc><?php echo home_url('/sitemap-pages.xml'); ?></loc>
-            <lastmod><?php echo date('c'); ?></lastmod>
-        </sitemap>
-        <sitemap>
-            <loc><?php echo home_url('/sitemap-categories.xml'); ?></loc>
-        </sitemap>
+        <?php endforeach; ?>
     </sitemapindex>
     <?php
 }

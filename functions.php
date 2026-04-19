@@ -1001,4 +1001,9 @@ function sts_end_seo_buffer() {
 add_action('template_redirect', 'sts_start_seo_buffer', 1);
 add_action('shutdown', 'sts_end_seo_buffer', 999);
 
+/**
+ * SENIOR SEO: Desativa o Sitemap Nativo do WP para priorizar o nosso Motor de Alta Performance
+ */
+add_filter('wp_sitemaps_enabled', '__return_false');
+
 
