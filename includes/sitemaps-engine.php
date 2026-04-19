@@ -15,7 +15,6 @@ add_action('init', 'sts_sitemap_rewrite_rules');
 add_action('init', 'sts_sitemap_trigger', 1);
 
 function sts_sitemap_trigger() {
-    // Detecta se é um pedido de sitemap via URL bruta
     $uri = $_SERVER['REQUEST_URI'];
     $type = '';
 
@@ -27,43 +26,39 @@ function sts_sitemap_trigger() {
 
     if (!$type) return;
 
-    // Desativa compressão e cache para evitar sujeira no XML
     if (function_exists('ini_set')) {
         @ini_set('zlib.output_compression', 'Off');
     }
 
-    // LIMPEZA SUPREMA
     while (ob_get_level()) {
         ob_end_clean();
     }
     ob_start();
 
-    header('Content-Type: text/xml; charset=utf-8');
-    header('Cache-Control: no-cache, must-revalidate, max-age=0');
-    
-    // Echo direto sem quebra de linha entre declaração e conteúdo
-    echo '<?xml version="1.0" encoding="UTF-8"?>';
+    $xml_output = '<?xml version="1.0" encoding="UTF-8"?>';
 
     switch ($type) {
         case 'index':
-            sts_render_sitemap_index();
+            $xml_output .= sts_get_sitemap_index_xml();
             break;
         case 'category':
-            sts_render_sitemap_categories();
+            $xml_output .= sts_get_sitemap_categories_xml();
             break;
         default:
             $allowed_types = sts_get_sitemap_types();
             if (in_array($type, $allowed_types)) {
-                sts_render_generic_sitemap($type);
+                $xml_output .= sts_get_generic_sitemap_xml($type);
             } else {
                 status_header(404);
                 echo 'Sitemap not found';
+                exit;
             }
             break;
     }
     
-    // Finaliza e garante que nada mais seja impresso
-    ob_end_flush();
+    header('Content-Type: text/xml; charset=utf-8');
+    header('Cache-Control: no-cache, must-revalidate, max-age=0');
+    echo trim($xml_output);
     exit;
 }
 
@@ -79,24 +74,18 @@ function sts_get_sitemap_types() {
     return array_diff($types, $exclude);
 }
 
-function sts_render_sitemap_index() {
+function sts_get_sitemap_index_xml() {
     $post_types = sts_get_sitemap_types();
     $xml = '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
     foreach ($post_types as $type) {
-        $xml .= '<sitemap>';
-        $xml .= '<loc>' . home_url("/sitemap-{$type}.xml/") . '</loc>';
-        $xml .= '<lastmod>' . date('c') . '</lastmod>';
-        $xml .= '</sitemap>';
+        $xml .= '<sitemap><loc>' . home_url("/sitemap-{$type}.xml/") . '</loc><lastmod>' . date('c') . '</lastmod></sitemap>';
     }
-    $xml .= '<sitemap>';
-    $xml .= '<loc>' . home_url('/sitemap-category.xml/') . '</loc>';
-    $xml .= '<lastmod>' . date('c') . '</lastmod>';
-    $xml .= '</sitemap>';
+    $xml .= '<sitemap><loc>' . home_url('/sitemap-category.xml/') . '</loc><lastmod>' . date('c') . '</lastmod></sitemap>';
     $xml .= '</sitemapindex>';
-    echo $xml;
+    return $xml;
 }
 
-function sts_render_generic_sitemap($post_type) {
+function sts_get_generic_sitemap_xml($post_type) {
     $query = new WP_Query(array(
         'post_type' => $post_type,
         'posts_per_page' => 500,
@@ -117,10 +106,10 @@ function sts_render_generic_sitemap($post_type) {
     }
     wp_reset_postdata();
     $xml .= '</urlset>';
-    echo $xml;
+    return $xml;
 }
 
-function sts_render_sitemap_categories() {
+function sts_get_sitemap_categories_xml() {
     $categories = get_categories(['hide_empty' => true]);
     $xml = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
     foreach ($categories as $cat) {
@@ -131,5 +120,5 @@ function sts_render_sitemap_categories() {
         $xml .= '</url>';
     }
     $xml .= '</urlset>';
-    echo $xml;
+    return $xml;
 }
