@@ -32,8 +32,17 @@ function sts_render_seo_meta() {
     $image = esc_url($image);
     $current_url = esc_url($current_url);
 
+    // No Index Check
+    $noindex = false;
+    if (is_singular()) {
+        $noindex = (get_post_meta(get_the_ID(), '_sts_seo_noindex', true) === '1');
+    }
+
     ?>
     <!-- SEO Básico -->
+    <?php if ($noindex) : ?>
+    <meta name="robots" content="noindex, follow">
+    <?php endif; ?>
     <meta name="description" content="<?php echo $description; ?>">
     <link rel="canonical" href="<?php echo $current_url; ?>">
 
