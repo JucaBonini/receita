@@ -19,9 +19,23 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('<?php echo THEME_URI; ?>/sw.js')
-                    .then(reg => console.log('[PWA] Service Worker registrado com sucesso!'))
-                    .catch(err => console.log('[PWA] Erro ao registrar SW:', err));
+                // Versão dinâmica baseada no timestamp para forçar atualização do cache quando houver mudanças
+                const swVersion = '<?php echo filemtime(get_template_directory() . "/sw.js"); ?>';
+                navigator.serviceWorker.register('<?php echo THEME_URI; ?>/sw.js?v=' + swVersion)
+                    .then(reg => {
+                        console.log('[PWA] Service Worker ativo (v' + swVersion + ')');
+                        // Força a atualização se houver uma nova versão esperando
+                        reg.onupdatefound = () => {
+                            const installingWorker = reg.installing;
+                            installingWorker.onstatechange = () => {
+                                if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    console.log('[PWA] Nova versão detectada, atualizando...');
+                                    window.location.reload();
+                                }
+                            };
+                        };
+                    })
+                    .catch(err => console.log('[PWA] Erro:', err));
             });
         }
     </script>
