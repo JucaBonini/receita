@@ -92,10 +92,10 @@ $schema = [
             "recipeInstructions" => [],
             "aggregateRating" => [
                 "@type" => "AggregateRating",
-                "ratingValue" => $display_rating_avg,
-                "reviewCount" => $display_rating_count,
-                "bestRating" => "5",
-                "worstRating" => "1"
+                "ratingValue" => (float)$display_rating_avg,
+                "reviewCount" => (int)$display_rating_count,
+                "bestRating" => 5,
+                "worstRating" => 1
             ]
         ]
     ]

@@ -974,4 +974,31 @@ function sts_async_styles($tag, $handle, $src) {
 }
 add_filter('style_loader_tag', 'sts_async_styles', 10, 3);
 
+/**
+ * SENIOR SEO CLEANUP: Sniper Anti-Conflito de Schemas
+ * Remove blocos de Article/Review genéricos que geram erro quando já temos uma Receita.
+ */
+function sts_force_clean_extra_schemas($buffer) {
+    if (is_singular('post')) {
+        // Se o buffer contém a nossa Receita, removemos qualquer Article que tenha aggregateRating irregular
+        if (strpos($buffer, '"@type": "Recipe"') !== false) {
+            // Regex potente para remover blocos de script application/ld+json que sejam "Article"
+            $buffer = preg_replace('/<script type="application\/ld\+json"[^>]*>.*?["\']@type["\']\s*:\s*["\']Article["\'].*?<\/script>/is', '', $buffer);
+            
+            // Remove especificamente o comentário "SEO Engine Pro" se ele estiver injetando lixo
+            $buffer = preg_replace('/<!-- SEO Engine Pro: Structured Data -->.*?<\/script>/is', '', $buffer);
+        }
+    }
+    return $buffer;
+}
+
+function sts_start_seo_buffer() {
+    if (!is_admin()) ob_start('sts_force_clean_extra_schemas');
+}
+function sts_end_seo_buffer() {
+    if (!is_admin() && ob_get_length()) ob_end_flush();
+}
+add_action('template_redirect', 'sts_start_seo_buffer', 1);
+add_action('shutdown', 'sts_end_seo_buffer', 999);
+
 
