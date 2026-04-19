@@ -32,8 +32,12 @@ function sts_render_seo_meta() {
     $image = esc_url($image);
     $current_url = esc_url($current_url);
 
-    // Lógica Anti-Canibalização (Web Stories -> Posts)
-    if (is_singular('web-story')) {
+    // Lógica Anti-Canibalização (Manual ou Web Stories -> Posts)
+    $manual_canonical = is_singular() ? get_post_meta(get_the_ID(), '_sts_seo_canonical', true) : '';
+    
+    if (!empty($manual_canonical)) {
+        $current_url = $manual_canonical;
+    } elseif (is_singular('web-story')) {
         $story_slug = get_post_field('post_name', get_the_ID());
         $matching_post = get_posts([
             'name'        => $story_slug,
