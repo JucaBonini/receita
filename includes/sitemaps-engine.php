@@ -12,9 +12,10 @@ function sts_sitemap_rewrite_rules() {
 add_action('init', 'sts_sitemap_rewrite_rules');
 
 // 2. Registra o Roteamento do Sitemap
-add_action('init', 'sts_sitemap_trigger', 1);
+add_action('init', 'sts_sitemap_trigger', 99);
 
 function sts_sitemap_trigger() {
+    // Detecta se é um pedido de sitemap via URL bruta (previne injeções de outros plugins)
     $uri = $_SERVER['REQUEST_URI'];
     $type = '';
 
@@ -30,6 +31,7 @@ function sts_sitemap_trigger() {
         @ini_set('zlib.output_compression', 'Off');
     }
 
+    // LIMPEZA SUPREMA
     while (ob_get_level()) {
         ob_end_clean();
     }
@@ -50,7 +52,7 @@ function sts_sitemap_trigger() {
                 $xml_output .= sts_get_generic_sitemap_xml($type);
             } else {
                 status_header(404);
-                echo 'Sitemap not found';
+                echo 'Sitemap "' . $type . '" not found. Allowed: ' . implode(', ', $allowed_types);
                 exit;
             }
             break;
