@@ -15,7 +15,7 @@ add_action('init', 'sts_sitemap_rewrite_rules');
 add_action('init', 'sts_sitemap_trigger', 1);
 
 function sts_sitemap_trigger() {
-    // Detecta se é um pedido de sitemap via URL bruta (previne injeções de outros plugins)
+    // Detecta se é um pedido de sitemap via URL bruta
     $uri = $_SERVER['REQUEST_URI'];
     $type = '';
 
@@ -27,14 +27,22 @@ function sts_sitemap_trigger() {
 
     if (!$type) return;
 
-    // LIMPEZA SUPREMA: Descarta qualquer CSS ou HTML injetado por plugins precoces
+    // Desativa compressão e cache para evitar sujeira no XML
+    if (function_exists('ini_set')) {
+        @ini_set('zlib.output_compression', 'Off');
+    }
+
+    // LIMPEZA SUPREMA
     while (ob_get_level()) {
         ob_end_clean();
     }
     ob_start();
 
     header('Content-Type: text/xml; charset=utf-8');
-    echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+    header('Cache-Control: no-cache, must-revalidate, max-age=0');
+    
+    // Echo direto sem quebra de linha entre declaração e conteúdo
+    echo '<?xml version="1.0" encoding="UTF-8"?>';
 
     switch ($type) {
         case 'index':
@@ -73,20 +81,19 @@ function sts_get_sitemap_types() {
 
 function sts_render_sitemap_index() {
     $post_types = sts_get_sitemap_types();
-    ?>
-    <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-        <?php foreach ($post_types as $type) : ?>
-        <sitemap>
-            <loc><?php echo home_url("/sitemap-{$type}.xml/"); ?></loc>
-            <lastmod><?php echo date('c'); ?></lastmod>
-        </sitemap>
-        <?php endforeach; ?>
-        <sitemap>
-            <loc><?php echo home_url('/sitemap-category.xml/'); ?></loc>
-            <lastmod><?php echo date('c'); ?></lastmod>
-        </sitemap>
-    </sitemapindex>
-    <?php
+    $xml = '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+    foreach ($post_types as $type) {
+        $xml .= '<sitemap>';
+        $xml .= '<loc>' . home_url("/sitemap-{$type}.xml/") . '</loc>';
+        $xml .= '<lastmod>' . date('c') . '</lastmod>';
+        $xml .= '</sitemap>';
+    }
+    $xml .= '<sitemap>';
+    $xml .= '<loc>' . home_url('/sitemap-category.xml/') . '</loc>';
+    $xml .= '<lastmod>' . date('c') . '</lastmod>';
+    $xml .= '</sitemap>';
+    $xml .= '</sitemapindex>';
+    echo $xml;
 }
 
 function sts_render_generic_sitemap($post_type) {
@@ -97,31 +104,32 @@ function sts_render_generic_sitemap($post_type) {
         'orderby' => 'modified',
         'order' => 'DESC'
     ));
-    ?>
-    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-        <?php while ($query->have_posts()) : $query->the_post(); ?>
-        <url>
-            <loc><?php the_permalink(); ?></loc>
-            <lastmod><?php echo get_the_modified_date('c'); ?></lastmod>
-            <changefreq>weekly</changefreq>
-            <priority><?php echo ($post_type === 'post') ? '1.0' : '0.8'; ?></priority>
-        </url>
-        <?php endwhile; wp_reset_postdata(); ?>
-    </urlset>
-    <?php
+    $priority = ($post_type === 'post') ? '1.0' : '0.8';
+    $xml = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+    while ($query->have_posts()) {
+        $query->the_post();
+        $xml .= '<url>';
+        $xml .= '<loc>' . get_permalink() . '</loc>';
+        $xml .= '<lastmod>' . get_the_modified_date('c') . '</lastmod>';
+        $xml .= '<changefreq>weekly</changefreq>';
+        $xml .= '<priority>' . $priority . '</priority>';
+        $xml .= '</url>';
+    }
+    wp_reset_postdata();
+    $xml .= '</urlset>';
+    echo $xml;
 }
 
 function sts_render_sitemap_categories() {
     $categories = get_categories(['hide_empty' => true]);
-    ?>
-    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-        <?php foreach ($categories as $cat) : ?>
-        <url>
-            <loc><?php echo get_category_link($cat->term_id); ?></loc>
-            <changefreq>daily</changefreq>
-            <priority>0.6</priority>
-        </url>
-        <?php endforeach; ?>
-    </urlset>
-    <?php
+    $xml = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+    foreach ($categories as $cat) {
+        $xml .= '<url>';
+        $xml .= '<loc>' . get_category_link($cat->term_id) . '</loc>';
+        $xml .= '<changefreq>daily</changefreq>';
+        $xml .= '<priority>0.6</priority>';
+        $xml .= '</url>';
+    }
+    $xml .= '</urlset>';
+    echo $xml;
 }
