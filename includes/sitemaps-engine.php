@@ -23,6 +23,12 @@ function sts_sitemap_trigger() {
     $type = get_query_var('sts_sitemap');
     if (!$type) return;
 
+    // Limpeza Nuclear de Buffer: Garante que nada (scripts, avisos, etc) suje o XML
+    while (ob_get_level()) {
+        ob_end_clean();
+    }
+    ob_start();
+
     header('Content-Type: text/xml; charset=utf-8');
     echo '<?xml version="1.0" encoding="UTF-8"?>';
 
