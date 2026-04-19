@@ -32,6 +32,21 @@ function sts_render_seo_meta() {
     $image = esc_url($image);
     $current_url = esc_url($current_url);
 
+    // Lógica Anti-Canibalização (Web Stories -> Posts)
+    if (is_singular('web-story')) {
+        $story_slug = get_post_field('post_name', get_the_ID());
+        $matching_post = get_posts([
+            'name'        => $story_slug,
+            'post_type'   => 'post',
+            'post_status' => 'publish',
+            'numberposts' => 1,
+            'fields'      => 'ids'
+        ]);
+        if (!empty($matching_post)) {
+            $current_url = get_permalink($matching_post[0]);
+        }
+    }
+
     // No Index Check
     $noindex = false;
     if (is_singular()) {

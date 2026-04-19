@@ -1035,6 +1035,16 @@ function sts_hardcore_performance_hints() {
 }
 add_action('wp_head', 'sts_hardcore_performance_hints', 1);
 
+// 6. Blindagem de Canonical (Anti-Canibalização para Web Stories)
+function sts_force_intelligent_canonical() {
+    if (is_singular('web-story')) {
+        // Remove canonicals vindo do WordPress ou de outros plugins
+        remove_action('wp_head', 'rel_canonical');
+        remove_action('wp_head', 'index_rel_link');
+    }
+}
+add_action('wp_head', 'sts_force_intelligent_canonical', 1);
+
 /**
  * HARDCORE SEO: Dynamic Robots.txt
  * GPS de Alta Performance para o Crawler do Google.
