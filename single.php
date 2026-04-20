@@ -97,8 +97,7 @@ if (have_posts()) : while (have_posts()) : the_post();
                     'loading' => 'eager', 
                     'fetchpriority' => 'high',
                     'decoding' => 'sync',
-                    'alt' => esc_attr($alt_text),
-                    'itemprop' => 'image'
+                    'alt' => esc_attr($alt_text)
                 ]); 
             } else {
                 // Imagem de Fallback quando não há destaque (SEO & Google Discover)

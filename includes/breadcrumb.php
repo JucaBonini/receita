@@ -20,8 +20,7 @@ function custom_breadcrumb() {
             $breadcrumb_html .= ' <span class="material-symbols-outlined text-[10px] opacity-30">chevron_right</span> ';
         }
         $breadcrumb_html .= '<span class="text-slate-400 font-medium line-clamp-1">' . get_the_title() . '</span>';
-        // O título final sem link não precisa estar no items do schema obrigatoriamente, mas é bom colocar
-        $items[] = array('name' => get_the_title(), 'url' => '');
+        $items[] = array('name' => get_the_title(), 'url' => get_permalink());
     }
     elseif (is_category()) {
         $breadcrumb_html .= ' <span class="material-symbols-outlined text-[10px] opacity-30">chevron_right</span> ';
