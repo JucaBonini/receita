@@ -5,6 +5,15 @@
  */
 
 function sts_render_seo_meta() {
+    // 1. Verificação Crítica de Redirecionamento (Modo Aniquilação do Scout)
+    if (is_singular()) {
+        $forced_redirect = get_post_meta(get_the_ID(), '_sts_seo_redirect', true);
+        if (!empty($forced_redirect)) {
+            wp_redirect(esc_url_raw($forced_redirect), 301);
+            exit;
+        }
+    }
+
     $site_name = get_bloginfo('name');
     $description = get_bloginfo('description');
     $home_url = home_url('/');
