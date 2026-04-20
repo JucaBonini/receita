@@ -112,6 +112,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const data = new FormData();
         data.append('action', 'get_fav_details');
+        data.append('nonce', window.themeConfig.nonce);
         favs.forEach(id => data.append('ids[]', id));
         
         fetch(window.themeConfig.ajaxUrl, {
@@ -304,6 +305,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 btn.disabled = true; btn.innerText = 'AUTENTICANDO...';
                 const formData = new FormData(loginForm);
                 formData.append('action', 'sts_ajax_login');
+                formData.append('nonce', window.themeConfig.nonce);
                 fetch(window.themeConfig.ajaxUrl, { method: 'POST', body: formData })
                 .then(res => res.json()).then(res => {
                     if (res.success) { window.location.href = res.data.redirect; }
@@ -322,6 +324,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 btn.disabled = true; btn.innerText = 'CADASTRANDO...';
                 const formData = new FormData(regForm);
                 formData.append('action', 'sts_ajax_register');
+                formData.append('nonce', window.themeConfig.nonce);
                 fetch(window.themeConfig.ajaxUrl, { method: 'POST', body: formData })
                 .then(res => res.json()).then(res => {
                     if (res.success) { window.location.href = res.data.redirect; }
@@ -338,7 +341,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const btn = profileForm.querySelector('button[type="submit"]');
                 btn.disabled = true; btn.innerText = 'SALVANDO...';
                 const formData = new FormData(profileForm);
-                formData.append('action', 'sts_update_profile');
+                formData.append('action', 'sts_update_full_profile');
+                formData.append('nonce', window.themeConfig.nonce);
                 fetch(window.themeConfig.ajaxUrl, { method: 'POST', body: formData })
                 .then(res => res.json()).then(res => {
                     if (res.success) { 
@@ -377,6 +381,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     const formData = new FormData();
                     formData.append('action', 'sts_recipe_rating');
+                    formData.append('nonce', window.themeConfig.nonce);
                     formData.append('post_id', postId);
                     formData.append('rating', rating);
 
@@ -557,6 +562,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     const formData = new FormData();
                     formData.append('action', 'sts_recipe_rating');
+                    formData.append('nonce', window.themeConfig.nonce);
                     formData.append('post_id', postId);
                     formData.append('rating', rating);
 
