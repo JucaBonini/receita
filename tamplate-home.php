@@ -165,15 +165,41 @@ get_header();
             </div>
         </div>
     </section>
+
+    <!-- Anúncio Estratégico Home (Espaço de Ouro) -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 mb-2 flex flex-col items-center">
+        <div class="flex flex-col items-center w-full">
+            <!-- Divisor Superior com Etiqueta -->
+            <div class="w-[250px] border-t border-slate-100 dark:border-slate-800 relative mb-4">
+                <div class="absolute -top-[12px] left-1/2 -translate-x-1/2 bg-white dark:bg-slate-900 px-4 text-[9px] uppercase tracking-[0.2em] text-slate-400 font-bold">
+                    Anúncio
+                </div>
+            </div>
+
+            <!-- Código de Anúncio AdSense -->
+            <div class="w-full flex justify-center py-2">
+                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7381677975479553" crossorigin="anonymous"></script>
+                <!-- [RECEITAS] ADS HOME NOVO -->
+                <ins class="adsbygoogle"
+                     style="display:block; width:100%;"
+                     data-ad-client="ca-pub-7381677975479553"
+                     data-ad-slot="1395718003"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+
+            <!-- Divisor Inferior -->
+            <div class="w-[250px] border-b border-slate-100 dark:border-slate-800 mt-4"></div>
+        </div>
+    </section>
+
     
     <!-- Filtro de Dispensa (Mecanismo de Busca Avançado) -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <?php get_template_part('template-parts/pantry-filter'); ?>
-    </div>
-<?php if (function_exists ('adinserter')) echo adinserter (1); ?>
-    <!-- Anúncio Estratégico Display (Estratégia 2026) -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Espaço para Publicidade (Ad Inserter) -->
     </div>
 
     <!-- Categorias -->
