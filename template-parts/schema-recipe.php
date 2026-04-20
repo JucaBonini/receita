@@ -77,8 +77,11 @@ $itens_ing = [];
 if (!empty($ingredientes_raw)) {
     // Se for um array de grupos (como no single.php), precisamos achatar ou pegar o primeiro
     $raw_list = is_array($ingredientes_raw) ? $ingredientes_raw : explode("\n", $ingredientes_raw);
-    foreach ($raw_list as $item) {
-        if (trim($item)) $itens_ing[] = esc_html(trim($item));
+    foreach ($raw_list as $line_block) {
+        $lines = explode("\n", $line_block);
+        foreach ($lines as $item) {
+            if (trim($item)) $itens_ing[] = esc_html(trim($item));
+        }
     }
 }
 $schema["recipeIngredient"] = !empty($itens_ing) ? $itens_ing : ["Ingredientes conforme modo de preparo"];
@@ -86,15 +89,20 @@ $schema["recipeIngredient"] = !empty($itens_ing) ? $itens_ing : ["Ingredientes c
 // Inserir Instruções (Como HowToStep)
 $itens_inst = [];
 if (!empty($instrucoes_raw)) {
+    $step_count = 0;
     $steps = is_array($instrucoes_raw) ? $instrucoes_raw : explode("\n", $instrucoes_raw);
-    foreach ($steps as $i => $step) {
-        if (trim($step)) {
-            $itens_inst[] = [
-                "@type" => "HowToStep",
-                "text" => esc_html(trim($step)),
-                "name" => "Passo " . ($i + 1),
-                "url" => get_permalink() . "#step-" . ($i + 1)
-            ];
+    foreach ($steps as $step_block) {
+        $lines = explode("\n", $step_block);
+        foreach ($lines as $step) {
+            if (trim($step)) {
+                $itens_inst[] = [
+                    "@type" => "HowToStep",
+                    "text" => esc_html(trim($step)),
+                    "name" => "Passo " . ($step_count + 1),
+                    "url" => get_permalink() . "#step-" . ($step_count + 1)
+                ];
+                $step_count++;
+            }
         }
     }
 }
