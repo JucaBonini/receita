@@ -1088,7 +1088,8 @@ function sts_ads_master_page() {
 
     if (isset($_POST['sts_ads_save'])) {
         foreach ($slots as $id => $label) {
-            update_option($id, $_POST[$id]);
+            // Usamos stripslashes para garantir que o código do anúncio não seja corrompido
+            update_option($id, stripslashes($_POST[$id]));
         }
         echo '<div class="notice notice-success is-dismissible"><p>Ouro guardado com sucesso! 💰</p></div>';
     }
