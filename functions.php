@@ -1069,47 +1069,46 @@ function sts_hardcore_robots_txt($output, $public) {
 add_filter('robots_txt', 'sts_hardcore_robots_txt', 20, 2);
 
 /**
- * 🎮 ADS MASTER CUSTOMIZER - Gerenciamento de Anúncios de Elite
+ * 🎮 ADS MASTER - PÁGINA DE CONFIGURAÇÕES (GOD MODE)
  */
-add_action('customize_register', function($wp_customize) {
-    $wp_customize->add_panel('sts_ads_master', array(
-        'title' => __('🎮 ADS MASTER', 'sts'),
-        'description' => 'Controle de Monetização nativo para o portal Descomplicando Receitas.',
-        'priority' => 10,
-    ));
-
-    $wp_customize->add_section('sts_ads_home', array('title' => 'Anúncios Home Page', 'panel' => 'sts_ads_master'));
-    $wp_customize->add_section('sts_ads_single', array('title' => 'Anúncios Receitas (Single)', 'panel' => 'sts_ads_master'));
-
-    $slots = [
-        'sts_ad_home_top_billboard' => ['section' => 'sts_ads_home', 'label' => 'Home: Billboard Topo'],
-        'sts_ad_home_mid_section'   => ['section' => 'sts_ads_home', 'label' => 'Home: Meio da Página'],
-        'sts_ad_single_top_author'  => ['section' => 'sts_ads_single', 'label' => 'Single: Topo (Abaixo Bio)'],
-        'sts_ad_single_mid_paragraphs' => ['section' => 'sts_ads_single', 'label' => 'Single: Meio do Conteúdo'],
-        'sts_ad_single_after_recipe' => ['section' => 'sts_ads_single', 'label' => 'Single: Final de Post'],
-        'sts_ad_archive_top'        => ['section' => 'sts_ads_single', 'label' => 'Arquivos: Topo de Categoria'],
-        'sts_ad_sidebar_sticky'     => ['section' => 'sts_ads_single', 'label' => 'Global: Sidebar Sticky'],
-    ];
-
-    foreach ($slots as $id => $data) {
-        $wp_customize->add_setting($id, array(
-            'default' => '',
-            'transport' => 'refresh',
-            'sanitize_callback' => 'sts_sanitize_ad_code'
-        ));
-
-        $wp_customize->add_control(new WP_Customize_Control($wp_customize, $id, array(
-            'label' => $data['label'],
-            'section' => $data['section'],
-            'settings' => $id,
-            'type' => 'textarea',
-            'description' => 'Cole o script <script> ou tag <ins> do AdSense/GAM aqui.',
-        )));
-    }
+add_action('admin_menu', function() {
+    add_menu_page('Ads Master', '🎮 Ads Master', 'manage_options', 'sts-ads-master', 'sts_ads_master_page', 'dashicons-money-alt', 30);
 });
 
-function sts_sanitize_ad_code($input) {
-    return $input; // Retorna bruto para permitir scripts
+function sts_ads_master_page() {
+    $slots = [
+        'sts_ad_home_top_billboard' => 'Home: Billboard Topo',
+        'sts_ad_home_mid_section'   => 'Home: Meio da Página',
+        'sts_ad_single_top_author'  => 'Single: Topo (Abaixo Bio)',
+        'sts_ad_single_mid_paragraphs' => 'Single: Meio do Conteúdo',
+        'sts_ad_single_after_recipe' => 'Single: Final de Post',
+        'sts_ad_archive_top'        => 'Arquivos: Topo de Categoria',
+        'sts_ad_sidebar_sticky'     => 'Global: Sidebar Sticky',
+    ];
+
+    if (isset($_POST['sts_ads_save'])) {
+        foreach ($slots as $id => $label) {
+            update_option($id, $_POST[$id]);
+        }
+        echo '<div class="notice notice-success is-dismissible"><p>Ouro guardado com sucesso! 💰</p></div>';
+    }
+    ?>
+    <div class="wrap" style="background: #fff; padding: 40px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.05); max-width: 800px; margin: 40px auto;">
+        <h1 style="font-weight: 900; font-size: 32px; color: #1e293b; margin-bottom: 10px;">🎮 ADS MASTER</h1>
+        <p style="color: #64748b; margin-bottom: 30px;">Gerencie sua monetização de elite com performance nativa.</p>
+        
+        <form method="post">
+            <?php foreach ($slots as $id => $label) : ?>
+                <div style="margin-bottom: 25px;">
+                    <label style="display: block; font-weight: 800; color: #334155; margin-bottom: 8px; font-size: 14px;"><?php echo $label; ?></label>
+                    <textarea name="<?php echo $id; ?>" style="width: 100%; height: 120px; border-radius: 12px; border: 1px solid #e2e8f0; font-family: monospace; background: #f8fafc; padding: 15px;" placeholder="Cole o código <script>..."><?php echo esc_textarea(get_option($id)); ?></textarea>
+                </div>
+            <?php endforeach; ?>
+            
+            <button type="submit" name="sts_ads_save" class="button button-primary button-large" style="background: #ec5b13; border: none; padding: 10px 40px; height: auto; font-weight: 900; border-radius: 12px; box-shadow: 0 10px 20px rgba(236, 91, 19, 0.2);">SALVAR CONFIGURAÇÕES</button>
+        </form>
+    </div>
+    <?php
 }
 
 
