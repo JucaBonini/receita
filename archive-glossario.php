@@ -39,15 +39,31 @@ ksort($grouped_terms);
 <main class="bg-white dark:bg-slate-950 min-h-screen font-sans pb-40" role="main">
     
     <!-- 🟢 BREADCRUMBS & TITLE -->
-    <div class="bg-white dark:bg-slate-900 pt-10 pb-6 border-b border-slate-100 dark:border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 lg:px-8">
+    <div class="bg-white dark:bg-slate-900 pt-10 pb-6 border-b border-slate-100 dark:border-slate-800 relative overflow-hidden">
+        <div class="absolute inset-0 bg-primary/5 opacity-50 pointer-events-none"></div>
+        <div class="max-w-7xl mx-auto px-4 lg:px-8 relative z-10">
             <nav aria-label="Breadcrumb" class="flex items-center justify-center space-x-2 text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-4">
                 <a href="<?php echo home_url(); ?>" class="hover:text-primary">PORTAL</a>
                 <span class="material-symbols-outlined text-[10px]">chevron_right</span>
-                <span class="text-slate-900 dark:text-white">GLOSSÁRIO</span>
+                <span class="text-slate-900 dark:text-white">GLOSSÁRIO TÉCNICO</span>
             </nav>
-            <h1 class="text-5xl md:text-7xl font-black text-slate-900 dark:text-white text-center leading-none tracking-tight">Glossário</h1>
-            <p class="text-slate-400 text-center text-sm font-bold mt-6 tracking-wide">Descubra o significado dos segredos da culinária.<br><?php echo $terms_query->found_posts; ?> termos catalogados.</p>
+            <h1 class="text-5xl md:text-7xl font-black text-slate-900 dark:text-white text-center leading-none tracking-tight mb-8">
+                Enciclopédia <span class="text-primary italic">Culinária</span>
+            </h1>
+            
+            <div class="max-w-3xl mx-auto text-center mb-12">
+                <p class="text-slate-600 dark:text-slate-400 text-lg leading-relaxed mb-6 font-medium">
+                    Bem-vindo à base de conhecimento definitiva do Descomplicando Receitas. Aqui, desmistificamos termos, técnicas e ingredientes para que você domine a cozinha com a segurança de um profissional.
+                </p>
+                <div class="flex flex-wrap items-center justify-center gap-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                    <span class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700">
+                        <span class="material-symbols-outlined text-sm text-primary">verified</span> Fonte Verificada
+                    </span>
+                    <span class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700">
+                        <span class="material-symbols-outlined text-sm text-primary">menu_book</span> <?php echo $terms_query->found_posts; ?> Verbetes
+                    </span>
+                </div>
+            </div>
         </div>
     </div>
 

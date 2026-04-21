@@ -202,10 +202,10 @@ if (have_posts()) : while (have_posts()) : the_post();
                 <!-- Utensílios (Destaque) -->
                 <?php if (!empty($utensilios)) : ?>
                 <section class="mb-12 bg-slate-100 dark:bg-slate-800/50 p-6 rounded-2xl border-l-4 border-primary">
-                    <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <div class="flex items-center gap-2 mb-4">
                         <span class="material-symbols-outlined text-primary">skillet</span>
-                        Utensílios Necessários
-                    </h2>
+                        <h2 class="text-xl font-bold italic uppercase tracking-wider text-slate-800 dark:text-slate-100">Utensílios Necessários</h2>
+                    </div>
                     <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         <?php foreach($utensilios as $u) : ?>
                             <li class="flex items-center gap-2 text-sm"><span class="w-1.5 h-1.5 bg-primary rounded-full"></span> <?php echo esc_html($u); ?></li>
@@ -220,10 +220,10 @@ if (have_posts()) : while (have_posts()) : the_post();
                 <!-- Ingredients Section -->
                 <section class="mb-12" id="ingredients">
                     <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-2xl font-bold flex items-center gap-2">
+                        <div class="flex items-center gap-2">
                             <span class="material-symbols-outlined text-primary">shopping_basket</span>
-                            Ingredientes
-                        </h2>
+                            <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Ingredientes</h2>
+                        </div>
                         <button onclick="window.print()" class="text-sm font-bold text-primary flex items-center gap-1 hover:underline">
                             <span class="material-symbols-outlined text-sm">print</span> Imprimir
                         </button>
@@ -255,16 +255,16 @@ if (have_posts()) : while (have_posts()) : the_post();
                 <!-- Instructions Section -->
                 <section class="mb-12" id="instructions">
                     <div class="flex items-center justify-between gap-4 mb-10">
-                        <h2 class="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tight flex items-center gap-3">
+                        <div class="flex items-center gap-3">
                             <span class="material-symbols-outlined text-primary text-3xl">restaurant</span>
-                            Modo de Preparo
-                        </h2>
+                            <h2 class="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Modo de Preparo</h2>
+                        </div>
                         <button id="start-cooking-mode" class="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full font-bold text-xs hover:bg-primary hover:text-white transition-all group">
                             <span class="material-symbols-outlined text-lg group-hover:animate-pulse">kitchen</span>
                             Modo Cozinha
                         </button>
                     </div>
-                    <div class="space-y-10 relative before:absolute before:left-5 before:top-2 before:bottom-2 before:w-0.5 before:bg-primary/10">
+                    <div class="space-y-10 relative before:absolute before:left-5 before:top-2 before:bottom-2 before:w-0.5 before:bg-primary/10 mb-16">
                         <?php 
                         if (is_array($instrucoes_raw)) : foreach($instrucoes_raw as $i => $passo) : if(trim($passo)) :
                         ?>
@@ -276,6 +276,32 @@ if (have_posts()) : while (have_posts()) : the_post();
                             </div>
                         </div>
                         <?php endif; endforeach; endif; ?>
+                    </div>
+
+                    <!-- E-E-A-T Mastery: Bloco de Autoridade da Mary Rodrigues -->
+                    <div class="author-box-sts p-8 sm:p-10 bg-slate-50 dark:bg-slate-800/20 border border-slate-100 dark:border-slate-800 rounded-[40px] flex flex-col sm:flex-row items-center sm:items-start gap-8 relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                            <span class="material-symbols-outlined text-8xl text-primary transform -rotate-12">restaurant_menu</span>
+                        </div>
+                        
+                        <div class="size-32 rounded-3xl overflow-hidden shadow-2xl border-4 border-white dark:border-slate-900 shrink-0 transform group-hover:scale-105 transition-transform duration-500">
+                             <img src="<?php echo get_avatar_url(get_the_author_meta('ID')); ?>" alt="Mary Rodrigues" class="w-full h-full object-cover">
+                        </div>
+                        
+                        <div class="flex-1 text-center sm:text-left relative z-10">
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
+                                <h3 class="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">Mary Rodrigues</h3>
+                                <span class="px-3 py-1 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest rounded-full border border-primary/20 w-fit mx-auto sm:mx-0">Especialista em Culinária Prática</span>
+                            </div>
+                            <p class="text-slate-600 dark:text-slate-400 text-lg leading-relaxed italic mb-6">
+                                "Com mais de 10 anos de experiência testando e simplificando receitas para o dia a dia. Minha missão é levar sabor, saúde e praticidade para sua mesa de forma descomplicada."
+                            </p>
+                            <div class="flex items-center justify-center sm:justify-start gap-4">
+                                <a href="#" class="size-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center text-slate-400 hover:text-primary shadow-sm hover:shadow-xl transition-all"><i class="fa-brands fa-instagram text-xl"></i></a>
+                                <a href="#" class="size-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center text-slate-400 hover:text-primary shadow-sm hover:shadow-xl transition-all"><i class="fa-brands fa-pinterest text-xl"></i></a>
+                                <a href="<?php echo get_author_posts_url(get_the_author_meta('ID')); ?>" class="ml-auto text-xs font-black uppercase tracking-widest text-primary flex items-center gap-1 hover:underline">VER TODAS AS RECEITAS <span class="material-symbols-outlined text-sm">arrow_right_alt</span></a>
+                            </div>
+                        </div>
                     </div>
                 </section>
 

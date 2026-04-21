@@ -73,10 +73,16 @@ get_header();
                 <!-- Tendências da Semana -->
                 <div class="w-full lg:w-2/5 flex flex-col gap-4">
                     <div class="bg-primary/5 dark:bg-primary/5 p-6 sm:p-8 rounded-[32px] border border-slate-100 dark:border-slate-800 flex-1 relative overflow-hidden group/trends">
-                        <h2 class="text-xl sm:text-2xl font-black mb-6 sm:mb-8 flex items-center gap-3 leading-tight">
-                            <span class="material-symbols-outlined text-primary text-2xl sm:text-3xl">local_fire_department</span>
-                            Tendências da <span class="text-primary italic">Semana</span>
-                        </h2>
+                        <div class="absolute -top-10 -right-10 size-40 bg-primary/5 rounded-full blur-3xl group-hover/trends:bg-primary/10 transition-all duration-700"></div>
+                        
+                        <!-- SEO de Elite: Ícone fora do H2 para pureza semântica -->
+                        <div class="flex items-center gap-3 mb-6 sm:mb-8 relative z-10">
+                             <span class="material-symbols-outlined text-primary text-2xl sm:text-3xl">local_fire_department</span>
+                             <h2 class="text-xl sm:text-2xl font-black leading-tight">
+                                Tendências da <span class="text-primary italic">Semana</span>
+                             </h2>
+                        </div>
+                        
                         <div class="space-y-6">
                             <?php
                             $trends_ids = get_transient('sts_weekly_trends');

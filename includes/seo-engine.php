@@ -34,6 +34,10 @@ function sts_render_seo_meta() {
         $description = $cat->description ?: 'Melhores receitas de ' . $cat->name;
     } else {
         $title = $site_name . ' | ' . $description;
+        // Fallback SEO para Home se o slogan estiver vazio
+        if (empty($description) || $description === 'Só mais um site WordPress') {
+            $description = 'Receitas Práticas, Rápidas e Deliciosas para o seu dia a dia. Aprenda a cozinhar pratos incríveis de forma descomplicada com a Chef Mary Rodrigues.';
+        }
     }
 
     $title = esc_attr($title);
