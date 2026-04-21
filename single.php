@@ -289,7 +289,7 @@ if (have_posts()) : while (have_posts()) : the_post();
                         </div>
                         
                         <div class="size-32 rounded-3xl overflow-hidden shadow-2xl border-4 border-white dark:border-slate-900 shrink-0 transform group-hover:scale-105 transition-transform duration-500">
-                             <img src="<?php echo get_avatar_url(get_the_author_meta('ID')); ?>" alt="Mary Rodrigues" class="w-full h-full object-cover">
+                             <img src="<?php echo get_template_directory_uri(); ?>/assets/images/mary-chef.png" alt="Mary Rodrigues" class="w-full h-full object-cover">
                         </div>
                         
                         <div class="flex-1 text-center sm:text-left relative z-10">
@@ -492,7 +492,7 @@ if (have_posts()) : while (have_posts()) : the_post();
                     <div class="flex items-center gap-5 mb-6">
                         <div class="relative">
                             <div class="size-20 rounded-full overflow-hidden border-4 border-slate-50 dark:border-slate-700 shadow-xl transform transition-transform group-hover:scale-105">
-                                <img src="<?php echo esc_url($author_avatar); ?>" alt="<?php echo esc_attr($author_name); ?>" class="w-full h-full object-cover">
+                                <img src="<?php echo get_template_directory_uri(); ?>/assets/images/mary-chef.png" alt="<?php echo esc_attr($author_name); ?>" class="w-full h-full object-cover">
                             </div>
                             <!-- Icone de Check de Autoridade -->
                             <div class="absolute -bottom-1 -right-1 size-7 bg-primary rounded-full border-4 border-white dark:border-slate-800 flex items-center justify-center">
