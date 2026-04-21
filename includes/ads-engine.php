@@ -56,8 +56,8 @@ function sts_render_ad($slot_name, $classes = '') {
                 ADS MASTER: <?php echo strtoupper(str_replace('_', ' ', $slot_name)); ?>
             </div>
         <?php else : ?>
-            <div class="sts-ad-wrapper" style="width: 100%; min-width: 300px; display: flex; justify-content: center; align-items: center;">
-                 <?php echo $ad_code; ?>
+            <div class="sts-ad-content" style="width: 100%;">
+                <?php echo $ad_code; ?>
             </div>
         <?php endif; ?>
     </div>
