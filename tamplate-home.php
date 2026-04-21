@@ -124,18 +124,6 @@ get_header();
     if (function_exists('sts_render_ad')) sts_render_ad('home_top_billboard'); 
     ?>
 
-    <!-- Anúncio Estratégico Home (Espaço de Ouro com Blindagem contra CLS) -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 mb-2 flex flex-col items-center">
-        <div class="flex flex-col items-center w-full">
-            <div class="w-[250px] border-t border-slate-100 dark:border-slate-800 relative mb-4">
-                <div class="absolute -top-[12px] left-1/2 -translate-x-1/2 bg-white dark:bg-slate-900 px-4 text-[9px] uppercase tracking-[0.2em] text-slate-400 font-bold">Anúncio</div>
-            </div>
-            <div class="w-full flex justify-center py-2" style="min-height: 280px; overflow: hidden; background: rgba(0,0,0,0.02); border-radius: 12px;">
-                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7381677975479553" crossorigin="anonymous"></script>
-                <ins class="adsbygoogle" style="display:block; width:100%;" data-ad-client="ca-pub-7381677975479553" data-ad-slot="1395718003" data-ad-format="auto" data-full-width-responsive="true"></ins>
-                <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-            </div>
-            <div class="w-[250px] border-b border-slate-100 dark:border-slate-800 mt-4"></div>
         </div>
     </section>
 
