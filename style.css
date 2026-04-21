@@ -3,7 +3,7 @@ Theme Name: Descomplicando Receitas
 Theme URI: https://descomplicandoreceitas.com.br
 Author: Juca Souza Bonini
 Description: Tema profissional de receitas otimizado para Google Discover e CWV.
-Version: 2.4.0
+Version: 2.4.1
 Text Domain: sts-recipe-2
 */
 
@@ -27,11 +27,11 @@ Text Domain: sts-recipe-2
 }
 
 @font-face {
-    font-family: 'Material Icons Outlined';
+    font-family: 'Material Symbols Outlined';
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src: url('assets/fonts/material-icons-outlined.woff2') format('woff2');
+    src: url('assets/fonts/material-symbols-outlined.woff2') format('woff2');
 }
 
 

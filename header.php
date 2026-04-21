@@ -52,14 +52,14 @@
     <!-- Preload das Fontes Locais em WOFF2 (Performance Sênior) -->
     <link rel="preload" href="<?php echo THEME_URI; ?>/assets/fonts/public-sans-400.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="<?php echo THEME_URI; ?>/assets/fonts/public-sans-700.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="<?php echo THEME_URI; ?>/assets/fonts/material-icons-outlined.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="<?php echo THEME_URI; ?>/assets/fonts/material-symbols-outlined.woff2" as="font" type="font/woff2" crossorigin>
 
     <!-- Font Awesome (Social Icons) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         .material-symbols-outlined { 
-            font-family: 'Material Icons Outlined';
+            font-family: 'Material Symbols Outlined';
             font-weight: normal;
             font-style: normal;
             font-size: 24px;
