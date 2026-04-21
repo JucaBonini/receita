@@ -11,18 +11,8 @@ if (!defined('ABSPATH')) exit;
  * Renderiza um slot de anúncio com blindagem técnica
  */
 function sts_render_ad($slot_name, $classes = '') {
-    // CENTRAL DE CÓDIGOS (Substitua as strings vazias pelos seus códigos AdSense/GAM)
-    $ads = [
-        'home_top_billboard'    => '', // Topo da Home
-        'home_mid_section'      => '', // Meio da Home
-        'single_top_author'     => '', // Abaixo do autor
-        'single_mid_paragraphs' => '', // Meio do artigo
-        'single_after_recipe'   => '', // Final de tudo
-        'category_header'       => '', // Topo de categoria
-        'sidebar_sticky'        => '', // Lateral Desktop
-    ];
-
-    $ad_code = isset($ads[$slot_name]) ? $ads[$slot_name] : '';
+    // Busca o código dinamicamente do Customizador (Puxado pelo Painel ADS MASTER)
+    $ad_code = get_theme_mod('sts_ad_' . $slot_name, '');
 
     // Se estiver vazio e não for admin, o slot fica invisível e não ocupa espaço
     if (empty($ad_code) && !is_user_logged_in()) return;

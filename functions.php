@@ -1068,4 +1068,39 @@ function sts_hardcore_robots_txt($output, $public) {
 }
 add_filter('robots_txt', 'sts_hardcore_robots_txt', 20, 2);
 
+/**
+ * 🎮 ADS MASTER CUSTOMIZER - Gerenciamento de Anúncios de Elite
+ */
+add_action('customize_register', function($wp_customize) {
+    $wp_customize->add_panel('sts_ads_master', array(
+        'title' => __('🎮 ADS MASTER', 'sts'),
+        'description' => 'Controle de Monetização nativo para o portal Descomplicando Receitas.',
+        'priority' => 10,
+    ));
+
+    $wp_customize->add_section('sts_ads_home', array('title' => 'Anúncios Home Page', 'panel' => 'sts_ads_master'));
+    $wp_customize->add_section('sts_ads_single', array('title' => 'Anúncios Receitas (Single)', 'panel' => 'sts_ads_master'));
+
+    $slots = [
+        'sts_ad_home_top_billboard' => ['section' => 'sts_ads_home', 'label' => 'Home: Billboard Topo'],
+        'sts_ad_home_mid_section'   => ['section' => 'sts_ads_home', 'label' => 'Home: Meio da Página'],
+        'sts_ad_single_top_author'  => ['section' => 'sts_ads_single', 'label' => 'Single: Topo (Abaixo Bio)'],
+        'sts_ad_single_mid_paragraphs' => ['section' => 'sts_ads_single', 'label' => 'Single: Meio do Conteúdo'],
+        'sts_ad_single_after_recipe' => ['section' => 'sts_ads_single', 'label' => 'Single: Final de Post'],
+        'sts_ad_archive_top'        => ['section' => 'sts_ads_single', 'label' => 'Arquivos: Topo de Categoria'],
+        'sts_ad_sidebar_sticky'     => ['section' => 'sts_ads_single', 'label' => 'Global: Sidebar Sticky'],
+    ];
+
+    foreach ($slots as $id => $data) {
+        $wp_customize->add_setting($id, array('default' => '', 'transport' => 'refresh'));
+        $wp_customize->add_control($id, array(
+            'label' => $data['label'],
+            'section' => $data['section'],
+            'type' => 'textarea',
+            'description' => 'Cole o script <script> ou tag <ins> do AdSense/GAM aqui.',
+        ));
+    }
+});
+
+
 
