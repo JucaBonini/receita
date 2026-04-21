@@ -6,7 +6,7 @@
 // Definir constantes do tema NO TOPO
 define('THEME_PATH', get_template_directory());
 define('THEME_URI', get_template_directory_uri());
-define('THEME_VERSION', '2.2.0'); // Cache Buster Force
+define('THEME_VERSION', '2.4.1'); // Cache Buster Force
 
 // Incluir Componentes Estratégicos (Nativos)
 require_once THEME_PATH . '/includes/sitemaps-engine.php';

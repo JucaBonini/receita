@@ -8,34 +8,6 @@ Text Domain: sts-recipe-2
 */
 
 /* ============================================================ 
-   LOCAL FONTS - PERFORMANCE GOD MODE
-   ============================================================ */
-@font-face {
-    font-family: 'Public Sans';
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src: url('assets/fonts/public-sans-400.woff2') format('woff2');
-}
-
-@font-face {
-    font-family: 'Public Sans';
-    font-style: normal;
-    font-weight: 700;
-    font-display: swap;
-    src: url('assets/fonts/public-sans-700.woff2') format('woff2');
-}
-
-@font-face {
-    font-family: 'Material Symbols Outlined';
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src: url('assets/fonts/material-symbols-outlined.woff2') format('woff2');
-}
-
-
-/* ============================================================ 
    PRINT STYLES - PDF GENERATOR (PROFESSIONAL LEVEL)
    ============================================================ */
 @media print {

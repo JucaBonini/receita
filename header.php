@@ -58,6 +58,29 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+        /* LOCAL FONTS CONFIGURATION */
+        @font-face {
+            font-family: 'Public Sans';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url('<?php echo THEME_URI; ?>/assets/fonts/public-sans-400.woff2') format('woff2');
+        }
+        @font-face {
+            font-family: 'Public Sans';
+            font-style: normal;
+            font-weight: 700;
+            font-display: swap;
+            src: url('<?php echo THEME_URI; ?>/assets/fonts/public-sans-700.woff2') format('woff2');
+        }
+        @font-face {
+            font-family: 'Material Symbols Outlined';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url('<?php echo THEME_URI; ?>/assets/fonts/material-symbols-outlined.woff2') format('woff2');
+        }
+
         .material-symbols-outlined { 
             font-family: 'Material Symbols Outlined';
             font-weight: normal;
@@ -70,6 +93,10 @@
             word-wrap: normal;
             white-space: nowrap;
             direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -moz-font-feature-settings: 'liga';
+            font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
         }
         body.admin-bar header { top: 32px !important; }
         @media screen and (max-width: 782px) { body.admin-bar header { top: 46px !important; } }
