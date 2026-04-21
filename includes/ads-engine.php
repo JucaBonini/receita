@@ -31,19 +31,24 @@ function sts_render_ad($slot_name, $classes = '') {
         .sts-ad-slot-<?php echo $slot_name; ?> {
             min-height: <?php echo $min_height; ?>;
             display: flex;
+            flex-direction: column;
             align-items: center; justify-content: center;
             margin: 3rem auto;
             background: rgba(0,0,0,0.02);
             border-radius: 32px;
-            position: relative; overflow: hidden;
+            position: relative;
+            /* overflow removido para não cortar anúncios expansíveis */
             transition: all 0.3s ease;
+            z-index: 1;
         }
-        /* Efeito Skeleton de carregamento (LCP Optimization) */
+        /* Efeito Skeleton (Movido para trás do conteúdo e sem interferência de clique) */
         .sts-ad-slot-<?php echo $slot_name; ?>::after {
             content: ""; position: absolute; inset: 0;
             background: linear-gradient(90deg, transparent, rgba(236, 91, 19, 0.05), transparent);
             transform: translateX(-100%);
             animation: sts-shimmer 2s infinite;
+            z-index: -1; 
+            pointer-events: none;
         }
         @keyframes sts-shimmer { 100% { transform: translateX(100%); } }
         .dark .sts-ad-slot-<?php echo $slot_name; ?> { background: rgba(255,255,255,0.03); }
@@ -56,26 +61,27 @@ function sts_render_ad($slot_name, $classes = '') {
                 ADS MASTER: <?php echo strtoupper(str_replace('_', ' ', $slot_name)); ?>
             </div>
         <?php else : ?>
-            <div class="ads-master-wrapper w-full">
+            <div class="ads-master-wrapper w-full" style="position: relative; z-index: 10;">
                 <!-- Top Wrapper (Label de Anúncio) -->
-                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 20px;">
-                    <div style="text-align: center; border-top: 1px solid rgba(128,128,128,0.3); width: 250px; position: relative;">
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <div style="display: inline-block; border-top: 1px solid rgba(128,128,128,0.3); width: 250px; position: relative;">
                         <div style="display: inline-block; position: relative; top: -10px; background-color: white; font-size: 10px; padding: 0px 15px; text-transform: uppercase; font-weight: 700; color: #94a3b8; letter-spacing: 0.05em;" class="ad-label-text">
                             Anúncio
                         </div>
                     </div>
                 </div>
 
-                <div class="sts-ad-content" style="width: 100%; display: flex; justify-content: center;">
+                <!-- Container do AdSense (Block + Center para compatibilidade total) -->
+                <div class="sts-ad-content" style="width: 100%; text-align: center; min-height: 50px;">
                     <?php 
-                    // Limpeza automática de aspas corrompidas para evitar erro de carregamento
+                    // Limpeza automática de aspas e injeção do código
                     echo str_replace('\&quot;', '"', $ad_code); 
                     ?>
                 </div>
 
                 <!-- Bottom Wrapper -->
-                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 10px;">
-                    <div style="text-align: center; border-bottom: 1px solid rgba(128,128,128,0.3); width: 250px;"></div>
+                <div style="text-align: center; margin-top: 15px;">
+                    <div style="display: inline-block; border-bottom: 1px solid rgba(128,128,128,0.3); width: 250px;"></div>
                 </div>
             </div>
 
