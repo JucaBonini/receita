@@ -56,9 +56,32 @@ function sts_render_ad($slot_name, $classes = '') {
                 ADS MASTER: <?php echo strtoupper(str_replace('_', ' ', $slot_name)); ?>
             </div>
         <?php else : ?>
-            <div class="sts-ad-content" style="width: 100%;">
-                <?php echo $ad_code; ?>
+            <div class="ads-master-wrapper w-full">
+                <!-- Top Wrapper (Label de Anúncio) -->
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 20px;">
+                    <div style="text-align: center; border-top: 1px solid rgba(128,128,128,0.3); width: 250px; position: relative;">
+                        <div style="display: inline-block; position: relative; top: -10px; background-color: white; font-size: 10px; padding: 0px 15px; text-transform: uppercase; font-weight: 700; color: #94a3b8; letter-spacing: 0.05em;" class="ad-label-text">
+                            Anúncio
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sts-ad-content" style="width: 100%; display: flex; justify-content: center;">
+                    <?php 
+                    // Limpeza automática de aspas corrompidas para evitar erro de carregamento
+                    echo str_replace('\&quot;', '"', $ad_code); 
+                    ?>
+                </div>
+
+                <!-- Bottom Wrapper -->
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 10px;">
+                    <div style="text-align: center; border-bottom: 1px solid rgba(128,128,128,0.3); width: 250px;"></div>
+                </div>
             </div>
+
+            <style>
+                .dark .ad-label-text { background-color: #0f172a !important; color: #475569 !important; }
+            </style>
         <?php endif; ?>
     </div>
     <?php
