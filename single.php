@@ -305,8 +305,13 @@ if (have_posts()) : while (have_posts()) : the_post();
                     </div>
                 </section>
 
-                <!-- Ad: Final da Receita (Nativo) -->
-                <?php if(function_exists('sts_show_ad_slot')) sts_show_ad_slot('ad_single_after_recipe'); ?>
+                <?php 
+                // ⚡ ADS MASTER: Abaixo da Bio Autor (Momento de Confiança)
+                if (function_exists('sts_render_ad')) sts_render_ad('single_top_author'); 
+
+                // ⚡ ADS MASTER: Final da Receita (Encerramento)
+                if (function_exists('sts_render_ad')) sts_render_ad('single_after_recipe'); 
+                ?>
 
                 <!-- Avaliação da Receita Widget -->
                 <section class="mb-12 bg-white dark:bg-slate-800 p-8 rounded-[32px] border border-slate-100 dark:border-slate-700 shadow-sm text-center relative overflow-hidden" id="rating-widget">

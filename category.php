@@ -59,9 +59,9 @@ $category_image = get_term_meta($category_id, 'category_image', true);
         </div>
     </section>
 
-    <!-- Anúncio Estratégico Archive (Estratégia 2026) -->
+    <!-- ⚡ ADS MASTER: Archive Top (Otimizado para Conversão) -->
     <div class="max-w-7xl mx-auto px-4 mt-12 overflow-hidden flex justify-center">
-        <!-- Espaço para Publicidade (Ad Inserter) -->
+        <?php if (function_exists('sts_render_ad')) sts_render_ad('archive_top'); ?>
     </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -172,8 +172,9 @@ $category_image = get_term_meta($category_id, 'category_image', true);
                 </div>
                 </div>
 
-                <!-- Anúncio Dinâmico: Sidebar (Ad Inserter) -->
+                <!-- ⚡ ADS MASTER: Sidebar (Slot de Alta Retenção) -->
                 <div class="flex justify-center overflow-hidden">
+                    <?php if (function_exists('sts_render_ad')) sts_render_ad('sidebar_sticky'); ?>
                 </div>
             </aside>
         </div>

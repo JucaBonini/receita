@@ -11,6 +11,7 @@ define('THEME_VERSION', '2.1.1'); // Cache Buster Force
 // Incluir Componentes Estratégicos (Nativos)
 require_once THEME_PATH . '/includes/sitemaps-engine.php';
 require_once THEME_PATH . '/includes/seo-engine.php';
+require_once THEME_PATH . '/includes/ads-engine.php';
 function sts_flush_sitemaps_once() {
     if (get_option('sts_sitemaps_flushed') !== 'yes') {
         sts_sitemap_rewrite_rules();

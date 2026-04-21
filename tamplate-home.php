@@ -119,6 +119,11 @@ get_header();
         </div>
     </section>
 
+    <?php 
+    // ⚡ ADS MASTER: Billboard de Topo (Otimizado para LCP)
+    if (function_exists('sts_render_ad')) sts_render_ad('home_top_billboard'); 
+    ?>
+
     <!-- Anúncio Estratégico Home (Espaço de Ouro com Blindagem contra CLS) -->
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 mb-2 flex flex-col items-center">
         <div class="flex flex-col items-center w-full">
@@ -280,6 +285,9 @@ get_header();
         array('slug' => 'culinaria-oriental', 'name' => 'Culinária Oriental', 'icon' => 'ramen_dining', 'color' => 'text-red-600'),
         array('slug' => 'receitas-veganas', 'name' => 'Receitas Veganas', 'icon' => 'eco', 'color' => 'text-emerald-500')
     );
+
+    // ⚡ ADS MASTER: Billboard de Topo (Otimizado para LCP)
+    if (function_exists('sts_render_ad')) sts_render_ad('home_top_billboard'); 
 
     foreach ($destaque_categorias as $cat_info) :
         $term = get_term_by('slug', $cat_info['slug'], 'category');
