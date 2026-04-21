@@ -63,6 +63,9 @@ if (have_posts()) : while (have_posts()) : the_post();
             <div class="mb-4">
                 <?php echo custom_breadcrumb(); ?>
             </div>
+
+            <!-- ⚡ ADS MASTER: Premium Above Title (Faturamento Máximo) -->
+            <?php if (function_exists('sts_render_ad')) sts_render_ad('single_above_title', 'my-4'); ?>
             
             <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-6 mb-6">
                 <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-slate-100 leading-tight">

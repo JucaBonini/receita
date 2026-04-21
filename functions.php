@@ -6,7 +6,7 @@
 // Definir constantes do tema NO TOPO
 define('THEME_PATH', get_template_directory());
 define('THEME_URI', get_template_directory_uri());
-define('THEME_VERSION', '2.4.1'); // Cache Buster Force
+define('THEME_VERSION', '2.4.2'); // Cache Buster Force
 
 // Incluir Componentes Estratégicos (Nativos)
 require_once THEME_PATH . '/includes/sitemaps-engine.php';
@@ -1079,6 +1079,7 @@ function sts_ads_master_page() {
     $slots = [
         'sts_ad_home_top_billboard' => 'Home: Billboard Topo',
         'sts_ad_home_mid_section'   => 'Home: Meio da Página',
+        'sts_ad_single_above_title'  => 'Single: Acima do Título (Premium)',
         'sts_ad_single_top_author'  => 'Single: Topo (Abaixo Bio)',
         'sts_ad_single_mid_paragraphs' => 'Single: Meio do Conteúdo',
         'sts_ad_single_after_recipe' => 'Single: Final de Post',
