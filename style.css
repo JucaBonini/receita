@@ -3,9 +3,37 @@ Theme Name: Descomplicando Receitas
 Theme URI: https://descomplicandoreceitas.com.br
 Author: Juca Souza Bonini
 Description: Tema profissional de receitas otimizado para Google Discover e CWV.
-Version: 2.3.0
+Version: 2.4.0
 Text Domain: sts-recipe-2
 */
+
+/* ============================================================ 
+   LOCAL FONTS - PERFORMANCE GOD MODE
+   ============================================================ */
+@font-face {
+    font-family: 'Public Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('assets/fonts/public-sans-400.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Public Sans';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('assets/fonts/public-sans-700.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Material Icons Outlined';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('assets/fonts/material-icons-outlined.woff2') format('woff2');
+}
+
 
 /* ============================================================ 
    PRINT STYLES - PDF GENERATOR (PROFESSIONAL LEVEL)

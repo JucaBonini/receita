@@ -15,11 +15,6 @@
     <link rel="dns-prefetch" href="//www.googletagservices.com">
     <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://pagead2.googlesyndication.com">
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-
     <?php wp_head(); ?>
 
     <!-- PWA: Configurações de Aplicativo (Tier 1) -->
@@ -54,12 +49,10 @@
         }
     </script>
     
-    <!-- Preload das Fontes Locais (Otimização CWV) -->
-    <link rel="preload" href="<?php echo THEME_URI; ?>/assets/fonts/public-sans-400.ttf" as="font" type="font/ttf" crossorigin>
-    <link rel="preload" href="<?php echo THEME_URI; ?>/assets/fonts/public-sans-700.ttf" as="font" type="font/ttf" crossorigin>
-
-    <!-- Material Icons (Otimizado Tier 1: Troca de 1MB por 40KB) -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Icons+Outlined&display=swap" rel="stylesheet">
+    <!-- Preload das Fontes Locais em WOFF2 (Performance Sênior) -->
+    <link rel="preload" href="<?php echo THEME_URI; ?>/assets/fonts/public-sans-400.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="<?php echo THEME_URI; ?>/assets/fonts/public-sans-700.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="<?php echo THEME_URI; ?>/assets/fonts/material-icons-outlined.woff2" as="font" type="font/woff2" crossorigin>
 
     <!-- Font Awesome (Social Icons) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
