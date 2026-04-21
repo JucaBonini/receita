@@ -58,14 +58,26 @@
     <link rel="preload" href="<?php echo THEME_URI; ?>/assets/fonts/public-sans-400.ttf" as="font" type="font/ttf" crossorigin>
     <link rel="preload" href="<?php echo THEME_URI; ?>/assets/fonts/public-sans-700.ttf" as="font" type="font/ttf" crossorigin>
 
-    <!-- Material Symbols (Otimizado: Apenas Peso 400) -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0&display=swap" rel="stylesheet">
+    <!-- Material Icons (Otimizado Tier 1: Troca de 1MB por 40KB) -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Icons+Outlined&display=swap" rel="stylesheet">
 
     <!-- Font Awesome (Social Icons) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .material-symbols-outlined { 
+            font-family: 'Material Icons Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
         body.admin-bar header { top: 32px !important; }
         @media screen and (max-width: 782px) { body.admin-bar header { top: 46px !important; } }
     </style>
