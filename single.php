@@ -289,16 +289,16 @@ if (have_posts()) : while (have_posts()) : the_post();
                         </div>
                         
                         <div class="size-32 rounded-3xl overflow-hidden shadow-2xl border-4 border-white dark:border-slate-900 shrink-0 transform group-hover:scale-105 transition-transform duration-500">
-                             <img src="<?php echo get_template_directory_uri(); ?>/assets/images/mary-chef.png" alt="Mary Rodrigues" class="w-full h-full object-cover">
+                             <img src="<?php echo get_avatar_url($author_id, ['size' => 120]); ?>" alt="<?php echo esc_attr($author_name); ?>" class="w-full h-full object-cover">
                         </div>
                         
                         <div class="flex-1 text-center sm:text-left relative z-10">
                             <div class="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
-                                <h3 class="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">Mary Rodrigues</h3>
+                                <h3 class="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter"><?php echo $author_name; ?></h3>
                                 <span class="px-3 py-1 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest rounded-full border border-primary/20 w-fit mx-auto sm:mx-0">Especialista com +20 anos de Experiência</span>
                             </div>
                             <p class="text-slate-600 dark:text-slate-400 text-lg leading-relaxed italic mb-6">
-                                "Mary Rodrigues é a mente por trás do Descomplicando Receitas. Com mais de 20 anos de experiência dedicados ao domínio da culinária prática, sua missão é democratizar a gastronomia, provando que qualquer pessoa pode preparar refeições incríveis com ingredientes simples e técnicas infalíveis."
+                                "<?php echo $author_name; ?> é a mente por trás do Descomplicando Receitas. Com mais de 20 anos de experiência dedicados ao domínio da culinária prática, sua missão é democratizar a gastronomia, provando que qualquer pessoa pode preparar refeições incríveis com ingredientes simples e técnicas infalíveis."
                             </p>
                             <div class="flex items-center justify-center sm:justify-start gap-4">
                                 <a href="#" class="size-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center text-slate-400 hover:text-primary shadow-sm hover:shadow-xl transition-all"><i class="fa-brands fa-instagram text-xl"></i></a>
@@ -492,7 +492,7 @@ if (have_posts()) : while (have_posts()) : the_post();
                     <div class="flex items-center gap-5 mb-6">
                         <div class="relative">
                             <div class="size-20 rounded-full overflow-hidden border-4 border-slate-50 dark:border-slate-700 shadow-xl transform transition-transform group-hover:scale-105">
-                                <img src="<?php echo get_template_directory_uri(); ?>/assets/images/mary-chef.png" alt="<?php echo esc_attr($author_name); ?>" class="w-full h-full object-cover">
+                                <img src="<?php echo esc_url($author_avatar); ?>" alt="<?php echo esc_attr($author_name); ?>" class="w-full h-full object-cover">
                             </div>
                             <!-- Icone de Check de Autoridade -->
                             <div class="absolute -bottom-1 -right-1 size-7 bg-primary rounded-full border-4 border-white dark:border-slate-800 flex items-center justify-center">
