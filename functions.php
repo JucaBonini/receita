@@ -4,6 +4,13 @@
  */
 
 // Definir constantes do tema NO TOPO
+defined( 'ABSPATH' ) || exit;
+
+/**
+ * STS AUTO-UPDATER: Monitora atualizações via GitHub
+ */
+require_once get_template_directory() . '/includes/theme-updater.php';
+
 define('THEME_PATH', get_template_directory());
 define('THEME_URI', get_template_directory_uri());
 define('THEME_VERSION', '2.4.2'); // Cache Buster Force
