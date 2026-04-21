@@ -291,10 +291,10 @@ if (have_posts()) : while (have_posts()) : the_post();
                         <div class="flex-1 text-center sm:text-left relative z-10">
                             <div class="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
                                 <h3 class="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">Mary Rodrigues</h3>
-                                <span class="px-3 py-1 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest rounded-full border border-primary/20 w-fit mx-auto sm:mx-0">Especialista em Culinária Prática</span>
+                                <span class="px-3 py-1 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest rounded-full border border-primary/20 w-fit mx-auto sm:mx-0">Especialista com +20 anos de Experiência</span>
                             </div>
                             <p class="text-slate-600 dark:text-slate-400 text-lg leading-relaxed italic mb-6">
-                                "Com mais de 10 anos de experiência testando e simplificando receitas para o dia a dia. Minha missão é levar sabor, saúde e praticidade para sua mesa de forma descomplicada."
+                                "Mary Rodrigues é a mente por trás do Descomplicando Receitas. Com mais de 20 anos de experiência dedicados ao domínio da culinária prática, sua missão é democratizar a gastronomia, provando que qualquer pessoa pode preparar refeições incríveis com ingredientes simples e técnicas infalíveis."
                             </p>
                             <div class="flex items-center justify-center sm:justify-start gap-4">
                                 <a href="#" class="size-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center text-slate-400 hover:text-primary shadow-sm hover:shadow-xl transition-all"><i class="fa-brands fa-instagram text-xl"></i></a>
