@@ -96,13 +96,14 @@ if (have_posts()) : while (have_posts()) : the_post();
                     'class' => 'w-full h-full object-cover transition-transform duration-700 group-hover:scale-105',
                     'loading' => 'eager', 
                     'fetchpriority' => 'high',
+                    'data-no-lazy' => '1',
                     'decoding' => 'sync',
                     'alt' => esc_attr($alt_text)
                 ]); 
             } else {
                 // Imagem de Fallback quando não há destaque (SEO & Google Discover)
                 $default_image = get_template_directory_uri() . '/assets/images/default-image.webp';
-                echo '<img src="' . esc_url($default_image) . '" alt="' . esc_attr(get_the_title()) . '" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="eager" decoding="async" fetchpriority="high">';
+                echo '<img src="' . esc_url($default_image) . '" alt="' . esc_attr(get_the_title()) . '" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="eager" decoding="sync" fetchpriority="high" data-no-lazy="1">';
             }
             ?>
             

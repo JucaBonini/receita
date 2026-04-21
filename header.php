@@ -6,6 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <?php sts_render_seo_meta(); ?>
+
+    <!-- Blindagem de Conexão (Otimização Sênior CWV) -->
+    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
+    <link rel="dns-prefetch" href="//adservice.google.com">
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link rel="dns-prefetch" href="//www.googletagservices.com">
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://pagead2.googlesyndication.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+
     <?php wp_head(); ?>
 
     <!-- PWA: Configurações de Aplicativo (Tier 1) -->
