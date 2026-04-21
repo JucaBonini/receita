@@ -58,8 +58,8 @@
     <link rel="preload" href="<?php echo THEME_URI; ?>/assets/fonts/public-sans-400.ttf" as="font" type="font/ttf" crossorigin>
     <link rel="preload" href="<?php echo THEME_URI; ?>/assets/fonts/public-sans-700.ttf" as="font" type="font/ttf" crossorigin>
 
-    <!-- Material Symbols -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <!-- Material Symbols (Otimizado: Apenas Peso 400) -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0&display=swap" rel="stylesheet">
 
     <!-- Font Awesome (Social Icons) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
