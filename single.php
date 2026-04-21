@@ -171,14 +171,31 @@ if (have_posts()) : while (have_posts()) : the_post();
                 <!-- Navigation Index (Pílulas com Ícones - Inteligente) -->
                 <?php sts_render_recipe_pill_toc(); ?>
 
+                <!-- AEO/GEO: Bloco de Autoridade para IAs (SearchGPT, Perplexity, Gemini) -->
+                <div class="aeo-summary mb-10 p-6 sm:p-8 bg-primary/5 rounded-[32px] border border-primary/10 relative overflow-hidden group">
+                    <div class="absolute -top-6 -right-6 size-24 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/20 transition-all"></div>
+                    <div class="flex items-start gap-4">
+                        <div class="size-10 rounded-xl bg-primary text-white flex items-center justify-center shrink-0 shadow-lg shadow-primary/20">
+                            <span class="material-symbols-outlined text-2xl font-light">tips_and_updates</span>
+                        </div>
+                        <div>
+                            <h2 class="text-sm font-black uppercase tracking-[0.2em] text-primary mb-2">Resumo da Chef</h2>
+                            <p class="text-lg sm:text-xl text-slate-800 dark:text-slate-200 font-medium leading-relaxed italic">
+                                <?php 
+                                // Otimizado para AEO/GEO: Resposta direta e curta para motores de IA
+                                $aeo_summary = get_the_excerpt() ?: wp_trim_words(get_the_content(), 25);
+                                echo esc_html($aeo_summary);
+                                ?>
+                            </p>
+                            <div class="mt-4 flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-widest bg-white/50 dark:bg-slate-900/50 w-fit px-3 py-1.5 rounded-lg border border-slate-100 dark:border-slate-800">
+                                <span class="material-symbols-outlined text-xs">verified</span> Garantia de Sucesso STS
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Intro/Content -->
                 <div class="prose sm:prose-xl dark:prose-invert max-w-none text-lg leading-relaxed space-y-8 prose-headings:text-primary prose-a:text-primary mb-12 selection:bg-primary/20">
-                    <?php if (has_excerpt()) : ?>
-                        <p class="text-2xl text-slate-700 dark:text-slate-300 font-medium italic border-l-4 border-primary pl-6 py-4 bg-primary/5 rounded-r-2xl mb-10 leading-relaxed">
-                            <?php echo get_the_excerpt(); ?>
-                        </p>
-                    <?php endif; ?>
-                    
                     <?php the_content(); ?>
                 </div>
 

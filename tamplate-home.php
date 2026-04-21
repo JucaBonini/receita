@@ -6,6 +6,11 @@ get_header();
 ?>
 
 <main>
+    <!-- H1 Semântico Mestra para SEO (Escondido visualmente) -->
+    <h1 class="sr-only" style="position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0;">
+        Descomplicando Receitas - Guia de Receitas Práticas, Rápidas e Testadas para o Dia a Dia
+    </h1>
+
     <!-- Hero Section (Destaque Principal) -->
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div class="@container">
@@ -15,135 +20,84 @@ get_header();
                 /**
                  * Lógica da Receita do Dia (Automática por 24h)
                  */
-                // 1. Busca todos os posts marcados como destaque (ou todos se não houver)
                 $candidates = get_posts(array(
-                    'post_type' => 'post',
-                    'posts_per_page' => -1,
-                    'fields' => 'ids',
-                    'meta_key' => 'destaque',
-                    'meta_value' => '1'
+                    'post_type' => 'post', 'posts_per_page' => -1, 'fields' => 'ids',
+                    'meta_key' => 'destaque', 'meta_value' => '1'
                 ));
-
                 if (empty($candidates)) {
-                    $candidates = get_posts(array(
-                        'post_type' => 'post',
-                        'posts_per_page' => 50,
-                        'fields' => 'ids'
-                    ));
+                    $candidates = get_posts(array('post_type' => 'post', 'posts_per_page' => 50, 'fields' => 'ids'));
                 }
-
                 $hero_post_id = 0;
                 if (!empty($candidates)) {
-                    // Semente baseada no dia atual (ex: 20231015)
-                    // Isso garante que o "sorteio" seja o mesmo para todos no mesmo dia
                     $seed = (int)date('Ymd');
                     $index = $seed % count($candidates);
                     $hero_post_id = $candidates[$index];
                 }
-
-                // Query final para o post selecionado
-                if ($hero_post_id) {
-                    $hero_query = new WP_Query(array('p' => $hero_post_id));
-                } else {
-                    $hero_query = new WP_Query(array('post_type' => 'post', 'posts_per_page' => 1));
-                }
+                if ($hero_post_id) { $hero_query = new WP_Query(array('p' => $hero_post_id)); } 
+                else { $hero_query = new WP_Query(array('post_type' => 'post', 'posts_per_page' => 1)); }
 
                 if ($hero_query->have_posts()) : while ($hero_query->have_posts()) : $hero_query->the_post();
-                    $hero_img = get_the_post_thumbnail_url(get_the_ID(), 'full') ?: THEME_URI . '/assets/images/placeholder.jpg';
                 ?>
                 <div class="w-full lg:w-3/5 relative rounded-[32px] overflow-hidden group min-h-[450px] shadow-2xl border border-slate-100 dark:border-slate-800 bg-slate-100 dark:bg-slate-900">
                     <?php 
                     if (has_post_thumbnail()) {
                         the_post_thumbnail('full', [
                             'class' => 'absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110',
-                            'loading' => 'eager', 
-                            'fetchpriority' => 'high',
-                            'decoding' => 'async',
-                            'alt' => get_the_title()
+                            'loading' => 'eager', 'fetchpriority' => 'high', 'decoding' => 'async', 'alt' => get_the_title()
                         ]); 
                     } else {
                         $default_image = get_template_directory_uri() . '/assets/images/default-image.webp';
-                        echo '<img src="' . esc_url($default_image) . '" alt="' . esc_attr(get_the_title()) . '" class="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" loading="eager" decoding="async">';
+                        echo '<img src="' . esc_url($default_image) . '" width="800" height="450" alt="' . esc_attr(get_the_title()) . '" class="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" loading="eager" decoding="async">';
                     }
                     ?>
                     <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
-                    
                     <div class="absolute top-6 left-6 z-10">
                         <span class="bg-primary text-white px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-primary/20 flex items-center gap-2">
                            <span class="material-symbols-outlined text-sm">auto_awesome</span> Receita do Dia
                         </span>
                     </div>
-
                     <div class="absolute bottom-0 left-0 p-6 sm:p-12 text-white z-10 w-full">
                         <div class="flex items-center gap-2 text-primary text-sm font-bold mb-4">
                             <span class="material-symbols-outlined text-sm">calendar_today</span>
                             <?php echo date_i18n('d \d\e F, Y'); ?>
                         </div>
-                        <h1 class="text-2xl sm:text-4xl md:text-5xl font-black mb-4 sm:mb-6 leading-[1.1] group-hover:text-primary transition-colors line-clamp-3 sm:line-clamp-none"><?php the_title(); ?></h1>
+                        <h2 class="text-2xl sm:text-4xl md:text-5xl font-black mb-4 sm:mb-6 leading-[1.1] group-hover:text-primary transition-colors line-clamp-3 sm:line-clamp-none"><?php the_title(); ?></h2>
                         <p class="text-slate-200 text-lg mb-8 max-w-xl line-clamp-2 opacity-90 leading-relaxed font-medium"><?php echo wp_trim_words(get_the_excerpt(), 25); ?></p>
-                        <a href="<?php the_permalink(); ?>" class="bg-primary hover:bg-white hover:text-primary text-white px-10 py-5 rounded-2xl font-black inline-flex items-center gap-3 transition-all active:scale-95 shadow-2xl shadow-primary/40 transform -translate-y-0 group-hover:-translate-y-1">
+                        <a href="<?php the_permalink(); ?>" class="bg-primary hover:bg-white hover:text-primary text-white px-10 py-5 rounded-2xl font-black inline-flex items-center gap-3 transition-all active:scale-95 shadow-2xl shadow-primary/40 transform px-10 py-5">
                             VER DETALHES <span class="material-symbols-outlined">arrow_forward</span>
                         </a>
                     </div>
                 </div>
-                <?php endwhile; wp_reset_postdata(); endif; ?>                <!-- Tendências da Semana (Muda a cada 7 dias) -->
+                <?php endwhile; wp_reset_postdata(); endif; ?>
+
+                <!-- Tendências da Semana -->
                 <div class="w-full lg:w-2/5 flex flex-col gap-4">
                     <div class="bg-primary/5 dark:bg-primary/5 p-6 sm:p-8 rounded-[32px] border border-slate-100 dark:border-slate-800 flex-1 relative overflow-hidden group/trends">
-                        <div class="absolute -top-10 -right-10 size-40 bg-primary/5 rounded-full blur-3xl group-hover/trends:bg-primary/10 transition-all duration-700"></div>
-                        
                         <h2 class="text-xl sm:text-2xl font-black mb-6 sm:mb-8 flex items-center gap-3 leading-tight">
                             <span class="material-symbols-outlined text-primary text-2xl sm:text-3xl">local_fire_department</span>
                             Tendências da <span class="text-primary italic">Semana</span>
                         </h2>
                         <div class="space-y-6">
                             <?php
-                            // Lógica de Sorteio Semanal com Cache (Transient API)
                             $trends_ids = get_transient('sts_weekly_trends');
-
                             if (false === $trends_ids) {
-                                $week_seed = (int)date('W') + (int)date('Y'); // Semente única por semana/ano
-                                
-                                $pool_ids = get_posts(array(
-                                    'post_type' => 'post',
-                                    'posts_per_page' => 30, // Pool maior para sorteio
-                                    'fields' => 'ids',
-                                    'post__not_in' => isset($hero_post_id) ? array($hero_post_id) : array()
-                                ));
-
+                                $pool_ids = get_posts(array('post_type' => 'post', 'posts_per_page' => 30, 'fields' => 'ids', 'post__not_in' => isset($hero_post_id) ? array($hero_post_id) : array()));
                                 if (!empty($pool_ids)) {
-                                    // Sorteio determinístico baseado na semana
-                                    mt_srand($week_seed);
-                                    shuffle($pool_ids);
+                                    mt_srand((int)date('W') + (int)date('Y')); shuffle($pool_ids);
                                     $trends_ids = array_slice($pool_ids, 0, 3);
-                                    
-                                    // Salva por 12 horas (720 * MINUTE_IN_SECONDS)
                                     set_transient('sts_weekly_trends', $trends_ids, 12 * HOUR_IN_SECONDS);
-                                } else {
-                                    $trends_ids = array();
                                 }
                             }
-
                             if (!empty($trends_ids)) {
                                 $trends_query = new WP_Query(array('post__in' => $trends_ids, 'orderby' => 'post__in'));
-                                
                                 while ($trends_query->have_posts()) : $trends_query->the_post();
-                                $t_img = get_the_post_thumbnail_url(get_the_ID(), 'thumbnail') ?: THEME_URI . '/assets/images/placeholder.jpg';
                             ?>
                             <a class="flex gap-5 group items-center p-3 rounded-2xl hover:bg-white dark:hover:bg-slate-800 transition-all border border-transparent hover:border-slate-100 dark:hover:border-slate-700 hover:shadow-xl hover:shadow-primary/5" href="<?php the_permalink(); ?>">
-                                <div class="size-20 rounded-2xl overflow-hidden shrink-0 shadow-lg group-hover:shadow-primary/20 transition-all bg-slate-100 dark:bg-slate-900">
-                                    <?php 
-                                    if (has_post_thumbnail()) {
-                                        the_post_thumbnail('thumbnail', array('class' => 'w-full h-full object-cover group-hover:scale-110 transition-transform duration-700', 'alt' => get_the_title())); 
-                                    } else {
-                                        $default_image = get_template_directory_uri() . '/assets/images/default-image.webp';
-                                        echo '<img src="' . esc_url($default_image) . '" alt="' . esc_attr(get_the_title()) . '" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" decoding="async">';
-                                    }
-                                    ?>
+                                <div class="size-20 rounded-2xl overflow-hidden shrink-0 shadow-lg bg-slate-100 dark:bg-slate-900">
+                                    <?php the_post_thumbnail('thumbnail', array('class' => 'w-full h-full object-cover group-hover:scale-110 transition-transform duration-700', 'alt' => get_the_title())); ?>
                                 </div>
                                 <div class="flex flex-col">
-                                    <h3 class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-primary transition-colors line-clamp-2 leading-tight">
-                                        <?php the_title(); ?>
-                                    </h3>
+                                    <h3 class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-primary transition-colors line-clamp-2 leading-tight"><?php the_title(); ?></h3>
                                     <div class="flex items-center gap-2 mt-2 text-[10px] font-black text-slate-400 uppercase tracking-widest">
                                         <span class="flex items-center gap-1"><span class="material-symbols-outlined text-xs">schedule</span> <?php echo sts_get_recipe_total_time(); ?></span>
                                         <span class="w-1 h-1 bg-slate-300 rounded-full"></span>
@@ -153,45 +107,23 @@ get_header();
                             </a>
                             <?php endwhile; wp_reset_postdata(); } ?>
                         </div>
-
-                        <div class="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
-                             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center italic opacity-70">
-                                🔄 Próxima atualização na segunda-feira.
-                             </p>
-                        </div>
                     </div>
                 </div>
-</div>
             </div>
         </div>
     </section>
 
-    <!-- Anúncio Estratégico Home (Espaço de Ouro) -->
+    <!-- Anúncio Estratégico Home (Espaço de Ouro com Blindagem contra CLS) -->
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 mb-2 flex flex-col items-center">
         <div class="flex flex-col items-center w-full">
-            <!-- Divisor Superior com Etiqueta -->
             <div class="w-[250px] border-t border-slate-100 dark:border-slate-800 relative mb-4">
-                <div class="absolute -top-[12px] left-1/2 -translate-x-1/2 bg-white dark:bg-slate-900 px-4 text-[9px] uppercase tracking-[0.2em] text-slate-400 font-bold">
-                    Anúncio
-                </div>
+                <div class="absolute -top-[12px] left-1/2 -translate-x-1/2 bg-white dark:bg-slate-900 px-4 text-[9px] uppercase tracking-[0.2em] text-slate-400 font-bold">Anúncio</div>
             </div>
-
-            <!-- Código de Anúncio AdSense -->
-            <div class="w-full flex justify-center py-2">
+            <div class="w-full flex justify-center py-2" style="min-height: 280px; overflow: hidden; background: rgba(0,0,0,0.02); border-radius: 12px;">
                 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7381677975479553" crossorigin="anonymous"></script>
-                <!-- [RECEITAS] ADS HOME NOVO -->
-                <ins class="adsbygoogle"
-                     style="display:block; width:100%;"
-                     data-ad-client="ca-pub-7381677975479553"
-                     data-ad-slot="1395718003"
-                     data-ad-format="auto"
-                     data-full-width-responsive="true"></ins>
-                <script>
-                     (adsbygoogle = window.adsbygoogle || []).push({});
-                </script>
+                <ins class="adsbygoogle" style="display:block; width:100%;" data-ad-client="ca-pub-7381677975479553" data-ad-slot="1395718003" data-ad-format="auto" data-full-width-responsive="true"></ins>
+                <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
             </div>
-
-            <!-- Divisor Inferior -->
             <div class="w-[250px] border-b border-slate-100 dark:border-slate-800 mt-4"></div>
         </div>
     </section>
