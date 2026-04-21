@@ -1092,15 +1092,25 @@ add_action('customize_register', function($wp_customize) {
     ];
 
     foreach ($slots as $id => $data) {
-        $wp_customize->add_setting($id, array('default' => '', 'transport' => 'refresh'));
-        $wp_customize->add_control($id, array(
+        $wp_customize->add_setting($id, array(
+            'default' => '',
+            'transport' => 'refresh',
+            'sanitize_callback' => 'sts_sanitize_ad_code'
+        ));
+
+        $wp_customize->add_control(new WP_Customize_Control($wp_customize, $id, array(
             'label' => $data['label'],
             'section' => $data['section'],
+            'settings' => $id,
             'type' => 'textarea',
             'description' => 'Cole o script <script> ou tag <ins> do AdSense/GAM aqui.',
-        ));
+        )));
     }
 });
+
+function sts_sanitize_ad_code($input) {
+    return $input; // Retorna bruto para permitir scripts
+}
 
 
 
