@@ -104,7 +104,7 @@ add_filter('the_content', function($content) {
     if (empty($ad_code)) return $content;
 
     $paragraphs = explode('</p>', $content);
-    $insert_after = 2; // Injetar após o 2º parágrafo
+    $insert_after = 4; // Injetar após o 5º parágrafo para evitar conflito com WhatsApp Banner
 
     foreach ($paragraphs as $index => $paragraph) {
         if (trim($paragraph)) {
