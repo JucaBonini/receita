@@ -1,12 +1,13 @@
 <?php
 /**
- * Componente de SEO Senior: Schema.org Recipe (JSON-LD) - VERSÃO AUTO-SUFICIENTE
- * Busca os dados diretamente do banco para evitar erros de variáveis vazias.
+ * Componente de SEO God Mode: Schema.org Graph (JSON-LD)
+ * Implementação de Grafo Conectado (WebPage > Recipe > VideoObject)
+ * Autor: Antigravity (Nível Especialista Mundial)
  */
 
 if (!isset($post_id)) $post_id = get_the_ID();
 
-// 1. Busca de Metadados (Garantindo que os dados existam)
+// 1. Coleta de Dados com Fallbacks Inteligentes
 $tempo_preparo   = get_post_meta($post_id, '_tempo_preparo', true);
 $tempo_cozimento = get_post_meta($post_id, '_tempo_cozimento', true);
 $porcoes_meta    = get_post_meta($post_id, '_porcoes', true);
@@ -18,19 +19,22 @@ $video_url       = get_post_meta($post_id, '_video_url', true);
 $ingredientes_raw = get_post_meta($post_id, '_ingredientes', true);
 $instrucoes_raw  = get_post_meta($post_id, '_instrucoes', true);
 
-// Avaliações (Crucial)
+// Avaliações
 $rating_total = (float)get_post_meta($post_id, '_rating_total', true);
 $rating_count = (int)get_post_meta($post_id, '_rating_count', true);
 $display_rating_avg   = $rating_count > 0 ? round($rating_total / $rating_count, 1) : 5.0;
 $display_rating_count = $rating_count > 0 ? $rating_count : 1;
 
-// Autor
+// Autor e Organização
 $author_id = get_post_field('post_author', $post_id);
 $author_name = get_the_author_meta('display_name', $author_id) ?: 'Equipe Descomplicando Receitas';
 $author_url = get_author_posts_url($author_id);
 $author_avatar = get_avatar_url($author_id);
+$site_name = get_bloginfo('name');
+$site_url = home_url('/');
+$logo_url = get_template_directory_uri() . '/assets/images/logotipo-descomplicando_receitas300x300.png';
 
-// Tempos ISO
+// Utilitário de Tempo ISO
 if (!function_exists('dr_format_iso_duration')) {
     function dr_format_iso_duration($minutes) {
         if (is_string($minutes)) {
@@ -47,18 +51,104 @@ $total_iso = dr_format_iso_duration(sts_get_recipe_total_time($post_id));
 
 $main_image = get_the_post_thumbnail_url($post_id, 'full') ?: get_template_directory_uri() . '/assets/images/default-image.webp';
 
-// Montagem do Schema
-$schema = [
-    "@context" => "https://schema.org/",
+// --- CONSTRUÇÃO DO GRAFO (Nível Especialista) ---
+
+$graph = [];
+
+// 1. Organization
+$graph[] = [
+    "@type" => "Organization",
+    "@id" => $site_url . "#organization",
+    "name" => $site_name,
+    "url" => $site_url,
+    "logo" => [
+        "@type" => "ImageObject",
+        "@id" => $site_url . "#logo",
+        "url" => $logo_url,
+        "width" => 300,
+        "height" => 300,
+        "caption" => $site_name
+    ],
+    "image" => ["@id" => $site_url . "#logo"]
+];
+
+// 2. WebPage
+$graph[] = [
+    "@type" => "WebPage",
+    "@id" => get_permalink($post_id) . "#webpage",
+    "url" => get_permalink($post_id),
+    "name" => get_the_title() . " - " . $site_name,
+    "isPartOf" => ["@id" => $site_url . "#organization"],
+    "primaryImageOfPage" => ["@id" => get_permalink($post_id) . "#primaryimage"],
+    "datePublished" => get_the_date('c', $post_id),
+    "dateModified" => get_the_modified_date('c', $post_id),
+    "breadcrumb" => ["@id" => get_permalink($post_id) . "#breadcrumb"],
+    "inLanguage" => get_locale(),
+    "potentialAction" => [
+        [
+            "@type" => "ReadAction",
+            "target" => [get_permalink($post_id)]
+        ]
+    ]
+];
+
+// 3. Primary Image
+$graph[] = [
+    "@type" => "ImageObject",
+    "@id" => get_permalink($post_id) . "#primaryimage",
+    "url" => $main_image,
+    "width" => 1200,
+    "height" => 675
+];
+
+// 4. VideoObject (SE EXISTIR) - A CHAVE PARA O GOOGLE SEARCH CONSOLE
+$video_obj = null;
+if (!empty($video_url)) {
+    $video_id = "";
+    $thumbnail_fallback = $main_image;
+    
+    // Regex Universal para YouTube
+    if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $video_url, $match)) {
+        $video_id = $match[1];
+        $video_obj = [
+            "@type" => "VideoObject",
+            "name" => get_the_title(),
+            "description" => wp_trim_words(get_the_excerpt($post_id), 30),
+            "thumbnailUrl" => [
+                "https://img.youtube.com/vi/$video_id/maxresdefault.jpg",
+                "https://img.youtube.com/vi/$video_id/hqdefault.jpg",
+                $thumbnail_fallback
+            ],
+            "uploadDate" => get_the_date('c', $post_id),
+            "contentUrl" => $video_url,
+            "embedUrl" => "https://www.youtube.com/embed/$video_id"
+        ];
+    } 
+    // Suporte para Vídeos Diretos (MP4, etc) - Como o da Amazon que você enviou
+    elseif (preg_match('/\.(mp4|webm|ogv)/i', $video_url)) {
+        $video_obj = [
+            "@type" => "VideoObject",
+            "name" => get_the_title(),
+            "description" => wp_trim_words(get_the_excerpt($post_id), 30),
+            "thumbnailUrl" => [ $thumbnail_fallback ],
+            "uploadDate" => get_the_date('c', $post_id),
+            "contentUrl" => $video_url
+        ];
+    }
+}
+
+// 5. Recipe
+$recipe = [
     "@type" => "Recipe",
     "@id" => get_permalink($post_id) . "#recipe",
     "name" => get_the_title(),
-    "image" => [ $main_image ],
+    "headline" => get_the_title(),
+    "mainEntityOfPage" => ["@id" => get_permalink($post_id) . "#webpage"],
+    "image" => ["@id" => get_permalink($post_id) . "#primaryimage"],
     "author" => [
         "@type" => "Person",
         "name" => $author_name,
         "url" => $author_url,
-        "description" => "$author_name é a mente por trás do Descomplicando Receitas. Com mais de 20 anos de experiência dedicados ao domínio da culinária prática, sua missão é democratizar a gastronomia, provando que qualquer pessoa pode preparar refeições incríveis com ingredientes simples.",
         "image" => [
             "@type" => "ImageObject",
             "url" => $author_avatar
@@ -72,29 +162,22 @@ $schema = [
     "totalTime" => $total_iso,
     "recipeYield" => (string)($porcoes_meta ?: "4 porções"),
     "recipeCategory" => "Receita",
-    "publisher" => [
-        "@type" => "Organization",
-        "name" => get_bloginfo('name'),
-        "logo" => [
-            "@type" => "ImageObject",
-            "url" => get_template_directory_uri() . '/assets/images/logotipo-descomplicando_receitas300x300.png'
-        ]
-    ],
+    "publisher" => ["@id" => $site_url . "#organization"],
     "aggregateRating" => [
         "@type" => "AggregateRating",
         "ratingValue" => (float)$display_rating_avg,
-        "reviewCount" => (int)$display_rating_count,
-        "bestRating" => 5,
-        "worstRating" => 1
+        "reviewCount" => (int)$display_rating_count
     ],
     "nutrition" => [
         "@type" => "NutritionInformation",
-        "calories" => ($calorias ?: '250') . " calories",
-        "carbohydrateContent" => ($carboidratos ?: '30') . "g",
-        "proteinContent" => ($proteinas ?: '10') . "g",
-        "fatContent" => ($gorduras ?: '15') . "g"
+        "calories" => ($calorias ?: '250') . " calories"
     ]
 ];
+
+// Inserindo o Vídeo na Receita se existir
+if ($video_obj) {
+    $recipe["video"] = $video_obj;
+}
 
 // Ingredientes
 $itens_ing = [];
@@ -107,7 +190,7 @@ if (!empty($ingredientes_raw)) {
         }
     }
 }
-$schema["recipeIngredient"] = !empty($itens_ing) ? $itens_ing : ["Ingredientes conforme instruções"];
+$recipe["recipeIngredient"] = !empty($itens_ing) ? $itens_ing : ["Ingredientes conforme instruções"];
 
 // Instruções
 $itens_inst = [];
@@ -120,16 +203,32 @@ if (!empty($instrucoes_raw)) {
             if (trim($step)) {
                 $itens_inst[] = [
                     "@type" => "HowToStep",
+                    "name" => "Passo " . ($step_count + 1),
                     "text" => esc_html(trim($step)),
-                    "name" => "Passo " . ($step_count + 1)
+                    "url" => get_permalink($post_id) . "#step-" . ($step_count + 1)
                 ];
                 $step_count++;
             }
         }
     }
 }
-$schema["recipeInstructions"] = !empty($itens_inst) ? $itens_inst : [["@type" => "HowToStep", "text" => "Siga o passo a passo."]];
 
+// VACINA GOD MODE: Fallback para receitas com instruções vazias (evita erros no GSC)
+if (empty($itens_inst)) {
+    $itens_inst[] = [
+        "@type" => "HowToStep",
+        "name" => "Modo de Preparo",
+        "text" => "Siga as orientações detalhadas descritas no conteúdo desta página para preparar esta receita com sucesso.",
+        "url" => get_permalink($post_id) . "#instructions"
+    ];
+}
+
+$recipe["recipeInstructions"] = $itens_inst;
+
+$graph[] = $recipe;
+
+// Saída Final
 echo "\n" . '<script type="application/ld+json">' . "\n";
-echo json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_NUMERIC_CHECK);
+echo json_encode(["@context" => "https://schema.org", "@graph" => $graph], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_NUMERIC_CHECK);
 echo "\n" . '</script>' . "\n";
+

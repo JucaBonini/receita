@@ -5,6 +5,26 @@
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <?php 
+    /**
+     * SEO SHIELD: Blindagem God Mode
+     * Força 'noindex' em páginas que drenam o Crawl Budget
+     */
+    if (
+        is_feed() || 
+        is_search() || 
+        is_404() || 
+        is_paged() || // Evita indexar página 2, 3... (foca na 1)
+        (isset($_GET['nonamp'])) || // Limpa o rastro de AMP que vimos na lista
+        (isset($_GET['noamp'])) || 
+        (isset($_GET['utm_source'])) || // Evita indexar links de rastreio de marketing
+        (isset($_GET['share'])) ||
+        (isset($_GET['auth']))
+    ) {
+        echo '<meta name="robots" content="noindex, follow">' . "\n";
+    }
+    ?>
+
     <?php sts_render_seo_meta(); ?>
 
     <!-- Blindagem de Conexão (Otimização Sênior CWV) -->

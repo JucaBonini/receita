@@ -104,22 +104,63 @@ function sts_get_sitemap_index_xml() {
 }
 
 function sts_get_generic_sitemap_xml($post_type) {
-    $query = new WP_Query(array(
+    $args = array(
         'post_type' => $post_type,
         'posts_per_page' => 500,
         'post_status' => 'publish',
         'orderby' => 'modified',
-        'order' => 'DESC'
-    ));
+        'order' => 'DESC',
+        'meta_query' => array(
+            'relation' => 'OR',
+            array(
+                'key' => '_sts_seo_noindex',
+                'compare' => 'NOT EXISTS',
+            ),
+            array(
+                'key' => '_sts_seo_noindex',
+                'value' => '1',
+                'compare' => '!=',
+            ),
+        ),
+    );
+
+    if ($post_type === 'page') {
+        $args['post_name__not_in'] = array('entrar', 'cadastrar', 'meu-painel', 'meu-perfil', 'perfil', 'login', 'register', 'checkout', 'cart');
+    }
+
+    $query = new WP_Query($args);
     $priority = ($post_type === 'post') ? '1.0' : '0.8';
-    $xml = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+    
+    // NAMESPACE GOD MODE: Inclui suporte a IMAGENS
+    $xml = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">';
+    
     while ($query->have_posts()) {
         $query->the_post();
+        $post_id = get_the_ID();
+        $slug = get_post_field('post_name', $post_id);
+        
+        if ($post_type === 'page' && in_array($slug, array('entrar', 'cadastrar', 'meu-painel', 'perfil'))) continue;
+
         $xml .= '<url>';
         $xml .= '<loc>' . get_permalink() . '</loc>';
         $xml .= '<lastmod>' . get_the_modified_date('c') . '</lastmod>';
         $xml .= '<changefreq>weekly</changefreq>';
         $xml .= '<priority>' . $priority . '</priority>';
+        
+        // ADIÇÃO GOD MODE: Incluir Imagem de Destaque no Sitemap
+        if (has_post_thumbnail($post_id)) {
+            $thumb_id = get_post_thumbnail_id($post_id);
+            $thumb_url = wp_get_attachment_image_url($thumb_id, 'full');
+            $thumb_title = get_the_title($post_id);
+            
+            if ($thumb_url) {
+                $xml .= '<image:image>';
+                $xml .= '<image:loc>' . esc_url($thumb_url) . '</image:loc>';
+                $xml .= '<image:title>' . esc_xml($thumb_title) . '</image:title>';
+                $xml .= '</image:image>';
+            }
+        }
+        
         $xml .= '</url>';
     }
     wp_reset_postdata();
@@ -129,7 +170,7 @@ function sts_get_generic_sitemap_xml($post_type) {
 
 function sts_get_sitemap_categories_xml() {
     $categories = get_categories(['hide_empty' => true]);
-    $xml = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+    $xml = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">';
     foreach ($categories as $cat) {
         $xml .= '<url>';
         $xml .= '<loc>' . get_category_link($cat->term_id) . '</loc>';

@@ -48,8 +48,8 @@ function sts_get_recipe_total_time($post_id = null) {
 }
 
 /**
- * Otimização Dinâmica do robots.txt
- * Avisa o Google sobre o novo endereço do Sitemap Nativo.
+ * Otimização Dinâmica do robots.txt: God Mode
+ * Bloqueia parâmetros de lixo e otimiza o rastreio.
  */
 function sts_custom_robots_txt($output, $public) {
     $sitemap_url = home_url('/sitemap_index.xml');
@@ -59,9 +59,34 @@ function sts_custom_robots_txt($output, $public) {
     $output .= "Disallow: /wp-includes/\n";
     $output .= "Allow: /wp-admin/admin-ajax.php\n";
     
+    // Blindagem contra lixo de rastreio (Crawled - currently not indexed)
+    $output .= "Disallow: */feed/\n";
+    $output .= "Disallow: */trackback/\n";
+    $output .= "Disallow: *?nonamp=*\n";
+    $output .= "Disallow: *?noamp=*\n";
+    $output .= "Disallow: *?utm_*\n";
+    $output .= "Disallow: *?share=*\n";
+    $output .= "Disallow: *?auth=*\n";
+    $output .= "Disallow: /?s=*\n"; // Bloqueia resultados de busca internos
+    
     return $output;
 }
-add_filter('robots_txt', 'sts_custom_robots_txt', 10, 2);
+add_filter('robots_txt', 'sts_custom_robots_txt', 20, 2);
+
+/**
+ * Desativa Feeds de Comentários (Drenos de SEO)
+ */
+function sts_disable_junk_feeds() {
+    // Remove os links de feeds de comentários do <head>
+    remove_action('wp_head', 'feed_links_extra', 3);
+    
+    // Redireciona qualquer tentativa de acessar feeds de comentários para o post original
+    if (is_feed() && (is_comment_feed() || is_trackback())) {
+        wp_redirect(get_permalink(), 301);
+        exit;
+    }
+}
+add_action('template_redirect', 'sts_disable_junk_feeds', 1);
 
 /**
  * Sistema Nativo de Visualizações (Substitui plugins pesados e ACF)
