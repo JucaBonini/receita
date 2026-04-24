@@ -314,7 +314,7 @@ if (have_posts()) : while (have_posts()) : the_post();
                 if (function_exists('sts_render_ad')) sts_render_ad('single_top_author'); 
 
                 // ⚡ ADS MASTER: Final da Receita (Encerramento)
-                if (function_exists('sts_render_ad')) sts_render_ad('single_after_recipe'); 
+                // Anúncio movido para baixo do widget de avaliação
                 ?>
 
                 <!-- Avaliação da Receita Widget -->
@@ -347,6 +347,11 @@ if (have_posts()) : while (have_posts()) : the_post();
                     
                     <input type="hidden" id="rating_post_id" value="<?php echo $post_id; ?>">
                 </section>
+
+                <?php 
+                // ⚡ ADS MASTER: Final da Receita (Momento de Saída/Conversão)
+                if (function_exists('sts_render_ad')) sts_render_ad('single_after_recipe'); 
+                ?>
 
                 <!-- 🛍️ Vitrine de Indicações Premium (Afiliados Mary) -->
                 <?php
@@ -631,11 +636,11 @@ if (have_posts()) : while (have_posts()) : the_post();
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row items-end justify-between mb-12 gap-6">
                 <div class="max-w-2xl">
-                    <span class="text-primary font-black uppercase tracking-[0.3em] text-[10px] mb-4 block">Loja de Afiliados</span>
+                    <span class="text-primary font-black uppercase tracking-[0.3em] text-[10px] mb-4 block">Loja de Indicações</span>
                     <h2 class="text-3xl sm:text-4xl font-black mb-6 leading-tight">Utensílios para sua <span class="text-primary italic">Cozinha</span></h2>
-                    <p class="text-slate-600 dark:text-slate-400 text-lg leading-relaxed">Selecionamos os melhores produtos que usamos e recomendamos para preparar esta e outras receitas.</p>
+                    <p class="text-slate-600 dark:text-slate-400 text-lg leading-relaxed">Equipamentos e acessórios que a Chef Mary utiliza e recomenda para garantir o melhor resultado nas suas receitas.</p>
                 </div>
-                <a href="<?php echo get_post_type_archive_link('achadinhos'); ?>" class="group flex items-center gap-2 font-bold text-slate-900 dark:text-white hover:text-primary transition-colors">
+                <a href="<?php echo home_url('/loja'); ?>" class="group flex items-center gap-2 font-bold text-slate-900 dark:text-white hover:text-primary transition-colors">
                     Ver vitrine completa 
                     <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_right_alt</span>
                 </a>
@@ -643,14 +648,16 @@ if (have_posts()) : while (have_posts()) : the_post();
 
             <div class="grid grid-cols-1 min-[420px]:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 text-left">
                 <?php
-                $achadinhos_single = new WP_Query(array(
-                    'post_type' => 'achadinhos',
-                    'posts_per_page' => 8
+                $indicacoes_footer_query = new WP_Query(array(
+                    'post_type'      => 'sts_indicacoes',
+                    'posts_per_page' => 4,
+                    'orderby'        => 'rand'
                 ));
 
-                if ($achadinhos_single->have_posts()) : while ($achadinhos_single->have_posts()) : $achadinhos_single->the_post();
-                    $link = get_post_meta(get_the_ID(), 'link_produto', true) ?: '#';
-                    $preco = get_post_meta(get_the_ID(), 'valor_produto', true);
+                if ($indicacoes_footer_query->have_posts()) : while ($indicacoes_footer_query->have_posts()) : $indicacoes_footer_query->the_post();
+                    $link = get_post_meta(get_the_ID(), '_sts_product_url', true) ?: '#';
+                    $preco = get_post_meta(get_the_ID(), '_sts_product_price', true);
+                    $marketplace = get_post_meta(get_the_ID(), '_sts_marketplace', true);
                 ?>
                 <div class="bg-white dark:bg-slate-800 rounded-[32px] p-4 border border-slate-100 dark:border-slate-700 hover:shadow-2xl transition-all group relative">
                     <div class="aspect-square rounded-[24px] overflow-hidden mb-5 bg-slate-50 dark:bg-slate-900">
@@ -667,14 +674,14 @@ if (have_posts()) : while (have_posts()) : the_post();
                         <h3 class="text-sm font-bold mb-2 line-clamp-1 group-hover:text-primary transition-colors"><?php the_title(); ?></h3>
                         <div class="flex items-center justify-between mb-4">
                             <?php if ($preco) : ?>
-                                <span class="text-base font-black text-slate-900 dark:text-white">R$ <?php echo $preco; ?></span>
+                                <span class="text-base font-black text-slate-900 dark:text-white"><?php echo $preco; ?></span>
                             <?php else : ?>
                                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Ver Preço</span>
                             <?php endif; ?>
                         </div>
 
                         <a href="<?php echo esc_url($link); ?>" target="_blank" rel="nofollow noopener" class="w-full bg-slate-900 dark:bg-slate-700 hover:bg-primary text-white py-3 rounded-xl font-black text-[10px] text-center flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-primary/20">
-                            COMPRAR <span class="material-symbols-outlined text-[10px]">open_in_new</span>
+                            VER OFERTA <span class="material-symbols-outlined text-[10px]">open_in_new</span>
                         </a>
                     </div>
                 </div>
