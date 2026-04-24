@@ -30,16 +30,22 @@ function sts_render_ad($slot_name, $classes = '') {
     <style>
         .sts-ad-slot-<?php echo $slot_name; ?> {
             min-height: <?php echo $min_height; ?>;
+            max-width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center; justify-content: center;
-            margin: 3rem auto;
+            margin: 2rem auto;
             background: rgba(0,0,0,0.02);
             border-radius: 32px;
             position: relative;
-            /* overflow removido para não cortar anúncios expansíveis */
+            overflow: hidden; /* Blindagem contra vazamento lateral */
             transition: all 0.3s ease;
             z-index: 1;
+        }
+        /* Força qualquer conteúdo interno a respeitar o limite */
+        .sts-ad-slot-<?php echo $slot_name; ?> * {
+            max-width: 100% !important;
+            box-sizing: border-box !important;
         }
         /* Efeito Skeleton (Movido para trás do conteúdo e sem interferência de clique) */
         .sts-ad-slot-<?php echo $slot_name; ?>::after {
