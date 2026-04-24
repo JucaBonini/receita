@@ -311,7 +311,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 
                 <?php 
                 // ⚡ ADS MASTER: Abaixo da Bio Autor (Momento de Confiança)
-                if (function_exists('sts_render_ad')) sts_render_ad('single_top_author'); 
+                // Anúncio movido para o rodapé entre vitrines
 
                 // ⚡ ADS MASTER: Final da Receita (Encerramento)
                 // Anúncio movido para baixo do widget de avaliação
@@ -632,6 +632,11 @@ if (have_posts()) : while (have_posts()) : the_post();
 
     <!-- 🚀 SEO GOD MODE: Recomendações Inteligentes (Largura Total) -->
     <?php get_template_part('template-parts/smart-recommendations'); ?>
+
+    <?php 
+    // ⚡ ADS MASTER: Divisor de Vitrines (Ponto de Alta Conversão)
+    if (function_exists('sts_render_ad')) sts_render_ad('single_top_author'); 
+    ?>
 
     <section class="bg-slate-50 dark:bg-slate-900/50 py-16 sm:py-24 border-y border-slate-100 dark:border-slate-800 w-full">
         <div class="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12">
