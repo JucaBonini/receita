@@ -155,8 +155,8 @@
                         $custom_logo_id = get_theme_mod('custom_logo');
                         $logo = wp_get_attachment_image_src($custom_logo_id , 'full');
                         if ($logo) : ?>
-                            <a href="<?php echo esc_url(home_url('/')); ?>" rel="home" aria-label="Ir para a página inicial">
-                                <img src="<?php echo esc_url($logo[0]); ?>" class="h-10 md:h-12 w-auto object-contain" alt="<?php bloginfo('name'); ?>" fetchpriority="high" decoding="sync">
+                            <a href="<?php echo esc_url(home_url('/')); ?>" rel="home" aria-label="Ir para a página inicial" class="block max-w-[120px] md:max-w-none">
+                                <img src="<?php echo esc_url($logo[0]); ?>" class="h-8 md:h-12 w-auto object-contain" alt="<?php bloginfo('name'); ?>" fetchpriority="high" decoding="sync">
                             </a>
                         <?php endif; ?>
                     </div>

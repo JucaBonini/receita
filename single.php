@@ -60,9 +60,21 @@ if (have_posts()) : while (have_posts()) : the_post();
         
         <!-- Top Meta (Breadcrumb & Title) -->
         <div class="mb-10">
-            <div class="mb-4">
+            <div class="mb-4 breadcrumb-container text-xs sm:text-sm">
                 <?php echo custom_breadcrumb(); ?>
             </div>
+            <style>
+                @media (max-width: 640px) {
+                    .breadcrumb-container a:last-of-type, 
+                    .breadcrumb-container span:last-child {
+                        display: none !important;
+                    }
+                    /* Remove o separador final se sobrar */
+                    .breadcrumb-container span.sep:last-of-type {
+                        display: none !important;
+                    }
+                }
+            </style>
 
             <!-- ⚡ ADS MASTER: Premium Above Title (Faturamento Máximo) -->
             <?php if (function_exists('sts_render_ad')) sts_render_ad('single_above_title', 'my-4'); ?>
@@ -122,37 +134,37 @@ if (have_posts()) : while (have_posts()) : the_post();
         </div>
 
         <!-- Metadata Cards Grid -->
-        <div class="grid grid-cols-2 min-[480px]:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4 mb-12">
-            <div class="bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
+        <div class="grid grid-cols-2 min-[400px]:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-4 mb-12">
+            <div class="bg-white dark:bg-slate-800 p-3 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
                 <span class="material-symbols-outlined text-primary mb-2">timer</span>
-                <span class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Preparo</span>
-                <span class="text-base sm:text-xl font-bold"><?php echo $tempo_preparo ?: '20'; ?>m</span>
+                <span class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Preparo</span>
+                <span class="text-sm sm:text-xl font-bold"><?php echo $tempo_preparo ?: '20'; ?>m</span>
             </div>
-            <div class="bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
+            <div class="bg-white dark:bg-slate-800 p-3 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
                 <span class="material-symbols-outlined text-primary mb-2">cooking</span>
-                <span class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Cozimento</span>
-                <span class="text-base sm:text-xl font-bold"><?php echo $tempo_cozimento ?: '30'; ?>m</span>
+                <span class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Cozimento</span>
+                <span class="text-sm sm:text-xl font-bold"><?php echo $tempo_cozimento ?: '30'; ?>m</span>
             </div>
-            <div class="bg-primary/20 border-2 border-primary/40 p-4 sm:p-5 rounded-2xl flex flex-col items-center text-center shadow-lg shadow-primary/10">
+            <div class="bg-primary/20 border-2 border-primary/40 p-3 sm:p-5 rounded-2xl flex flex-col items-center text-center shadow-lg shadow-primary/10">
                 <span class="material-symbols-outlined text-primary mb-2">schedule</span>
-                <span class="text-[10px] uppercase tracking-wider text-primary font-black mb-1">Tempo Total</span>
+                <span class="text-[9px] sm:text-[10px] uppercase tracking-wider text-primary font-black mb-1">Total</span>
                 <span class="text-base sm:text-2xl font-black text-primary italic"><?php echo sts_get_recipe_total_time($post_id); ?></span>
             </div>
-            <div class="bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
+            <div class="bg-white dark:bg-slate-800 p-3 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
                 <span class="material-symbols-outlined text-primary mb-2">restaurant</span>
-                <span class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Rendimento</span>
-                <span class="text-base sm:text-xl font-bold"><?php echo trim($porcoes_meta ?: '4'); ?></span>
+                <span class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Rende</span>
+                <span class="text-sm sm:text-xl font-bold"><?php echo trim($porcoes_meta ?: '4'); ?></span>
             </div>
-            <div class="bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
+            <div class="bg-white dark:bg-slate-800 p-3 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
                 <span class="material-symbols-outlined text-primary mb-2">bar_chart</span>
-                <span class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Dificuldade</span>
-                <span class="text-base sm:text-xl font-bold"><?php echo $dificuldade ?: 'Fácil'; ?></span>
+                <span class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Nível</span>
+                <span class="text-sm sm:text-xl font-bold"><?php echo $dificuldade ?: 'Fácil'; ?></span>
             </div>
             <!-- Botão Salvar em PDF (4º Card) -->
-            <button onclick="window.print()" class="bg-slate-50 dark:bg-slate-800/10 hover:bg-primary text-slate-900 dark:text-white hover:text-white p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-col items-center text-center transition-all group">
+            <button onclick="window.print()" class="bg-slate-50 dark:bg-slate-800/10 hover:bg-primary text-slate-900 dark:text-white hover:text-white p-3 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-col items-center text-center transition-all group">
                 <span class="material-symbols-outlined mb-2 group-hover:scale-110 transition-transform">picture_as_pdf</span>
-                <span class="text-[10px] uppercase tracking-wider font-bold mb-1">Salvar</span>
-                <span class="text-base sm:text-xl font-bold">PDF</span>
+                <span class="text-[9px] sm:text-[10px] uppercase tracking-wider font-bold mb-1">Salvar</span>
+                <span class="text-sm sm:text-xl font-bold">PDF</span>
             </button>
         </div>
 
@@ -353,95 +365,7 @@ if (have_posts()) : while (have_posts()) : the_post();
                 if (function_exists('sts_render_ad')) sts_render_ad('single_after_recipe'); 
                 ?>
 
-                <!-- 🛍️ Vitrine de Indicações Premium (Afiliados Mary) -->
-                <?php
-                $indicacoes_query = new WP_Query(array(
-                    'post_type'      => 'sts_indicacoes',
-                    'posts_per_page' => 6,
-                    'orderby'        => 'rand'
-                ));
-
-                if ($indicacoes_query->have_posts()) : ?>
-                <section class="mt-20 mb-16 py-16 border-t border-slate-100 dark:border-slate-800">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
-                        <div class="max-w-2xl">
-                            <div class="flex items-center gap-3 mb-3">
-                                <span class="size-2 bg-primary rounded-full animate-pulse"></span>
-                                <span class="text-[11px] font-black text-primary uppercase tracking-[0.4em]">Curadoria Exclusiva</span>
-                            </div>
-                            <h3 class="text-3xl md:text-4xl font-black text-slate-900 dark:text-white leading-none">Utensílios para sua <span class="text-primary italic">Cozinha</span></h3>
-                            <p class="text-base text-slate-500 mt-4 leading-relaxed">Equipamentos e acessórios que <span class="font-bold text-slate-700 dark:text-slate-300">eu utilizo pessoalmente</span> e recomendo para garantir o melhor resultado nas suas receitas.</p>
-                        </div>
-                        <a href="<?php echo home_url('/loja'); ?>" class="group/all flex items-center gap-3 px-6 py-3 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all duration-300 shadow-sm">
-                            Ver vitrine completa 
-                            <span class="material-symbols-outlined text-sm transition-transform group-hover/all:translate-x-1">arrow_forward</span>
-                        </a>
-                    </div>
-
-                    <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
-                        <?php while ($indicacoes_query->have_posts()) : $indicacoes_query->the_post(); 
-                            $url = get_post_meta(get_the_ID(), '_sts_product_url', true);
-                            $price = get_post_meta(get_the_ID(), '_sts_product_price', true);
-                            $marketplace = get_post_meta(get_the_ID(), '_sts_marketplace', true);
-                            
-                            // Rastrear Visualização (Dashboard Admin)
-                            sts_track_product_impression(get_the_ID());
-
-                            // Cores Blindadas via HEX (Sincronizado com a Loja)
-                            $mkt_hex = '#0f172a'; // Slate-900 (Default)
-                            $txt_hex = '#ffffff';
-                            $btn_label = 'VER OFERTA';
-                            
-                            if ($marketplace === 'shopee') {
-                                $mkt_hex = '#D73211';
-                                $btn_label = 'NA SHOPEE';
-                            } elseif ($marketplace === 'amazon') {
-                                $mkt_hex = '#FF9900';
-                                $txt_hex = '#000000';
-                                $btn_label = 'NA AMAZON';
-                            } elseif ($marketplace === 'mercado_livre') {
-                                $mkt_hex = '#FFE600';
-                                $txt_hex = '#2d3277';
-                                $btn_label = 'NO ML';
-                            }
-                        ?>
-                        <div class="bg-white dark:bg-slate-800 rounded-[28px] md:rounded-[40px] p-3 md:p-5 shadow-[0_10px_40px_rgba(0,0,0,0.04)] border border-slate-100 dark:border-slate-700 hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 flex flex-col group/card relative overflow-hidden">
-                            
-                            <!-- Imagem com Preço Flutuante -->
-                            <div class="aspect-square rounded-[20px] md:rounded-[32px] overflow-hidden bg-slate-50 dark:bg-slate-900 mb-4 md:mb-6 relative border border-slate-50 dark:border-slate-800">
-                                <?php if (has_post_thumbnail()) : ?>
-                                    <?php the_post_thumbnail('large', ['class' => 'w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110', 'loading' => 'lazy', 'alt' => get_the_title()]); ?>
-                                <?php endif; ?>
-                                
-                                <!-- Badge de Marketplace -->
-                                <div class="absolute top-2 left-2 md:top-4 md:left-4 px-2 md:px-4 py-1 md:py-2 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-xl text-[7px] md:text-[9px] font-black text-slate-500 uppercase tracking-widest shadow-sm">
-                                    <?php echo $marketplace ? esc_html($marketplace) : 'Indicação'; ?>
-                                </div>
-
-                                <!-- Preço em Destaque -->
-                                <?php if ($price) : ?>
-                                    <div class="absolute bottom-2 right-2 md:bottom-4 md:right-4 bg-primary text-white px-2 md:px-5 py-1 md:py-2 rounded-xl text-[9px] md:text-xs font-black shadow-xl">
-                                        <?php echo $price; ?>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                            
-                            <h4 class="px-1 text-[11px] md:text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight line-clamp-2 mb-3 md:mb-6 h-8 md:h-10 leading-tight">
-                                <?php the_title(); ?>
-                            </h4>
-
-                            <!-- Botão Blindado (Sincronizado) -->
-                            <a href="<?php echo $url ? esc_url($url) : '#'; ?>" target="_blank" rel="noopener nofollow" 
-                               style="background-color: <?php echo $mkt_hex; ?>; color: <?php echo $txt_hex; ?>;"
-                               class="w-full flex items-center justify-center gap-1.5 md:gap-3 py-3 md:py-5 px-2 rounded-[16px] md:rounded-[24px] text-[8px] md:text-xs font-black uppercase tracking-widest transition-all duration-300 group/btn active:scale-95 shadow-lg">
-                                <span><?php echo $btn_label; ?></span>
-                                <span class="material-symbols-outlined text-sm md:text-lg">shopping_cart</span>
-                            </a>
-                        </div>
-                        <?php endwhile; wp_reset_postdata(); ?>
-                    </div>
-                </section>
-                <?php endif; ?>
+                <!-- Vitrine de Afiliados removida deste ponto para evitar redundância (Foco na Vitrine de Rodapé 2.5.0) -->
 
                 <!-- 🟢 Social Sharing (Engagement Boost) -->
                 <div class="mb-12 pt-10 border-t border-slate-100 dark:border-slate-800">
@@ -454,21 +378,21 @@ if (have_posts()) : while (have_posts()) : the_post();
                         $share_url = urlencode(get_permalink());
                         $share_title = urlencode(get_the_title());
                         ?>
-                        <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $share_url; ?>" target="_blank" class="flex items-center gap-2 px-6 py-3 bg-[#1877F2] text-white rounded-2xl hover:bg-[#1877F2]/90 transition-all font-bold text-sm shadow-lg shadow-[#1877F2]/20 transform active:scale-95">
-                            <span class="material-symbols-outlined text-xl">share</span>
-                            Facebook
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $share_url; ?>" target="_blank" class="flex items-center gap-2 px-4 py-3 bg-[#1877F2] text-white rounded-2xl hover:bg-[#1877F2]/90 transition-all font-bold text-xs shadow-lg shadow-[#1877F2]/20 transform active:scale-95">
+                            <span class="material-symbols-outlined text-lg">share</span>
+                            FB
                         </a>
-                        <a href="https://twitter.com/intent/tweet?text=<?php echo $share_title; ?>&url=<?php echo $share_url; ?>" target="_blank" class="flex items-center gap-2 px-6 py-3 bg-[#1DA1F2] text-white rounded-2xl hover:bg-[#1DA1F2]/90 transition-all font-bold text-sm shadow-lg shadow-[#1DA1F2]/20 transform active:scale-95">
-                            <span class="material-symbols-outlined text-xl">post_add</span>
-                            Twitter
+                        <a href="https://twitter.com/intent/tweet?text=<?php echo $share_title; ?>&url=<?php echo $share_url; ?>" target="_blank" class="flex items-center gap-2 px-4 py-3 bg-[#1DA1F2] text-white rounded-2xl hover:bg-[#1DA1F2]/90 transition-all font-bold text-xs shadow-lg shadow-[#1DA1F2]/20 transform active:scale-95">
+                            <span class="material-symbols-outlined text-lg">post_add</span>
+                            X
                         </a>
-                        <a href="https://api.whatsapp.com/send?text=<?php echo $share_title . ' ' . $share_url; ?>" target="_blank" class="flex items-center gap-2 px-6 py-3 bg-[#25D366] text-white rounded-2xl hover:bg-[#25D366]/90 transition-all font-bold text-sm shadow-lg shadow-[#25D366]/20 transform active:scale-95">
-                            <span class="material-symbols-outlined text-xl">chat</span>
-                            WhatsApp
+                        <a href="https://api.whatsapp.com/send?text=<?php echo $share_title . ' ' . $share_url; ?>" target="_blank" class="flex items-center gap-2 px-4 py-3 bg-[#25D366] text-white rounded-2xl hover:bg-[#25D366]/90 transition-all font-bold text-xs shadow-lg shadow-[#25D366]/20 transform active:scale-95">
+                            <span class="material-symbols-outlined text-lg">chat</span>
+                            Whats
                         </a>
-                        <button onclick="navigator.clipboard.writeText('<?php the_permalink(); ?>'); alert('Link da receita copiado!');" class="flex items-center gap-2 px-6 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-2xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all font-bold text-sm transform active:scale-95">
-                            <span class="material-symbols-outlined text-xl">link</span>
-                            Copiar Link
+                        <button onclick="navigator.clipboard.writeText('<?php the_permalink(); ?>'); alert('Link da receita copiado!');" class="flex items-center gap-2 px-4 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-2xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all font-bold text-xs transform active:scale-95">
+                            <span class="material-symbols-outlined text-lg">link</span>
+                            Copiar
                         </button>
                     </div>
                 </div>
@@ -588,36 +512,7 @@ if (have_posts()) : while (have_posts()) : the_post();
                 </div>
                 <?php endif; ?>
 
-                <!-- Related Recipes -->
-                <div>
-                    <h4 class="font-bold mb-4 text-lg">Receitas que você vai Amar</h4>
-                    <div class="space-y-4">
-                        <?php
-                        $related_query = new WP_Query(array(
-                            'post_type' => 'post',
-                            'posts_per_page' => 3,
-                            'post__not_in' => array($post_id),
-                            'category__in' => wp_get_post_categories($post_id)
-                        ));
-
-                        if ($related_query->have_posts()) : while ($related_query->have_posts()) : $related_query->the_post();
-                            $r_cat = get_the_category();
-                            $r_slug = $r_cat ? $r_cat[0]->slug : '';
-                        ?>
-                        <a class="group flex gap-3 items-center smart-recommendation-item transition-all" 
-                           href="<?php the_permalink(); ?>" 
-                           data-category="<?php echo $r_slug; ?>">
-                            <div class="size-20 rounded-xl overflow-hidden flex-shrink-0">
-                                <?php the_post_thumbnail('thumbnail', ['class' => 'w-full h-full object-cover group-hover:scale-110 transition-transform', 'loading' => 'lazy', 'alt' => get_the_title()]); ?>
-                            </div>
-                            <div>
-                                <h5 class="font-bold text-sm group-hover:text-primary transition-colors line-clamp-2"><?php the_title(); ?></h5>
-                                <p class="text-xs text-slate-500"><?php echo sts_get_recipe_total_time(); ?> • <?php echo get_post_meta(get_the_ID(), '_dificuldade', true) ?: 'Fácil'; ?></p>
-                            </div>
-                        </a>
-                        <?php endwhile; wp_reset_postdata(); endif; ?>
-                    </div>
-                </div>
+                <!-- Seção repetida removida para evitar redundância com a Sugestão da Chef Mary -->
 
             </aside>
 
@@ -630,16 +525,8 @@ if (have_posts()) : while (have_posts()) : the_post();
         </article>
     </main>
 
-    <!-- 🚀 SEO GOD MODE: Recomendações Inteligentes (Largura Total) -->
-    <?php get_template_part('template-parts/smart-recommendations'); ?>
-
-    <?php 
-    // ⚡ ADS MASTER: Divisor de Vitrines (Ponto de Alta Conversão)
-    if (function_exists('sts_render_ad')) sts_render_ad('single_top_author'); 
-    ?>
-
-    <section class="bg-slate-50 dark:bg-slate-900/50 py-16 sm:py-24 border-y border-slate-100 dark:border-slate-800 w-full">
-        <div class="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12">
+    <section class="bg-slate-50 dark:bg-slate-900/50 py-16 sm:py-24 border-y border-slate-100 dark:border-slate-800 w-full overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-10 lg:px-12">
             <div class="flex flex-col md:flex-row items-end justify-between mb-12 gap-6">
                 <div class="max-w-2xl">
                     <span class="text-primary font-black uppercase tracking-[0.3em] text-[10px] mb-4 block">Loja de Indicações</span>
@@ -695,6 +582,14 @@ if (have_posts()) : while (have_posts()) : the_post();
             </div>
         </div>
     </section>
+
+    <?php 
+    // ⚡ ADS MASTER: Divisor de Vitrines (Ponto de Alta Conversão)
+    if (function_exists('sts_render_ad')) sts_render_ad('single_top_author'); 
+    ?>
+
+    <!-- 🚀 SEO GOD MODE: Recomendações Inteligentes (Largura Total) -->
+    <?php get_template_part('template-parts/smart-recommendations'); ?>
 
     <?php 
     // Floating Rating Bar (Scroll Triggered)

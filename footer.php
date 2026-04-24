@@ -69,10 +69,10 @@
 
         <div class="border-t border-slate-800 pt-8 mt-8">
             <!-- Breadcrumb Simples (Opcional - Pode usar o do plugin de SEO se preferir) -->
-            <nav aria-label="Breadcrumb" class="flex text-xs text-slate-500 gap-2 mb-8 uppercase tracking-widest">
+            <nav aria-label="Breadcrumb" class="flex flex-wrap items-center text-[10px] text-slate-500 gap-2 mb-8 uppercase tracking-widest">
                 <a class="hover:text-slate-300" href="<?php echo home_url(); ?>">Home</a>
-                <span>/</span>
-                <span class="text-slate-400"><?php if (is_single()) the_title(); else echo "Menu"; ?></span>
+                <span class="opacity-30">/</span>
+                <span class="text-slate-400 truncate max-w-[150px] sm:max-w-none"><?php if (is_single()) the_title(); else echo "Menu"; ?></span>
             </nav>
 
             <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
