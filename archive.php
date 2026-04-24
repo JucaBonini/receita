@@ -74,7 +74,8 @@ get_header(); ?>
                                     if (has_post_thumbnail()) {
                                         the_post_thumbnail('recipe-card', array(
                                             'class' => 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500',
-                                            'alt' => get_the_title()
+                                            'alt' => get_the_title(),
+                                            'loading' => 'lazy'
                                         )); 
                                     } else {
                                         $default_image = get_template_directory_uri() . '/assets/images/default-image.webp';

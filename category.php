@@ -81,7 +81,7 @@ $category_image = get_term_meta($category_id, 'category_image', true);
                             <div class="relative aspect-[4/3] overflow-hidden">
                                 <a href="<?php the_permalink(); ?>" class="block w-full h-full">
                                     <?php if(has_post_thumbnail()) : ?>
-                                        <?php the_post_thumbnail('medium_large', array('class' => 'w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-out')); ?>
+                                        <?php the_post_thumbnail('medium_large', array('class' => 'w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-out', 'loading' => 'lazy', 'alt' => get_the_title())); ?>
                                     <?php else : ?>
                                         <div class="w-full h-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
                                             <span class="material-symbols-outlined text-slate-300 text-6xl">image</span>
@@ -163,7 +163,7 @@ $category_image = get_term_meta($category_id, 'category_image', true);
                         ?>
                         <a href="<?php the_permalink(); ?>" class="group flex gap-4 items-center">
                             <div class="size-16 rounded-2xl overflow-hidden flex-shrink-0 bg-slate-100">
-                                <?php the_post_thumbnail('thumbnail', ['class' => 'w-full h-full object-cover group-hover:scale-110 transition-transform']); ?>
+                                <?php the_post_thumbnail('thumbnail', ['class' => 'w-full h-full object-cover group-hover:scale-110 transition-transform', 'loading' => 'lazy', 'alt' => get_the_title()]); ?>
                             </div>
                             <h5 class="text-sm font-bold leading-tight group-hover:text-primary transition-colors line-clamp-2"><?php the_title(); ?></h5>
                         </a>

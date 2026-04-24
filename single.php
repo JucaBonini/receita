@@ -162,7 +162,7 @@ if (have_posts()) : while (have_posts()) : the_post();
                 <?php 
                 $embed_url = str_contains($video_url, 'youtube.com') ? str_replace('watch?v=', 'embed/', $video_url) : $video_url;
                 ?>
-                <iframe class="w-full h-full" src="<?php echo esc_url($embed_url); ?>" frameborder="0" allowfullscreen></iframe>
+                <iframe class="w-full h-full" src="<?php echo esc_url($embed_url); ?>" title="Vídeo da Receita: <?php echo esc_attr(get_the_title()); ?>" frameborder="0" allowfullscreen loading="lazy"></iframe>
             </div>
         <?php endif; ?>
 
@@ -289,7 +289,7 @@ if (have_posts()) : while (have_posts()) : the_post();
                         </div>
                         
                         <div class="size-32 rounded-3xl overflow-hidden shadow-2xl border-4 border-white dark:border-slate-900 shrink-0 transform group-hover:scale-105 transition-transform duration-500">
-                             <img src="<?php echo get_avatar_url($author_id, ['size' => 120]); ?>" alt="<?php echo esc_attr($author_name); ?>" class="w-full h-full object-cover">
+                             <img src="<?php echo get_avatar_url($author_id, ['size' => 120]); ?>" alt="<?php echo esc_attr($author_name); ?>" class="w-full h-full object-cover" loading="lazy">
                         </div>
                         
                         <div class="flex-1 text-center sm:text-left relative z-10">
@@ -405,7 +405,7 @@ if (have_posts()) : while (have_posts()) : the_post();
                             <!-- Imagem com Preço Flutuante -->
                             <div class="aspect-square rounded-[20px] md:rounded-[32px] overflow-hidden bg-slate-50 dark:bg-slate-900 mb-4 md:mb-6 relative border border-slate-50 dark:border-slate-800">
                                 <?php if (has_post_thumbnail()) : ?>
-                                    <?php the_post_thumbnail('large', ['class' => 'w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110']); ?>
+                                    <?php the_post_thumbnail('large', ['class' => 'w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110', 'loading' => 'lazy', 'alt' => get_the_title()]); ?>
                                 <?php endif; ?>
                                 
                                 <!-- Badge de Marketplace -->
@@ -495,7 +495,7 @@ if (have_posts()) : while (have_posts()) : the_post();
                     <div class="flex items-center gap-5 mb-6">
                         <div class="relative">
                             <div class="size-20 rounded-full overflow-hidden border-4 border-slate-50 dark:border-slate-700 shadow-xl transform transition-transform group-hover:scale-105">
-                                <img src="<?php echo esc_url($author_avatar); ?>" alt="<?php echo esc_attr($author_name); ?>" class="w-full h-full object-cover">
+                                <img src="<?php echo esc_url($author_avatar); ?>" alt="<?php echo esc_attr($author_name); ?>" class="w-full h-full object-cover" loading="lazy">
                             </div>
                             <!-- Icone de Check de Autoridade -->
                             <div class="absolute -bottom-1 -right-1 size-7 bg-primary rounded-full border-4 border-white dark:border-slate-800 flex items-center justify-center">
@@ -604,7 +604,7 @@ if (have_posts()) : while (have_posts()) : the_post();
                            href="<?php the_permalink(); ?>" 
                            data-category="<?php echo $r_slug; ?>">
                             <div class="size-20 rounded-xl overflow-hidden flex-shrink-0">
-                                <?php the_post_thumbnail('thumbnail', ['class' => 'w-full h-full object-cover group-hover:scale-110 transition-transform']); ?>
+                                <?php the_post_thumbnail('thumbnail', ['class' => 'w-full h-full object-cover group-hover:scale-110 transition-transform', 'loading' => 'lazy', 'alt' => get_the_title()]); ?>
                             </div>
                             <div>
                                 <h5 class="font-bold text-sm group-hover:text-primary transition-colors line-clamp-2"><?php the_title(); ?></h5>
@@ -655,7 +655,7 @@ if (have_posts()) : while (have_posts()) : the_post();
                 <div class="bg-white dark:bg-slate-800 rounded-[32px] p-4 border border-slate-100 dark:border-slate-700 hover:shadow-2xl transition-all group relative">
                     <div class="aspect-square rounded-[24px] overflow-hidden mb-5 bg-slate-50 dark:bg-slate-900">
                         <?php if (has_post_thumbnail()) : ?>
-                            <?php the_post_thumbnail('medium', array('class' => 'w-full h-full object-cover group-hover:scale-110 transition-transform duration-500')); ?>
+                            <?php the_post_thumbnail('medium', array('class' => 'w-full h-full object-cover group-hover:scale-110 transition-transform duration-500', 'loading' => 'lazy', 'alt' => get_the_title())); ?>
                         <?php else : ?>
                             <div class="w-full h-full flex items-center justify-center text-slate-200">
                                 <span class="material-symbols-outlined text-4xl">shopping_basket</span>

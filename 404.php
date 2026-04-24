@@ -9,13 +9,13 @@ get_header(); ?>
     <div class="max-w-xl w-full text-center">
         <!-- 404 Visual -->
         <div class="relative inline-block mb-12 group">
-            <h1 class="text-[180px] font-black text-primary/10 dark:text-primary/5 leading-none select-none tracking-tighter">404</h1>
+            <span class="text-[180px] font-black text-primary/10 dark:text-primary/5 leading-none select-none tracking-tighter">404</span>
             <div class="absolute inset-0 flex items-center justify-center transform group-hover:scale-110 transition-transform">
                 <span class="material-symbols-outlined text-[100px] text-primary drop-shadow-2xl">sentiment_very_dissatisfied</span>
             </div>
         </div>
 
-        <h2 class="text-4xl font-black text-slate-900 dark:text-slate-100 mb-6">Página não encontrada</h2>
+        <h1 class="text-4xl font-black text-slate-900 dark:text-slate-100 mb-6">Página não encontrada</h1>
         <p class="text-xl text-slate-500 mb-10 leading-relaxed max-w-md mx-auto">
             Opa! Parece que essa receita desandou ou o link que você seguiu não existe mais.
         </p>
