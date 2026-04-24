@@ -1204,5 +1204,52 @@ function sts_ads_master_page() {
     <?php
 }
 
+/**
+ * 🕸️ HIPERLINKADOR SEMÂNTICO (GOD MODE)
+ * Transforma termos-chave em links de autoridade automaticamente.
+ * Regra: Apenas 1 link por termo, ignora títulos e links existentes.
+ */
+function sts_semantic_hyperlinker($content) {
+    if (!is_single() || !is_main_query()) return $content;
+
+    // Mapa Semântico: "Termo" => "Slug da Receita Mestre"
+    $semantic_map = [
+        'Peras'        => 'peras-assadas-com-gorgonzola-e-mel',
+        'Pera'         => 'peras-assadas-com-gorgonzola-e-mel',
+        'Caldo'        => 'como-fazer-caldo-cabeca-de-galo',
+        'Caldos'       => 'como-fazer-caldo-cabeca-de-galo',
+        'Camarão'      => 'camarao-no-abacaxi',
+        'Camarões'     => 'camarao-no-abacaxi',
+        'Cebola'       => 'cebola-em-conserva',
+        'Cebolas'      => 'cebola-em-conserva',
+        'Pimenta'      => 'conserva-de-pimenta-cumari',
+        'Pimentas'     => 'conserva-de-pimenta-cumari',
+        'Mocotó'       => 'como-fazer-caldo-de-mocoto-mineiro',
+        'Empadão'      => 'empadao-de-frango-com-massa-podre',
+        'Panceta'      => 'panceta-oriental-ao-molho-agridoce',
+        'Conservas'    => 'cebola-em-conserva',
+        'Conserva'     => 'cebola-em-conserva'
+    ];
+
+    $post_id = get_the_ID();
+
+    foreach ($semantic_map as $term => $slug) {
+        $target_post = get_page_by_path($slug, OBJECT, 'post');
+        
+        if ($target_post && $target_post->ID != $post_id) {
+            $link = get_permalink($target_post->ID);
+            
+            // Regex Ninja: Casa a palavra mas ignora se estiver dentro de <a> ou tags de título
+            $pattern = '/(?!(?:[^<]+>|[^>]+<\/a>))\b(' . preg_quote($term, '/') . ')\b/i';
+            
+            // Substitui apenas a PRIMEIRA ocorrência
+            $content = preg_replace($pattern, '<a href="' . $link . '" class="semantic-link text-primary hover:underline font-medium">$1</a>', $content, 1);
+        }
+    }
+
+    return $content;
+}
+add_filter('the_content', 'sts_semantic_hyperlinker', 10);
+
 
 
