@@ -148,6 +148,65 @@ function descomplicando_receitas_setup() {
 }
 add_action('after_setup_theme', 'descomplicando_receitas_setup');
 
+/**
+ * 🚀 SMART AUTHORITY LINKER (GOD MODE)
+ * Injeta links das receitas novas nas páginas de maior autoridade para acelerar indexação e ranking.
+ */
+function sts_smart_authority_linker($content) {
+    if (!is_single() || !in_the_loop() || !is_main_query()) return $content;
+
+    $post_id = get_the_ID();
+    $current_slug = get_post_field('post_name', $post_id);
+
+    // Suas "God Pages" (As que têm o poder de arrastar outras para o topo)
+    $power_pages = [
+        'peras-assadas-com-gorgonzola-e-mel',
+        'como-fazer-caldo-cabeca-de-galo',
+        'camarao-no-abacaxi',
+        'cebola-em-conserva',
+        'conserva-de-pimenta-cumari'
+    ];
+
+    // Se estivermos em uma página de poder, injetamos o link para a novidade
+    if (in_array($current_slug, $power_pages)) {
+        
+        // Busca as 2 receitas mais recentes (excluindo a atual)
+        $latest_posts = get_posts(array(
+            'numberposts' => 1,
+            'post__not_in' => array($post_id),
+            'post_status' => 'publish',
+            'orderby'     => 'date',
+            'order'       => 'DESC'
+        ));
+
+        if (!empty($latest_posts)) {
+            $new_recipe = $latest_posts[0];
+            $link = get_permalink($new_recipe->ID);
+            $title = get_the_title($new_recipe->ID);
+
+            $linker_html = '
+            <div class="authority-linker-box my-10 p-6 bg-primary/5 border-2 border-dashed border-primary/20 rounded-[32px] flex items-center gap-6 group hover:bg-primary/10 transition-all duration-500">
+                <div class="size-16 shrink-0 bg-primary text-white rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
+                    <span class="material-symbols-outlined text-3xl font-light">tips_and_updates</span>
+                </div>
+                <div class="flex-1">
+                    <p class="text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-1">Dica Extra da Chef Mary</p>
+                    <h4 class="text-lg font-bold text-slate-800 dark:text-white leading-tight mb-2">Você também precisa provar:</h4>
+                    <a href="' . $link . '" class="text-primary font-black text-xl hover:underline flex items-center gap-2">
+                        ' . $title . '
+                        <span class="material-symbols-outlined text-sm transition-transform group-hover:translate-x-2">arrow_forward</span>
+                    </a>
+                </div>
+            </div>';
+
+            $content .= $linker_html;
+        }
+    }
+
+    return $content;
+}
+add_filter('the_content', 'sts_smart_authority_linker', 99);
+
 // Adicionar preconnect para Google Fonts e CDNs externas
 function add_external_resource_preconnects() {
     echo '<link rel="preconnect" href="https://fonts.googleapis.com">' . "\n";

@@ -468,6 +468,9 @@ if (have_posts()) : while (have_posts()) : the_post();
                     </div>
                 </div>
 
+                <!-- 🚀 SEO GOD MODE: Recomendações Inteligentes (Autoridade e Retenção) -->
+                <?php get_template_part('template-parts/smart-recommendations'); ?>
+
                 <!-- Comments/Reviews Placeholder -->
                 <section class="mt-8 pt-12 border-t border-slate-200 dark:border-slate-800">
                     <?php if (comments_open() || get_comments_number()) comments_template(); ?>
