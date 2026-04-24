@@ -39,8 +39,8 @@ if ($power_query->have_posts()) {
     wp_reset_postdata();
 }
 
-// Passo B: Completar as 6 vagas (primeiro mesma categoria, depois geral se faltar)
-$total_needed = 6;
+// Passo B: Completar as 12 vagas (primeiro mesma categoria, depois geral se faltar)
+$total_needed = 12;
 $remaining_slots = $total_needed - count($recommendations_ids);
 if ($remaining_slots > 0) {
     // Tenta mesma categoria
@@ -89,8 +89,8 @@ if (!empty($recommendations_ids)) :
         'orderby' => 'post__in'
     ));
 ?>
-<section class="smart-recommendations mt-16 mb-12 py-12 border-t border-slate-100 dark:border-slate-800">
-    <div class="max-w-6xl mx-auto">
+<section class="smart-recommendations mt-16 mb-12 py-12 border-t border-slate-100 dark:border-slate-800 w-full">
+    <div class="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12">
         <div class="flex flex-col md:flex-row items-center justify-between mb-10 gap-4">
             <div>
                 <div class="flex items-center gap-2 mb-2">
@@ -104,7 +104,7 @@ if (!empty($recommendations_ids)) :
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
             <?php while ($recommendations->have_posts()) : $recommendations->the_post(); 
                 $r_id = get_the_ID();
                 $r_slug = get_post_field('post_name', $r_id);

@@ -473,8 +473,7 @@ if (have_posts()) : while (have_posts()) : the_post();
                     </div>
                 </div>
 
-                <!-- 🚀 SEO GOD MODE: Recomendações Inteligentes (Autoridade e Retenção) -->
-                <?php get_template_part('template-parts/smart-recommendations'); ?>
+                <!-- 🚀 SEO GOD MODE: Recomendações Inteligentes movidas para fora do container principal para largura total -->
 
                 <!-- Comments/Reviews Placeholder -->
                 <section class="mt-8 pt-12 border-t border-slate-200 dark:border-slate-800">
@@ -631,9 +630,11 @@ if (have_posts()) : while (have_posts()) : the_post();
         </article>
     </main>
 
-    <!-- Seção Loja de Achadinhos (Full Width no final do post) -->
-    <section class="bg-slate-50 dark:bg-slate-900/50 py-16 sm:py-24 border-y border-slate-100 dark:border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- 🚀 SEO GOD MODE: Recomendações Inteligentes (Largura Total) -->
+    <?php get_template_part('template-parts/smart-recommendations'); ?>
+
+    <section class="bg-slate-50 dark:bg-slate-900/50 py-16 sm:py-24 border-y border-slate-100 dark:border-slate-800 w-full">
+        <div class="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12">
             <div class="flex flex-col md:flex-row items-end justify-between mb-12 gap-6">
                 <div class="max-w-2xl">
                     <span class="text-primary font-black uppercase tracking-[0.3em] text-[10px] mb-4 block">Loja de Indicações</span>
@@ -646,11 +647,11 @@ if (have_posts()) : while (have_posts()) : the_post();
                 </a>
             </div>
 
-            <div class="grid grid-cols-1 min-[420px]:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 text-left">
+            <div class="grid grid-cols-1 min-[420px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-6 sm:gap-8 text-left">
                 <?php
                 $indicacoes_footer_query = new WP_Query(array(
                     'post_type'      => 'sts_indicacoes',
-                    'posts_per_page' => 4,
+                    'posts_per_page' => 12,
                     'orderby'        => 'rand'
                 ));
 
