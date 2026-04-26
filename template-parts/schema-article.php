@@ -118,10 +118,40 @@ if ($video_obj) {
 
 $graph[] = $article;
 
-// 5. FAQ (Opcional)
-if ($is_faq) {
+// 5. FAQ (Opcional - God Mode)
+$faq_perguntas = get_post_meta($post_id, '_faq_perguntas', true);
+$faq_respostas = get_post_meta($post_id, '_faq_respostas', true);
+
+if (!empty($faq_perguntas)) {
+    $questions = [];
+    foreach ($faq_perguntas as $index => $pergunta) {
+        $resposta = $faq_respostas[$index] ?? '';
+        if (!empty($pergunta) && !empty($resposta)) {
+            $questions[] = [
+                "@type" => "Question",
+                "name" => esc_html($pergunta),
+                "acceptedAnswer" => [
+                    "@type" => "Answer",
+                    "text" => wp_strip_all_tags($resposta)
+                ]
+            ];
+        }
+    }
+    
+    if (!empty($questions)) {
+        $graph[] = [
+            "@type" => "FAQPage",
+            "@id" => get_permalink($post_id) . "#faq",
+            "isPartOf" => ["@id" => get_permalink($post_id) . "#webpage"],
+            "mainEntity" => $questions
+        ];
+    }
+} elseif ($is_faq) {
+    // Fallback para posts que usam o título e conteúdo como única pergunta
     $graph[] = [
         "@type" => "FAQPage",
+        "@id" => get_permalink($post_id) . "#faq",
+        "isPartOf" => ["@id" => get_permalink($post_id) . "#webpage"],
         "mainEntity" => [[
             "@type" => "Question",
             "name" => get_the_title(),

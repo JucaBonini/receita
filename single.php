@@ -24,6 +24,8 @@ if (have_posts()) : while (have_posts()) : the_post();
     $ingredientes_grp = get_post_meta($post_id, '_ingredientes_grupo', true);
     $instrucoes_raw   = get_post_meta($post_id, '_instrucoes', true);
     $utensilios       = get_post_meta($post_id, '_utensilios', true);
+    $faq_perguntas    = get_post_meta($post_id, '_faq_perguntas', true);
+    $faq_respostas    = get_post_meta($post_id, '_faq_respostas', true);
 
     $rating_total = (int) get_post_meta($post_id, '_rating_total', true);
     $rating_count = (int) get_post_meta($post_id, '_rating_count', true);
@@ -320,6 +322,32 @@ if (have_posts()) : while (have_posts()) : the_post();
                         </div>
                     </div>
                 </section>
+
+                <!-- FAQ Section (SEO God Mode Display) -->
+                <?php if (!empty($faq_perguntas) && array_filter($faq_perguntas)) : ?>
+                <section class="mb-12 scroll-mt-32" id="faq">
+                    <div class="flex items-center gap-3 mb-8">
+                        <span class="material-symbols-outlined text-primary text-3xl">quiz</span>
+                        <h2 class="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Dúvidas Frequentes</h2>
+                    </div>
+                    <div class="space-y-4">
+                        <?php foreach ($faq_perguntas as $idx => $pergunta) : 
+                            $resposta = $faq_respostas[$idx] ?? '';
+                            if (empty($pergunta) || empty($resposta)) continue;
+                        ?>
+                        <div class="faq-card bg-white dark:bg-slate-800/50 p-6 rounded-[24px] border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
+                            <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3 flex items-start gap-3">
+                                <span class="size-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-xs shrink-0 mt-0.5">Q</span>
+                                <?php echo esc_html($pergunta); ?>
+                            </h3>
+                            <div class="text-slate-600 dark:text-slate-400 leading-relaxed pl-10 border-l-2 border-slate-50 dark:border-slate-800">
+                                <?php echo nl2br(esc_html($resposta)); ?>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                </section>
+                <?php endif; ?>
 
                 <?php 
                 // ⚡ ADS MASTER: Abaixo da Bio Autor (Momento de Confiança)

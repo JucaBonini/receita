@@ -51,6 +51,8 @@ function renderizar_metabox_receita($post) {
     $ingredientes_grupo     = get_post_meta($post->ID, '_ingredientes_grupo', true);
     $instrucoes             = get_post_meta($post->ID, '_instrucoes', true);
     $utensilios_text        = get_post_meta($post->ID, '_utensilios', true);
+    $faq_perguntas          = get_post_meta($post->ID, '_faq_perguntas', true);
+    $faq_respostas          = get_post_meta($post->ID, '_faq_respostas', true);
     ?>
     
     <script>
@@ -175,13 +177,35 @@ function renderizar_metabox_receita($post) {
             ?>
         </div>
 
+        <div class="metabox-section">
+            <h3>FAQ - Perguntas Frequentes (SEO God Mode)</h3>
+            <p class="description">Estas perguntas aparecerão como Rich Snippets no Google, aumentando seu CTR.</p>
+            <div id="faq-container">
+                <?php
+                if (!empty($faq_perguntas)) {
+                    foreach ($faq_perguntas as $index => $pergunta) {
+                        $resposta = $faq_respostas[$index] ?? '';
+                        echo '<div class="faq-item">';
+                        echo '<input type="text" name="faq_perguntas[]" value="' . esc_attr($pergunta) . '" placeholder="Pergunta (Ex: Pode congelar?)" style="width:100%; margin-bottom:5px; font-weight:bold;">';
+                        echo '<textarea name="faq_respostas[]" placeholder="Resposta curta e direta" style="width:100%; height:60px;">' . esc_textarea($resposta) . '</textarea>';
+                        echo '<button type="button" class="remove-item">× Remover Pergunta</button>';
+                        echo '</div>';
+                    }
+                } else {
+                    echo '<div class="faq-item"><input type="text" name="faq_perguntas[]" placeholder="Pergunta"><textarea name="faq_respostas[]" placeholder="Resposta"></textarea></div>';
+                }
+                ?>
+            </div>
+            <button type="button" id="adicionar-faq" class="button">+ Adicionar Pergunta</button>
+        </div>
+
     </div>
 
     <style>
         .receita-metabox .metabox-section { background: #fff; border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; border-radius: 8px; }
         .metabox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
-        .ingrediente-grupo, .instrucao-item { background: #f9f9f9; padding: 15px; border-left: 4px solid #ec5b13; margin-bottom: 15px; border-radius: 0 8px 8px 0; }
-        .ingrediente-grupo input, .ingrediente-grupo textarea, .instrucao-item textarea { width: 100%; margin-bottom: 8px; }
+        .ingrediente-grupo, .instrucao-item, .faq-item { background: #f9f9f9; padding: 15px; border-left: 4px solid #ec5b13; margin-bottom: 15px; border-radius: 0 8px 8px 0; }
+        .ingrediente-grupo input, .ingrediente-grupo textarea, .instrucao-item textarea, .faq-item input, .faq-item textarea { width: 100%; margin-bottom: 8px; }
         .remove-item { color: #d63638; cursor: pointer; border: none; background: none; font-size: 11px; font-weight: bold; }
         .remove-item:hover { text-decoration: underline; }
     </style>
@@ -194,6 +218,9 @@ function renderizar_metabox_receita($post) {
         $('#adicionar-instrucao').click(function() {
             var count = $('#instrucoes-container .instrucao-item').length + 1;
             $('#instrucoes-container').append('<div class="instrucao-item"><label>Passo ' + count + '</label><textarea name="instrucoes[]"></textarea><button type="button" class="remove-item">× Remover</button></div>');
+        });
+        $('#adicionar-faq').click(function() {
+            $('#faq-container').append('<div class="faq-item"><input type="text" name="faq_perguntas[]" placeholder="Pergunta"><textarea name="faq_respostas[]" placeholder="Resposta"></textarea><button type="button" class="remove-item">× Remover Pergunta</button></div>');
         });
         $(document).on('click', '.remove-item', function() { $(this).parent().remove(); });
 
@@ -252,6 +279,11 @@ function salvar_metabox_receita($post_id) {
 
     if (isset($_POST['instrucoes'])) {
         update_post_meta($post_id, '_instrucoes', array_filter(array_map('wp_kses_post', $_POST['instrucoes'])));
+    }
+
+    if (isset($_POST['faq_perguntas']) && isset($_POST['faq_respostas'])) {
+        update_post_meta($post_id, '_faq_perguntas', array_map('sanitize_text_field', $_POST['faq_perguntas']));
+        update_post_meta($post_id, '_faq_respostas', array_map('wp_kses_post', $_POST['faq_respostas']));
     }
 
     if (isset($_POST['utensilios'])) {

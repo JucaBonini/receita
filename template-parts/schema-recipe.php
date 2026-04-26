@@ -18,6 +18,8 @@ $gorduras        = get_post_meta($post_id, '_gorduras', true);
 $video_url       = get_post_meta($post_id, '_video_url', true);
 $ingredientes_raw = get_post_meta($post_id, '_ingredientes', true);
 $instrucoes_raw  = get_post_meta($post_id, '_instrucoes', true);
+$faq_perguntas   = get_post_meta($post_id, '_faq_perguntas', true);
+$faq_respostas   = get_post_meta($post_id, '_faq_respostas', true);
 
 // Avaliações
 $rating_total = (float)get_post_meta($post_id, '_rating_total', true);
@@ -260,6 +262,33 @@ if (empty($itens_inst)) {
 $recipe["recipeInstructions"] = $itens_inst;
 
 $graph[] = $recipe;
+
+// 7. FAQPage (Nível God Mode)
+if (!empty($faq_perguntas)) {
+    $questions = [];
+    foreach ($faq_perguntas as $index => $pergunta) {
+        $resposta = $faq_respostas[$index] ?? '';
+        if (!empty($pergunta) && !empty($resposta)) {
+            $questions[] = [
+                "@type" => "Question",
+                "name" => esc_html($pergunta),
+                "acceptedAnswer" => [
+                    "@type" => "Answer",
+                    "text" => wp_strip_all_tags($resposta)
+                ]
+            ];
+        }
+    }
+    
+    if (!empty($questions)) {
+        $graph[] = [
+            "@type" => "FAQPage",
+            "@id" => get_permalink($post_id) . "#faq",
+            "isPartOf" => ["@id" => get_permalink($post_id) . "#webpage"],
+            "mainEntity" => $questions
+        ];
+    }
+}
 
 // Saída Final
 echo "\n" . '<script type="application/ld+json">' . "\n";
