@@ -185,9 +185,14 @@ $recipe = [
         "@type" => "Person",
         "name" => $author_name,
         "url" => $author_url,
+        "jobTitle" => get_the_author_meta('job_title', $author_id) ?: 'Chef de Cozinha',
         "image" => [
             "@type" => "ImageObject",
             "url" => $author_avatar
+        ],
+        "sameAs" => [
+            "https://www.instagram.com/maryrodrigues", 
+            "https://www.pinterest.com/maryrodrigues"
         ]
     ],
     "datePublished" => get_the_date('c', $post_id),

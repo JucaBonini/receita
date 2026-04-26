@@ -64,16 +64,23 @@ function sts_render_seo_meta() {
         }
     }
 
-    // No Index Check
+    // No Index Check & Index Shield (AEO/SEO Fine-tuning)
     $noindex = false;
     if (is_singular()) {
         $noindex = (get_post_meta(get_the_ID(), '_sts_seo_noindex', true) === '1');
+    }
+    
+    // Proteção contra conteúdo raso (Filtros e Busca)
+    if (is_search() || is_archive() && !is_category() && !is_tag() && !is_author()) {
+        $noindex = true;
     }
 
     ?>
     <!-- SEO Básico -->
     <?php if ($noindex) : ?>
     <meta name="robots" content="noindex, follow">
+    <?php else : ?>
+    <meta name="robots" content="max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <?php endif; ?>
     <meta name="description" content="<?php echo $description; ?>">
     <link rel="canonical" href="<?php echo $current_url; ?>">
