@@ -137,7 +137,41 @@ if (!empty($video_url)) {
     }
 }
 
-// 5. Recipe
+// 5. BreadcrumbList (Obrigatório para o Google Search Console)
+$breadcrumb_items = [];
+$breadcrumb_items[] = [
+    "@type" => "ListItem",
+    "position" => 1,
+    "name" => "Início",
+    "item" => $site_url
+];
+
+$categories = get_the_category($post_id);
+$pos = 2;
+if (!empty($categories)) {
+    $category = $categories[0];
+    $breadcrumb_items[] = [
+        "@type" => "ListItem",
+        "position" => $pos++,
+        "name" => $category->name,
+        "item" => get_category_link($category->term_id)
+    ];
+}
+
+$breadcrumb_items[] = [
+    "@type" => "ListItem",
+    "position" => $pos,
+    "name" => get_the_title($post_id),
+    "item" => get_permalink($post_id)
+];
+
+$graph[] = [
+    "@type" => "BreadcrumbList",
+    "@id" => get_permalink($post_id) . "#breadcrumb",
+    "itemListElement" => $breadcrumb_items
+];
+
+// 6. Recipe
 $recipe = [
     "@type" => "Recipe",
     "@id" => get_permalink($post_id) . "#recipe",

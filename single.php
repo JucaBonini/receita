@@ -61,7 +61,7 @@ if (have_posts()) : while (have_posts()) : the_post();
         <!-- Top Meta (Breadcrumb & Title) -->
         <div class="mb-10">
             <div class="mb-4 breadcrumb-container text-xs sm:text-sm">
-                <?php echo custom_breadcrumb(); ?>
+                <?php echo custom_breadcrumb(false); ?>
             </div>
             <style>
                 @media (max-width: 640px) {

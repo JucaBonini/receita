@@ -1,6 +1,6 @@
 <?php
 // Função para gerar breadcrumb dinâmico com Schema JSON-LD
-function custom_breadcrumb() {
+function custom_breadcrumb($echo_schema = true) {
     global $post;
     
     $breadcrumb_html = '<div class="breadcrumb container flex items-center gap-2 text-xs font-bold text-slate-500 mb-6">';
@@ -36,19 +36,24 @@ function custom_breadcrumb() {
     
     $breadcrumb_html .= '</div>';
     
-    // Injetar JSON-LD
-    dr_add_breadcrumb_schema($items);
+    // Injetar JSON-LD se solicitado
+    if ($echo_schema) {
+        dr_add_breadcrumb_schema($items);
+    }
     
     return $breadcrumb_html;
 }
 
-// Função para injetar Schema de Breadcrumb no <head>
+// Função para injetar Schema de Breadcrumb no <head> ou corpo
 function dr_add_breadcrumb_schema($items) {
     if (empty($items)) return;
     
+    $current_url = get_permalink() ?: home_url(add_query_arg(array(), $GLOBALS['wp']->request));
+
     $schema = array(
         '@context' => 'https://schema.org',
         '@type' => 'BreadcrumbList',
+        '@id' => $current_url . '#breadcrumb',
         'itemListElement' => array()
     );
     
