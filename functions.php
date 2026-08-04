@@ -1,0 +1,1418 @@
+<?php
+/**
+ * Funções do tema Descomplicando Receitas
+ * @package Descomplicando Receitas
+ */
+
+// Definir constantes do tema NO TOPO
+defined( 'ABSPATH' ) || exit;
+
+/**
+ * STS AUTO-UPDATER: Monitora atualizações via GitHub
+ */
+require_once get_template_directory() . '/includes/theme-updater.php';
+
+define('THEME_PATH',    get_template_directory());
+define('THEME_URI',     get_template_directory_uri());
+define('THEME_VERSION', '2.9.1'); // Sincronizado com style.css
+
+// Configurações centralizadas do tema (constantes e valores padrão)
+require_once THEME_PATH . '/includes/theme-config.php';
+
+// Incluir Componentes Estratégicos (Nativos)
+require_once THEME_PATH . '/includes/sitemaps-engine.php';
+require_once THEME_PATH . '/includes/seo-engine.php';
+require_once THEME_PATH . '/includes/ads-engine.php';
+
+function sts_flush_sitemaps_once() {
+    if (get_option('sts_sitemaps_flushed') !== 'yes') {
+        sts_sitemap_rewrite_rules();
+        flush_rewrite_rules();
+        update_option('sts_sitemaps_flushed', 'yes');
+    }
+}
+add_action('after_setup_theme', 'sts_flush_sitemaps_once');
+
+/**
+ * Função Mestra: Retorna o Tempo Total formatado (XX MIN)
+ * Centraliza a lógica para evitar inconsistências no site.
+ */
+function sts_get_recipe_total_time($post_id = null) {
+    if (!$post_id) $post_id = get_the_ID();
+    
+    $total = get_post_meta($post_id, '_total_time', true);
+    
+    // Fallback se o tempo total não estiver calculado (posts antigos)
+    if (!$total) {
+        $prep = (int)get_post_meta($post_id, '_tempo_preparo', true) ?: (int)get_post_meta($post_id, 'tempo', true);
+        $cook = (int)get_post_meta($post_id, '_tempo_cozimento', true);
+        $total = $prep + $cook;
+    }
+    
+    return ($total > 0) ? $total . ' MIN' : '20 MIN'; // 20 MIN é o fallback padrão
+}
+
+// robots.txt: A regra unificada está em sts_hardcore_robots_txt (linha ~1147) que cobre todas as diretivas.
+// Esta função foi removida para evitar conflito de filtros com mesma prioridade 20.
+
+/**
+ * Desativa Feeds de Comentários (Drenos de SEO)
+ */
+function sts_disable_junk_feeds() {
+    // Remove os links de feeds de comentários do <head>
+    remove_action('wp_head', 'feed_links_extra', 3);
+    
+    // Redireciona qualquer tentativa de acessar feeds de comentários para o post original
+    if (is_feed() && (is_comment_feed() || is_trackback())) {
+        wp_redirect(get_permalink(), 301);
+        exit;
+    }
+}
+add_action('template_redirect', 'sts_disable_junk_feeds', 1);
+
+/**
+ * Sistema Nativo de Visualizações (Substitui plugins pesados e ACF)
+ * Registra e recupera o número de acessos de cada post.
+ */
+function sts_set_post_views($postID) {
+    if (is_admin()) return;
+    $count_key = 'post_views_count';
+    $count = get_post_meta($postID, $count_key, true);
+    if($count==''){
+        $count = 0;
+        delete_post_meta($postID, $count_key);
+        add_post_meta($postID, $count_key, '0');
+    }else{
+        $count++;
+        update_post_meta($postID, $count_key, $count);
+    }
+}
+function get_post_views($postID){
+    $count_key = 'post_views_count';
+    $count = get_post_meta($postID, $count_key, true);
+    if($count==''){
+        return "0";
+    }
+    return $count;
+}
+
+// Setup do tema
+function descomplicando_receitas_setup() {
+    add_theme_support('post-thumbnails');
+    add_theme_support('title-tag');
+    add_theme_support('custom-logo');
+    add_theme_support('automatic-feed-links'); // Suporte nativo a feeds RSS
+    
+    // Tamanhos de Imagem Personalizados (Padrão Google Discover 16:9)
+    add_image_size('google-discover', 1200, 675, true);
+    
+    add_theme_support('html5', array(
+        'search-form', 
+        'comment-list', 
+        'comment-form', 
+        'gallery', 
+        'caption',
+        'style',
+        'script'
+    ));
+    
+    // Registrar menus
+    register_nav_menus(array(
+        'main-menu' => 'Menu Principal',
+        'footer-menu' => 'Menu Rodapé'
+    ));
+    
+    // Tamanhos de imagem personalizados
+    add_image_size('recipe-card', 300, 200, true);
+    add_image_size('blog-featured', 800, 400, true);
+    add_image_size('achadinho-thumb', 400, 300, true);
+    add_image_size('discover-large', 1200, 0, false); // Tamanho ideal para Google Discover (>=1200px)
+}
+add_action('after_setup_theme', 'descomplicando_receitas_setup');
+
+/**
+ * 🚀 SMART AUTHORITY LINKER (GOD MODE)
+ * Injeta links das receitas novas nas páginas de maior autoridade para acelerar indexação e ranking.
+ */
+function sts_smart_authority_linker($content) {
+    if (!is_single() || !in_the_loop() || !is_main_query()) return $content;
+
+    $post_id = get_the_ID();
+    $current_slug = get_post_field('post_name', $post_id);
+
+    // Suas "God Pages" (As que têm o poder de arrastar outras para o topo)
+    $power_pages = [
+        'peras-assadas-com-gorgonzola-e-mel',
+        'como-fazer-caldo-cabeca-de-galo',
+        'camarao-no-abacaxi',
+        'cebola-em-conserva',
+        'conserva-de-pimenta-cumari'
+    ];
+
+    // Se estivermos em uma página de poder, injetamos o link para a novidade
+    if (in_array($current_slug, $power_pages)) {
+        
+        // Busca as 2 receitas mais recentes (excluindo a atual)
+        $latest_posts = get_posts(array(
+            'numberposts' => 1,
+            'post__not_in' => array($post_id),
+            'post_status' => 'publish',
+            'orderby'     => 'date',
+            'order'       => 'DESC'
+        ));
+
+        if (!empty($latest_posts)) {
+            $new_recipe = $latest_posts[0];
+            $link = get_permalink($new_recipe->ID);
+            $title = get_the_title($new_recipe->ID);
+
+            $linker_html = '
+            <div class="authority-linker-box my-10 p-6 bg-primary/5 border-2 border-dashed border-primary/20 rounded-[32px] flex items-center gap-6 group hover:bg-primary/10 transition-all duration-500">
+                <div class="size-16 shrink-0 bg-primary text-white rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
+                    <span class="material-symbols-outlined text-3xl font-light">tips_and_updates</span>
+                </div>
+                <div class="flex-1">
+                    <p class="text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-1">Dica Extra da Chef Mary</p>
+                    <h4 class="text-lg font-bold text-slate-800 dark:text-white leading-tight mb-2">Você também precisa provar:</h4>
+                    <a href="' . $link . '" class="text-primary font-black text-xl hover:underline flex items-center gap-2">
+                        ' . $title . '
+                        <span class="material-symbols-outlined text-sm transition-transform group-hover:translate-x-2">arrow_forward</span>
+                    </a>
+                </div>
+            </div>';
+
+            $content .= $linker_html;
+        }
+    }
+
+    return $content;
+}
+add_filter('the_content', 'sts_smart_authority_linker', 99);
+
+// Adicionar preconnect para Google Fonts e CDNs externas
+function add_external_resource_preconnects() {
+    echo '<link rel="preconnect" href="https://fonts.googleapis.com">' . "\n";
+    echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' . "\n";
+    echo '<link rel="preconnect" href="https://cdnjs.cloudflare.com">' . "\n";
+}
+add_action('wp_head', 'add_external_resource_preconnects', 1);
+
+// Carregar estilos e scripts
+function descomplicando_receitas_scripts() {
+    // Remover estilos de blocos (Gutenberg) se não estiver na página de posts (opcional para performance)
+    if (!is_singular('post')) {
+        wp_dequeue_style('wp-block-library');
+        wp_dequeue_style('wp-block-library-theme');
+        wp_dequeue_style('wc-block-style');
+    }
+
+    // Carregar Tailwind CSS Compilado
+    wp_enqueue_style('main-css', THEME_URI . '/assets/css/main.min.css', array(), THEME_VERSION, 'all');
+    
+    // Novo Sistema de Impressão Premium
+    wp_enqueue_style('print-css', THEME_URI . '/assets/css/print.css', array(), THEME_VERSION, 'print');
+    
+    // Novas fontes (Public Sans) gerenciadas no header.php
+    
+    // JS - Carregamento com defer (true no último parâmetro)
+    wp_enqueue_script('jquery'); // Garantir que jQuery está carregado
+    wp_enqueue_script('main-js', THEME_URI . '/assets/js/main.js', array('jquery'), THEME_VERSION, true);
+    
+    if (is_singular('post')) {
+        wp_enqueue_script('sts-smart-rec', THEME_URI . '/assets/js/smart-recommendations.js', array(), THEME_VERSION, true);
+    }
+
+    // Achadinhos JS: carregado apenas na página de achadinhos (Performance: sem carga desnecessária)
+    if (is_page('achadinhos') || is_page_template('page-achadinhos.php')) {
+        wp_enqueue_script('achadinhos-js', THEME_URI . '/assets/js/achadinhos.js', array('jquery'), THEME_VERSION, true);
+    }
+    
+    // Localize script para AJAX e Configurações Globais
+    wp_localize_script('main-js', 'themeConfig', array(
+        'ajaxUrl' => admin_url('admin-ajax.php'),
+        'homeUrl' => home_url('/'),
+        'nonce' => wp_create_nonce('theme_nonce')
+    ));
+}
+add_action('wp_enqueue_scripts', 'descomplicando_receitas_scripts');
+
+/**
+ * Otimização de Imagens: Discover & Core Web Vitals (CLS/LCP)
+ * 1. Remove lazy-loading de imagens críticas (LCP)
+ * 2. Adiciona width/height se faltarem para evitar saltos (CLS)
+ */
+add_filter('wp_get_loading_optimization_attributes', function($attrs, $tag_name, $context) {
+    if (isset($attrs['loading']) && ($attrs['loading'] === 'eager' || is_singular())) {
+        // Se for a imagem de destaque ou no topo, removemos o lazy para velocidade máxima
+        unset($attrs['loading']); 
+    }
+    return $attrs;
+}, 10, 3);
+
+function sts_optimize_content_images($content) {
+    if (!is_singular()) return $content;
+    
+    // Adicionar width/height faltantes para evitar CLS em imagens do post
+    $pattern = '/<img [^>]*src="[^"]+"[^>]*>/i';
+    if (preg_match_all($pattern, $content, $matches)) {
+        foreach ($matches[0] as $img_tag) {
+            if (strpos($img_tag, 'width=') === false || strpos($img_tag, 'height=') === false) {
+                // Aqui o WordPress já tenta fazer nativamente, mas reforçamos se necessário
+                $img_tag_new = str_replace('<img ', '<img loading="lazy" decoding="async" ', $img_tag);
+                $content = str_replace($img_tag, $img_tag_new, $content);
+            }
+        }
+    }
+    return $content;
+}
+add_filter('the_content', 'sts_optimize_content_images');
+
+/**
+ * Injeção Nativa do Banner do WhatsApp (Após o 2º Parágrafo)
+ */
+function sts_insert_whatsapp_banner($content) {
+    if (!is_singular('post') || is_admin()) return $content;
+
+    $closing_p = '</p>';
+    $paragraphs = explode($closing_p, $content);
+    
+    // Inserir após o 2º parágrafo (se houver parágrafos suficientes)
+    if (count($paragraphs) >= 3) {
+        ob_start();
+        get_template_part('template-parts/whatsapp-mid-post');
+        $banner_html = ob_get_clean();
+
+        foreach ($paragraphs as $index => $paragraph) {
+            if (trim($paragraph)) {
+                $paragraphs[$index] .= $closing_p;
+            }
+            if ($index === 1) { // 0 é o 1º, 1 é o 2º
+                $paragraphs[$index] .= $banner_html;
+            }
+        }
+        $content = implode('', $paragraphs);
+    }
+    
+    return $content;
+}
+add_filter('the_content', 'sts_insert_whatsapp_banner', 15);
+
+// Adicionar atributos async/defer ao JS para otimizar o INP
+function add_async_defer_attributes($tag, $handle, $src) {
+    if (is_admin()) return $tag;
+    // Não adicionar defer se já tiver async ou defer, ou se for o script do AdSense
+    if (strpos($tag, ' defer') !== false || strpos($tag, ' async') !== false || $handle === 'google-adsense') {
+        return $tag;
+    }
+    return str_replace('<script ', '<script defer ', $tag);
+}
+add_filter('script_loader_tag', 'add_async_defer_attributes', 10, 3);
+
+// Adicionar atributos para carregamento assíncrono do CSS (Critical CSS Strategy)
+function dr_optimize_css_loading($html, $handle, $href, $media) {
+    // Apenas para o CSS principal, para evitar render-blocking
+    if ($handle === 'main-css') {
+        return '<link rel="preload" href="' . $href . '" as="style" id="main-css-preload" onload="this.onload=null;this.rel=\'stylesheet\'">' . "\n" .
+               '<noscript><link rel="stylesheet" href="' . $href . '"></noscript>' . "\n";
+    }
+    return $html;
+}
+add_filter('style_loader_tag', 'dr_optimize_css_loading', 10, 4);
+
+// Injetar CSS Crítico inline no <head>
+function dr_inline_critical_css() {
+    $critical_file = THEME_PATH . '/assets/css/critical.css';
+    if (file_exists($critical_file)) {
+        echo '<style id="critical-css-inline">' . file_get_contents($critical_file) . '</style>' . "\n";
+    }
+}
+add_action('wp_head', 'dr_inline_critical_css', 2);
+
+// Incluir arquivos personalizados (VERIFICAR SE EXISTEM)
+$includes_files = array(
+    '/includes/categoria-home.php',
+    '/includes/destaque-home.php', 
+    '/includes/achadinhos-home.php',
+    '/includes/receitas-cpt.php',
+    '/includes/sidebar-receita.php',
+    '/includes/breadcrumb.php',
+    '/includes/header&footer.php',
+    '/includes/otimizacao-imagens.php',
+    '/includes/live-search.php',
+    '/includes/sumario.php',
+    '/includes/cooking-mode.php',
+    '/includes/cloudflare-cache.php',
+    '/includes/pwa-smart-banner.php',
+    '/includes/cpt-afiliados.php',
+    '/includes/view-tracker.php'
+);
+
+foreach ($includes_files as $file) {
+    if (file_exists(THEME_PATH . $file)) {
+        require_once THEME_PATH . $file;
+    }
+}
+
+// Carregar arquivos de CPTs (VERIFICAR SE EXISTEM)
+$cpt_files = array(
+	'/includes/cpt/cpt-ebooks.php',
+    '/includes/cpt/cpt-achadinhos.php',
+    '/includes/cpt/cpt-artigos.php', 
+    '/includes/cpt/cpt-glossario.php',
+    '/includes/cpt/cpt-faqs.php',
+    '/includes/cpt/cpt-reviews.php',
+    '/includes/cpt/custom-taxonomies.php',
+	'/includes/cpt/avaliacao.php'
+);
+
+foreach ($cpt_files as $file) {
+    if (file_exists(THEME_PATH . $file)) {
+        require_once THEME_PATH . $file;
+    }
+}
+
+// PagSeguro: Checkout Transparente
+if (file_exists(THEME_PATH . '/includes/pagseguro-handler.php')) {
+    require_once THEME_PATH . '/includes/pagseguro-handler.php';
+}
+
+/**
+ * Otimização de Imagens para Google Discover & WebP
+ * Garante que as imagens de 1200px tenham compressão ideal
+ */
+add_filter('wp_editor_set_quality', function($quality, $mime_type) {
+    if ('image/webp' === $mime_type) return 85; 
+    return 82; 
+}, 10, 2);
+
+// Forçar redimensionamento proporcional para o Discover
+add_filter('image_size_names_choose', function($sizes) {
+    return array_merge($sizes, array(
+        'discover-large' => 'Google Discover (1200px)',
+    ));
+});
+
+/**
+ * Filtros para permitir classes personalizadas no wp_nav_menu
+ */
+function sts_add_additional_class_on_li($classes, $item, $args) {
+    if(isset($args->add_li_class)) {
+        $classes[] = $args->add_li_class;
+    }
+    return $classes;
+}
+add_filter('nav_menu_css_class', 'sts_add_additional_class_on_li', 1, 3);
+
+function sts_add_additional_class_on_a($attr, $item, $args) {
+    if(isset($args->add_li_class)) {
+        $attr['class'] = $args->add_li_class;
+    }
+    return $attr;
+}
+add_filter('nav_menu_link_attributes', 'sts_add_additional_class_on_a', 1, 3);
+
+/**
+ * Limpeza Mestra do <head> (SEO, Performance e Segurança)
+ * Todos os remove_action consolidados em um único lugar para facilitar manutenção.
+ */
+function dr_limpeza_head_completa() {
+    // --- Segurança: ocultar versão do WP e informações ---
+    remove_action('wp_head', 'wp_generator');
+    add_filter('the_generator', '__return_empty_string');
+    add_filter('xmlrpc_enabled', '__return_false');
+
+    // --- Links desnecessários no <head> ---
+    remove_action('wp_head', 'rsd_link');
+    remove_action('wp_head', 'wlwmanifest_link');
+    remove_action('wp_head', 'index_rel_link');
+    remove_action('wp_head', 'wp_shortlink_wp_head');
+    remove_action('wp_head', 'rest_output_link_wp_head');
+    remove_action('wp_head', 'wp_oembed_add_discovery_links');
+    remove_action('wp_head', 'wp_oembed_add_host_js');
+    remove_action('wp_head', 'parent_post_rel_link', 10, 0);
+    remove_action('wp_head', 'start_post_rel_link', 10, 0);
+    remove_action('wp_head', 'adjacent_posts_rel_link', 10, 0);
+
+    // --- Emojis (peso desnecessário) ---
+    remove_action('wp_head', 'print_emoji_detection_script', 7);
+    remove_action('wp_print_styles', 'print_emoji_styles');
+    remove_action('admin_print_scripts', 'print_emoji_detection_script');
+    remove_action('admin_print_styles', 'print_emoji_styles');
+    remove_filter('the_content_feed', 'wp_staticize_emoji');
+    remove_filter('comment_text_rss', 'wp_staticize_emoji');
+    remove_filter('wp_mail', 'wp_staticize_emoji_for_email');
+
+    // --- oEmbed e Embeds externos ---
+    wp_deregister_script('wp-embed');
+}
+add_action('init', 'dr_limpeza_head_completa');
+
+// Heartbeat API: desativar no front-end para economizar CPU
+add_action('init', function() {
+    if (!is_admin()) {
+        wp_deregister_script('heartbeat');
+    }
+}, 1);
+
+// As funções de visualização foram movidas/consolidadas no includes/view-tracker.php para performance
+
+
+// Adicionar campo de Expertise/Credenciais ao perfil do usuário (E-E-A-T)
+function add_user_expertise_field($user) {
+    ?>
+    <h3><?php _e("Informações de Expertise (E-E-A-T)", "text-domain"); ?></h3>
+    <table class="form-table">
+        <tr>
+            <th><label for="expertise"><?php _e("Expertise/Credenciais", "text-domain"); ?></label></th>
+            <td>
+                <input type="text" name="expertise" id="expertise" value="<?php echo esc_attr(get_the_author_meta('expertise', $user->ID)); ?>" class="regular-text" /><br />
+                <span class="description"><?php _e("Ex: Chef de Cozinha, Sommelier, Nutricionista"); ?></span>
+            </td>
+        </tr>
+        <tr>
+            <th><label for="certifications"><?php _e("Certificações", "text-domain"); ?></label></th>
+            <td>
+                <input type="text" name="certifications" id="certifications" value="<?php echo esc_attr(get_the_author_meta('certifications', $user->ID)); ?>" class="regular-text" /><br />
+                <span class="description"><?php _e("Cursos, diplomados ou prêmios relevantes."); ?></span>
+            </td>
+        </tr>
+        <tr>
+            <th><label for="education"><?php _e("Educação", "text-domain"); ?></label></th>
+            <td>
+                <input type="text" name="education" id="education" value="<?php echo esc_attr(get_the_author_meta('education', $user->ID)); ?>" class="regular-text" /><br />
+                <span class="description"><?php _e("Bacharelado em Gastronomia, Pós em Nutrição, etc."); ?></span>
+            </td>
+        </tr>
+        <tr>
+            <th><label for="job_title"><?php _e("Cargo/Título Profissional", "text-domain"); ?></label></th>
+            <td>
+                <input type="text" name="job_title" id="job_title" value="<?php echo esc_attr(get_the_author_meta('job_title', $user->ID)); ?>" class="regular-text" /><br />
+                <span class="description"><?php _e("Título que aparecerá no Schema (ex: Chef e Escritora)."); ?></span>
+            </td>
+        </tr>
+    </table>
+<?php
+}
+add_action('show_user_profile', 'add_user_expertise_field');
+add_action('edit_user_profile', 'add_user_expertise_field');
+
+// Salvar o campo de Expertise/Credenciais
+function save_user_expertise_field($user_id) {
+    if (!current_user_can('edit_user', $user_id)) {
+        return false;
+    }
+    if (isset($_POST['expertise'])) {
+        update_user_meta($user_id, 'expertise', sanitize_text_field($_POST['expertise']));
+    }
+    if (isset($_POST['certifications'])) {
+        update_user_meta($user_id, 'certifications', sanitize_text_field($_POST['certifications']));
+    }
+    if (isset($_POST['education'])) {
+        update_user_meta($user_id, 'education', sanitize_text_field($_POST['education']));
+    }
+    if (isset($_POST['job_title'])) {
+        update_user_meta($user_id, 'job_title', sanitize_text_field($_POST['job_title']));
+    }
+}
+add_action('personal_options_update', 'save_user_expertise_field');
+add_action('edit_user_profile_update', 'save_user_expertise_field');
+
+// O rastreamento agora é feito via AJAX em includes/view-tracker.php
+
+
+// Linhas no functions.php (aproximadamente 268 e 269)
+$rating_value = get_post_meta(get_the_ID(), 'review_rating', true); // Mude 'review_rating' para o nome do seu campo
+$review_author = get_post_meta(get_the_ID(), 'review_author', true); // Mude 'review_author' para o nome do seu campo
+// AJAX: Buscar detalhes das receitas favoritas (para o dropdown)
+function sts_get_favorites_details() {
+    check_ajax_referer('theme_nonce', 'nonce');
+    
+    $ids = isset($_POST['ids']) ? array_map('intval', $_POST['ids']) : [];
+    
+    if (empty($ids)) {
+        wp_send_json_error('No IDs provided');
+    }
+
+    $query = new WP_Query(array(
+        'post_type' => 'any',
+        'post__in' => $ids,
+        'posts_per_page' => 10,
+        'orderby' => 'post__in'
+    ));
+
+    $results = [];
+    if ($query->have_posts()) {
+        while ($query->have_posts()) {
+            $query->the_post();
+            $results[] = [
+                'id' => get_the_ID(),
+                'title' => get_the_title(),
+                'url' => get_permalink(),
+                'thumb' => get_the_post_thumbnail_url(get_the_ID(), 'thumbnail') ?: 'https://via.placeholder.com/80?text=Logo'
+            ];
+        }
+    }
+    wp_reset_postdata();
+    wp_send_json_success($results);
+}
+add_action('wp_ajax_get_fav_details', 'sts_get_favorites_details');
+add_action('wp_ajax_nopriv_get_fav_details', 'sts_get_favorites_details');
+// AJAX: Submissão de Receita pelo Usuário (via Dashboard)
+function sts_handle_recipe_submission() {
+    check_ajax_referer('theme_nonce', 'nonce');
+
+    if (!is_user_logged_in()) {
+        wp_send_json_error('Acesso negado.');
+    }
+
+    $title = isset($_POST['recipe_title']) ? sanitize_text_field($_POST['recipe_title']) : '';
+    $cat = isset($_POST['recipe_category']) ? intval($_POST['recipe_category']) : 0;
+    $ingredients = isset($_POST['recipe_ingredients']) ? sanitize_textarea_field($_POST['recipe_ingredients']) : '';
+    $steps = isset($_POST['recipe_steps']) ? sanitize_textarea_field($_POST['recipe_steps']) : '';
+
+    if (empty($title)) {
+        wp_send_json_error('O título da receita é obrigatório.');
+    }
+
+    // Cria o post no WordPress com status "pending" (esperando aprovação)
+    $new_post = array(
+        'post_title'    => $title,
+        'post_content'  => "<!-- Ingredientes -->\n" . $ingredients . "\n\n<!-- Modo de Preparo -->\n" . $steps,
+        'post_status'   => 'pending',
+        'post_author'   => get_current_user_id(),
+        'post_type'     => 'post',
+        'post_category' => array($cat)
+    );
+
+    $post_id = wp_insert_post($new_post);
+
+    if ($post_id && !is_wp_error($post_id)) {
+        // Upload da Imagem de Destaque
+        if (!empty($_FILES['recipe_image']['name'])) {
+            require_once(ABSPATH . 'wp-admin/includes/image.php');
+            require_once(ABSPATH . 'wp-admin/includes/file.php');
+            require_once(ABSPATH . 'wp-admin/includes/media.php');
+
+            $file_type = wp_check_filetype($_FILES['recipe_image']['name']);
+            $allowed_exts = array('jpg', 'jpeg', 'png', 'webp');
+
+            if (in_array(strtolower($file_type['ext']), $allowed_exts)) {
+                $attachment_id = media_handle_upload('recipe_image', $post_id);
+                if (!is_wp_error($attachment_id)) {
+                    set_post_thumbnail($post_id, $attachment_id);
+                }
+            }
+        }
+
+        // Salva metadados personalizados (opcional)
+        update_post_meta($post_id, '_ingredientes_user', $ingredients);
+        update_post_meta($post_id, '_preparo_user', $steps);
+        wp_send_json_success('Receita enviada para moderação!');
+    } else {
+        wp_send_json_error('Não foi possível salvar a receita no momento.');
+    }
+}
+add_action('wp_ajax_sts_submit_recipe', 'sts_handle_recipe_submission');
+// AJAX: Ações de Moderação (Aprovar/Excluir) - Apenas Admins
+function sts_handle_admin_actions() {
+    check_ajax_referer('theme_nonce', 'nonce');
+
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error('Permissão insuficiente.');
+    }
+
+    $post_id = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
+    $action_type = isset($_POST['type']) ? sanitize_text_field($_POST['type']) : '';
+
+    if (!$post_id) {
+        wp_send_json_error('ID do post inválido.');
+    }
+
+    if ($action_type === 'approve') {
+        $updated = wp_update_post(array(
+            'ID' => $post_id,
+            'post_status' => 'publish'
+        ));
+        if ($updated) wp_send_json_success('Receita aprovada com sucesso!');
+    } elseif ($action_type === 'delete') {
+        $deleted = wp_delete_post($post_id, true);
+        if ($deleted) wp_send_json_success('Receita excluída permanentemente.');
+    }
+
+    wp_send_json_error('Falha ao processar ação.');
+}
+add_action('wp_ajax_sts_admin_action', 'sts_handle_admin_actions');
+
+// AJAX: Login Personalizado
+function sts_ajax_login_handler() {
+    check_ajax_referer('theme_nonce', 'nonce');
+
+    // Rate Limiting: máx 5 tentativas por IP em 15 minutos (anti brute-force)
+    $ip_hash   = md5($_SERVER['REMOTE_ADDR']); // Anonimiza o IP
+    $transient = 'sts_login_attempts_' . $ip_hash;
+    $attempts  = (int) get_transient($transient);
+
+    if ($attempts >= 5) {
+        wp_send_json_error('Muitas tentativas de login. Aguarde 15 minutos e tente novamente.');
+        return;
+    }
+
+    $info = array();
+    $info['user_login']    = isset($_POST['log']) ? sanitize_user($_POST['log']) : '';
+    $info['user_password'] = isset($_POST['pwd']) ? $_POST['pwd'] : '';
+    $info['remember']      = isset($_POST['rememberme']) ? true : false;
+
+    $user_signon = wp_signon($info, is_ssl());
+
+    if (is_wp_error($user_signon)) {
+        // Incrementa contador de tentativas falhas
+        set_transient($transient, $attempts + 1, 15 * MINUTE_IN_SECONDS);
+        wp_send_json_error('Dados de acesso incorretos. Tente novamente.');
+    } else {
+        // Login bem-sucedido: apaga contador de tentativas
+        delete_transient($transient);
+        wp_send_json_success(array(
+            'message'  => 'Login efetuado com sucesso!',
+            'redirect' => home_url('/meu-painel')
+        ));
+    }
+}
+add_action('wp_ajax_sts_ajax_login', 'sts_ajax_login_handler');
+add_action('wp_ajax_nopriv_sts_ajax_login', 'sts_ajax_login_handler');
+
+// AJAX: Cadastro Personalizado
+function sts_ajax_register_handler() {
+    check_ajax_referer('theme_nonce', 'nonce');
+
+    $name = isset($_POST['user_name']) ? sanitize_text_field($_POST['user_name']) : '';
+    $email = isset($_POST['user_email']) ? sanitize_email($_POST['user_email']) : '';
+    $pass = isset($_POST['user_pass']) ? $_POST['user_pass'] : '';
+    
+    // Validações Básicas
+    if (empty($name) || empty($email) || empty($pass)) {
+        wp_send_json_error('Por favor, preencha todos os campos obrigatórios.');
+    }
+    
+    if (!is_email($email)) {
+        wp_send_json_error('O endereço de e-mail fornecido não é válido.');
+    }
+    
+    if (email_exists($email)) {
+        wp_send_json_error('Este e-mail já está cadastrado em nosso site.');
+    }
+    
+    // Tenta criar o usuário (usuário = email para facilitar)
+    $user_id = wp_create_user($email, $pass, $email);
+    
+    if (is_wp_error($user_id)) {
+        wp_send_json_error('Erro ao criar conta: ' . $user_id->get_error_message());
+    } else {
+        // Define o Display Name e Nome
+        wp_update_user(array(
+            'ID' => $user_id,
+            'display_name' => $name,
+            'first_name' => $name
+        ));
+        
+        // Login Automático após o cadastro
+        wp_set_current_user($user_id);
+        wp_set_auth_cookie($user_id);
+        
+        wp_send_json_success(array(
+            'message' => 'Conta criada com sucesso! Bem-vindo(a).',
+            'redirect' => home_url('/meu-painel')
+        ));
+    }
+}
+add_action('wp_ajax_sts_ajax_register', 'sts_ajax_register_handler');
+add_action('wp_ajax_nopriv_sts_ajax_register', 'sts_ajax_register_handler');
+
+// AJAX: Atualizar Perfil Completo (Nova Página)
+function sts_handle_full_profile_update() {
+    check_ajax_referer('theme_nonce', 'nonce');
+    
+    if (!is_user_logged_in()) wp_send_json_error('Acesso negado.');
+
+    $user_id = get_current_user_id();
+    $update_data = array('ID' => $user_id);
+    
+    // 1. Gênero, Nome e Sobrenome
+    if (isset($_POST['sts_gender'])) update_user_meta($user_id, 'sts_gender', sanitize_text_field($_POST['sts_gender']));
+    if (isset($_POST['first_name'])) update_user_meta($user_id, 'first_name', sanitize_text_field($_POST['first_name']));
+    if (isset($_POST['last_name'])) update_user_meta($user_id, 'last_name', sanitize_text_field($_POST['last_name']));
+    if (isset($_POST['description'])) update_user_meta($user_id, 'description', sanitize_textarea_field($_POST['description']));
+
+    // 2. Senha com Requisitos Rigorosos
+    if (!empty($_POST['new_password'])) {
+        $pass1 = $_POST['new_password'];
+        $pass2 = $_POST['confirm_password'];
+
+        if ($pass1 !== $pass2) {
+            wp_send_json_error('As senhas não coincidem.');
+        }
+
+        // Validação de força (8 caracteres, 1 número, 1 min, 1 maiusc, 1 especial)
+        $has_number = preg_match('/[0-9]/', $pass1);
+        $has_lower = preg_match('/[a-z]/', $pass1);
+        $has_upper = preg_match('/[A-Z]/', $pass1);
+        $has_special = preg_match('/[^A-Za-z0-9]/', $pass1);
+
+        if (strlen($pass1) < 8 || !$has_number || !$has_lower || !$has_upper || !$has_special) {
+            wp_send_json_error('A senha não atende aos requisitos mínimos de segurança.');
+        }
+
+        $update_data['user_pass'] = $pass1;
+    }
+
+    // Persistir alterações de senha
+    if (isset($update_data['user_pass'])) {
+        $result = wp_update_user($update_data);
+        if (is_wp_error($result)) {
+            wp_send_json_error('Erro ao atualizar senha: ' . $result->get_error_message());
+        }
+    }
+
+    // 3. Processar Novo Avatar
+    if (!empty($_FILES['user_avatar']['name'])) {
+        require_once(ABSPATH . 'wp-admin/includes/image.php');
+        require_once(ABSPATH . 'wp-admin/includes/file.php');
+        require_once(ABSPATH . 'wp-admin/includes/media.php');
+
+        $file_type = wp_check_filetype($_FILES['user_avatar']['name']);
+        $allowed = array('jpg', 'jpeg'); // Apenas JPG/JPEG conforme modelo
+
+        if (in_array(strtolower($file_type['ext']), $allowed)) {
+            // Validar tamanho (inferior a 10MB)
+            if ($_FILES['user_avatar']['size'] > (10 * 1024 * 1024)) {
+                wp_send_json_error('O arquivo é muito grande. Máximo 10MB.');
+            }
+
+            $attachment_id = media_handle_upload('user_avatar', 0);
+            if (!is_wp_error($attachment_id)) {
+                update_user_meta($user_id, 'sts_avatar_id', $attachment_id);
+            } else {
+                wp_send_json_error('Erro no upload: ' . $attachment_id->get_error_message());
+            }
+        } else {
+            wp_send_json_error('Formato inválido. Use apenas JPG ou JPEG.');
+        }
+    }
+
+    wp_send_json_success(array('message' => 'Perfil completo atualizado com sucesso!'));
+}
+add_action('wp_ajax_sts_update_full_profile', 'sts_handle_full_profile_update');
+
+// Automação: Criar Páginas Essenciais Automaticamente
+function sts_auto_create_pages() {
+    $pages = array(
+        'meu-perfil' => array(
+            'title'    => 'Meu Perfil de Chef',
+            'template' => 'template-profile.php'
+        ),
+        'meu-painel' => array(
+            'title'    => 'Meu Painel',
+            'template' => 'template-dashboard.php'
+        ),
+        'entrar' => array(
+            'title'    => 'Entrar no Site',
+            'template' => 'template-login.php'
+        ),
+        'cadastrar' => array(
+            'title'    => 'Cadastrar na Rede',
+            'template' => 'template-register.php'
+        )
+    );
+
+    foreach ($pages as $slug => $data) {
+        $check_page = get_page_by_path($slug);
+        if (!$check_page) {
+            $page_id = wp_insert_post(array(
+                'post_title'    => $data['title'],
+                'post_name'     => $slug,
+                'post_content'  => '',
+                'post_status'   => 'publish',
+                'post_type'     => 'page',
+            ));
+            
+            if ($page_id && !empty($data['template'])) {
+                update_post_meta($page_id, '_wp_page_template', $data['template']);
+            }
+        }
+    }
+}
+add_action('after_setup_theme', 'sts_auto_create_pages');
+
+// Função auxiliar para retornar URL do avatar customizado ou padrão
+function sts_get_user_avatar_url($user_id, $size = 96) {
+    $avatar_id = get_user_meta($user_id, 'sts_avatar_id', true);
+    if ($avatar_id) {
+        return wp_get_attachment_image_url($avatar_id, 'thumbnail');
+    }
+    return get_avatar_url($user_id, array('size' => $size));
+}
+
+// AJAX: Avaliação de Receitas
+function sts_ajax_recipe_rating_handler() {
+    check_ajax_referer('theme_nonce', 'nonce');
+
+    $post_id = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
+    $rating  = isset($_POST['rating']) ? intval($_POST['rating']) : 0;
+    
+    if (!$post_id || $rating < 1 || $rating > 5) {
+        wp_send_json_error('Avaliação inválida.');
+    }
+
+    // Prevenção básica de votos duplicados (sessão ou cookie)
+    $cookie_name = 'sts_rated_' . $post_id;
+    if (isset($_COOKIE[$cookie_name])) {
+        wp_send_json_error('Você já avaliou esta receita.');
+    }
+
+    $total = (int) get_post_meta($post_id, '_rating_total', true);
+    $count = (int) get_post_meta($post_id, '_rating_count', true);
+
+    $total += $rating;
+    $count += 1;
+
+    update_post_meta($post_id, '_rating_total', $total);
+    update_post_meta($post_id, '_rating_count', $count);
+    
+    $avg = round($total / $count, 1);
+    update_post_meta($post_id, '_rating_avg', $avg);
+
+    // Salva cookie por 30 dias (Simplificado para localhost)
+    setcookie($cookie_name, '1', time() + (30 * DAY_IN_SECONDS), '/');
+
+    wp_send_json_success(array(
+        'average' => $avg,
+        'count'   => $count,
+        'message' => 'Obrigado por avaliar!'
+    ));
+}
+add_action('wp_ajax_sts_recipe_rating', 'sts_ajax_recipe_rating_handler');
+add_action('wp_ajax_nopriv_sts_recipe_rating', 'sts_ajax_recipe_rating_handler');
+
+// Ocultar a barra de administração para todos exceto Administradores (Melhoria de UX para Assinantes)
+function sts_hide_admin_bar_for_subscribers() {
+    if (!current_user_can('administrator')) {
+        show_admin_bar(false);
+    }
+}
+add_action('after_setup_theme', 'sts_hide_admin_bar_for_subscribers');
+
+/**
+ * Proteção de Cardápios Futuros
+ * Impede o acesso direto a cardápios que ainda não deveriam estar públicos.
+ */
+function sts_protect_future_menus() {
+    if (is_singular('sts_cardapio')) {
+        $post = get_post();
+        if ($post->post_date > current_time('mysql') && !current_user_can('edit_posts')) {
+            wp_redirect(home_url('/cardapios'));
+            exit;
+        }
+    }
+}
+add_action('template_redirect', 'sts_protect_future_menus');
+
+// Sistema Profissional de Gerenciamento de Anúncios (CPT) REMOVIDO
+require_once get_template_directory() . '/includes/cpt/cardapios.php';
+
+// Sistema Surgical Ad Engine REMOVIDO
+
+/**
+ * AJAX: Compilar Lista de Compras do Cardápio
+ * Protegido com nonce para evitar acesso externo não autorizado.
+ */
+function sts_get_cardapio_ingredients() {
+    check_ajax_referer('theme_nonce', 'nonce');
+
+    $ids_str = isset($_GET['ids']) ? sanitize_text_field($_GET['ids']) : '';
+    $ids = !empty($ids_str) ? array_map('intval', explode(',', $ids_str)) : array();
+    $compiled = array();
+
+    if (!empty($ids)) {
+        foreach ($ids as $id) {
+            $ing_raw = get_post_meta($id, '_ingredientes_raw', true);
+            if (is_array($ing_raw)) {
+                foreach ($ing_raw as $grupo) {
+                    if (empty($grupo)) continue;
+                    $itens = explode("\n", $grupo);
+                    foreach ($itens as $item) {
+                        $item = trim($item);
+                        if (!empty($item)) $compiled[] = sanitize_text_field($item);
+                    }
+                }
+            }
+        }
+    }
+
+    $compiled = array_unique($compiled);
+    wp_send_json_success(array_values($compiled));
+}
+add_action('wp_ajax_get_cardapio_ingredients', 'sts_get_cardapio_ingredients');
+add_action('wp_ajax_nopriv_get_cardapio_ingredients', 'sts_get_cardapio_ingredients');
+/**
+ * Paginação Premium com Tailwind CSS
+ */
+function sts_pagination() {
+    if (is_singular()) return;
+
+    global $wp_query;
+    $big = 999999999;
+    $pages = paginate_links(array(
+        'base'      => str_replace($big, '%#%', esc_url(get_pagenum_link($big))),
+        'format'    => '?paged=%#%',
+        'current'   => max(1, get_query_var('paged')),
+        'total'     => $wp_query->max_num_pages,
+        'type'      => 'array',
+        'prev_next' => true,
+        'prev_text' => '<span class="material-symbols-outlined">west</span>',
+        'next_text' => '<span class="material-symbols-outlined">east</span>',
+    ));
+
+    if (is_array($pages)) {
+        echo '<nav class="flex justify-center items-center gap-2 mt-16" aria-label="Navegação de páginas">';
+        foreach ($pages as $page) {
+            $class = "inline-flex items-center justify-center size-12 rounded-2xl bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold hover:bg-primary hover:text-white border border-slate-100 dark:border-slate-700 transition-all shadow-sm";
+            
+            // Verifica se é a página atual
+            if (strpos($page, 'current') !== false) {
+                $page = str_replace('page-numbers current', 'page-numbers', $page);
+                echo str_replace('page-numbers', $class . ' !bg-primary !text-white shadow-lg shadow-primary/20', $page);
+            } 
+            // Botões de Próximo/Anterior
+            elseif (strpos($page, 'prev') !== false || strpos($page, 'next') !== false) {
+                echo str_replace('page-numbers', $class . ' bg-slate-50 dark:bg-slate-900 border-none', $page);
+            }
+            // Dots (...)
+            elseif (strpos($page, 'dots') !== false) {
+                echo '<span class="px-2 text-slate-400 font-bold">...</span>';
+            }
+            // Páginas normais
+            else {
+                echo str_replace('page-numbers', $class, $page);
+            }
+        }
+        echo '</nav>';
+    }
+}
+/**
+ * Minificador de HTML Nativo (Zero-Plugin Cache)
+ * Remove espaços, quebras de linha e comentários inúteis.
+ */
+function sts_minify_html_output($buffer) {
+    if (is_admin()) return $buffer; // Não minifica o painel administrativo
+    
+    $search = array(
+        '/\>\s+\</',      // Remove espaços entre tags
+        '/\s{2,}/',       // Remove espaços duplos
+        '/(\r?\n)/',      // Remove quebras de linha
+        '/<!--(.*?)-->/s' // Remove comentários HTML (Exceto Konditional comments do IE se houver)
+    );
+    $replace = array(
+        '><',
+        ' ',
+        '',
+        ''
+    );
+    return preg_replace($search, $replace, $buffer);
+}
+
+/**
+ * Roteador Inteligente de Templates (Foco em SEO & Schema)
+ * Direciona posts para single.php (Receitas) ou single-default.php (Artigos)
+ * sem a necessidade de plugins ou alteração física no single.php
+ */
+function sts_smart_template_router($template) {
+    if (is_singular('post')) {
+        $post_id = get_the_ID();
+        
+        // Critério de identificação de Receita: Presença de Ingredientes ou Categoria Específica
+        $ingredientes = get_post_meta($post_id, '_ingredientes', true);
+        $is_recipe_cat = has_category('receitas', $post_id) || has_category('receita', $post_id);
+
+        // Se NÃO for receita, usamos o template de artigo padrão
+        if (empty($ingredientes) && !$is_recipe_cat) {
+            $default_template = locate_template('single-default.php');
+            if ($default_template) {
+                return $default_template;
+            }
+        }
+    }
+    
+    return $template;
+}
+add_filter('template_include', 'sts_smart_template_router', 99);
+
+
+/**
+ * SENIOR SEO: Limpeza de Bloatware do WordPress
+ * Remove scripts e estilos nativos que só pesam o site.
+ */
+function sts_remove_wp_bloat() {
+    // Remover Emojis
+    remove_action('wp_head', 'print_emoji_detection_script', 7);
+    remove_action('admin_print_scripts', 'print_emoji_detection_script');
+    remove_action('wp_print_styles', 'print_emoji_styles');
+    remove_action('admin_print_styles', 'print_emoji_styles');
+    remove_filter('the_content_feed', 'wp_staticize_emoji');
+    remove_filter('comment_text_rss', 'wp_staticize_emoji');
+    remove_filter('wp_mail', 'wp_staticize_emoji_for_email');
+
+    // Remover links de RSD, WLW e Shortlinks
+    remove_action('wp_head', 'rsd_link');
+    remove_action('wp_head', 'wlwmanifest_link');
+    remove_action('wp_head', 'wp_shortlink_wp_head');
+    remove_action('wp_head', 'wp_generator'); // Esconde a versão do WP
+}
+add_action('init', 'sts_remove_wp_bloat');
+
+/**
+ * SENIOR SEO: Preconnect para acelerar carregamento de fontes e scripts externos
+ */
+function sts_add_resource_hints($urls, $relation) {
+    if ('preconnect' === $relation) {
+        $urls[] = array('href' => 'https://fonts.googleapis.com', 'crossorigin' => 'anonymous');
+        $urls[] = array('href' => 'https://fonts.gstatic.com', 'crossorigin' => 'anonymous');
+        $urls[] = array('href' => 'https://cdnjs.cloudflare.com', 'crossorigin' => 'anonymous');
+    }
+    return $urls;
+}
+add_filter('wp_resource_hints', 'sts_add_resource_hints', 10, 2);
+
+/**
+ * SENIOR SEO: Carregar CSS principal de forma assíncrona (Opcional, mas potente)
+ */
+function sts_async_styles($tag, $handle, $src) {
+    if ('google-fonts' === $handle || 'material-symbols' === $handle) {
+        return str_replace("rel='stylesheet'", "rel='stylesheet' media='print' onload=\"this.media='all'\"", $tag);
+    }
+    return $tag;
+}
+add_filter('style_loader_tag', 'sts_async_styles', 10, 3);
+
+/**
+ * SENIOR SEO CLEANUP: Sniper Anti-Conflito de Schemas
+ * Remove blocos de Article/Review genéricos que geram erro quando já temos uma Receita.
+ */
+function sts_force_clean_extra_schemas($buffer) {
+    if (is_singular('post')) {
+        // Se o buffer contém a nossa Receita, removemos qualquer Article que tenha aggregateRating irregular
+        if (strpos($buffer, '"@type": "Recipe"') !== false) {
+            // Regex potente para remover blocos de script application/ld+json que sejam "Article"
+            $buffer = preg_replace('/<script type="application\/ld\+json"[^>]*>.*?["\']@type["\']\s*:\s*["\']Article["\'].*?<\/script>/is', '', $buffer);
+            
+            // Remove especificamente o comentário "SEO Engine Pro" se ele estiver injetando lixo
+            $buffer = preg_replace('/<!-- SEO Engine Pro: Structured Data -->.*?<\/script>/is', '', $buffer);
+        }
+    }
+    return $buffer;
+}
+
+function sts_start_seo_buffer() {
+    if (!is_admin()) ob_start('sts_force_clean_extra_schemas');
+}
+function sts_end_seo_buffer() {
+    if (!is_admin() && ob_get_length()) ob_end_flush();
+}
+add_action('template_redirect', 'sts_start_seo_buffer', 1);
+add_action('shutdown', 'sts_end_seo_buffer', 999);
+
+/**
+ * SENIOR SEO: Desativa o Sitemap Nativo do WP para priorizar o nosso Motor de Alta Performance
+ * E redireciona o link antigo para o novo para evitar erros 404 no Google.
+ */
+add_filter('wp_sitemaps_enabled', '__return_false');
+
+add_action('template_redirect', function() {
+    if (strpos($_SERVER['REQUEST_URI'], '/wp-sitemap.xml') !== false) {
+        wp_redirect(home_url('/sitemap_index.xml'), 301);
+        exit;
+    }
+});
+
+/**
+ * HARDCORE SEO: X-Robots-Tag HTTP Headers
+ * Força o Google a tratar o site com máxima prioridade no nível de protocolo.
+ */
+function sts_hardcore_seo_headers() {
+    if (is_singular('post')) {
+        header('X-Robots-Tag: index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
+    }
+}
+add_action('send_headers', 'sts_hardcore_seo_headers');
+
+/**
+ * HARDCORE PERFORMANCE: Preload de Recursos Críticos (LCP)
+ * Faz o site 'voar' para o Crawler do Google (Nota 90+ no PageSpeed)
+ */
+function sts_hardcore_performance_hints() {
+    echo '<link rel="dns-prefetch" href="//www.google-analytics.com">';
+    echo '<link rel="dns-prefetch" href="//www.googletagmanager.com">';
+}
+add_action('wp_head', 'sts_hardcore_performance_hints', 1);
+
+// 6. Blindagem de Canonical (Anti-Canibalização para Web Stories)
+function sts_force_intelligent_canonical() {
+    if (is_singular('web-story')) {
+        // Remove canonicals vindo do WordPress ou de outros plugins
+        remove_action('wp_head', 'rel_canonical');
+        remove_action('wp_head', 'index_rel_link');
+    }
+}
+add_action('wp_head', 'sts_force_intelligent_canonical', 1);
+
+/**
+ * Robots.txt Unificado (God Mode)
+ * Regra mestra com todas as diretivas consolidadas.
+ * Inclui: segurança, anti-crawl-lixo, e sitemap.
+ */
+function sts_hardcore_robots_txt($output, $public) {
+    if ('0' == $public) return $output; // Respeita configuração do painel WP
+
+    $output  = "User-agent: *\n";
+    $output .= "Allow: /wp-admin/admin-ajax.php\n";
+    $output .= "Disallow: /wp-admin/\n";
+    $output .= "Disallow: /wp-includes/\n";
+    $output .= "Disallow: /wp-content/plugins/\n";
+    $output .= "Disallow: /wp-content/cache/\n";
+    $output .= "Disallow: /readme.html\n";
+    $output .= "Disallow: /license.txt\n";
+    $output .= "Disallow: /search/\n";
+    // Blindagem contra parâmetros de lixo (Crawled - currently not indexed)
+    $output .= "Disallow: */feed/\n";
+    $output .= "Disallow: */trackback/\n";
+    $output .= "Disallow: *?nonamp=*\n";
+    $output .= "Disallow: *?noamp=*\n";
+    $output .= "Disallow: *?utm_source=*\n";
+    $output .= "Disallow: *?share=*\n";
+    $output .= "Disallow: *?auth=*\n";
+    $output .= "Disallow: /?s=*\n"; // Bloqueia resultados de busca internos
+    $output .= "\n";
+    $output .= "Sitemap: " . home_url('/sitemap_index.xml') . "\n";
+
+    return $output;
+}
+add_filter('robots_txt', 'sts_hardcore_robots_txt', 20, 2);
+
+/**
+ * 🎮 ADS MASTER - PÁGINA DE CONFIGURAÇÕES (GOD MODE)
+ */
+add_action('admin_menu', function() {
+    add_menu_page('Ads Master', '🎮 Ads Master', 'manage_options', 'sts-ads-master', 'sts_ads_master_page', 'dashicons-money-alt', 30);
+});
+
+function sts_ads_master_page() {
+    $slots = [
+        'sts_ad_header'             => 'Header: Script Global / Head (Ad Manager / Auto Ads)',
+        'sts_ad_home_top_billboard' => 'Home: Billboard Topo',
+        'sts_ad_home_mid_section'   => 'Home: Meio da Página',
+        'sts_ad_single_above_title'  => 'Single: Acima do Título (Premium)',
+        'sts_ad_single_top_author'  => 'Single: Topo (Abaixo Bio)',
+        'sts_ad_single_mid_paragraphs' => 'Single: Meio do Conteúdo',
+        'sts_ad_single_after_recipe' => 'Single: Final de Post',
+        'sts_ad_archive_top'        => 'Arquivos: Topo de Categoria',
+        'sts_ad_sidebar_sticky'     => 'Global: Sidebar Sticky',
+    ];
+
+    if (isset($_POST['sts_ads_save'])) {
+        foreach ($slots as $id => $label) {
+            // Usamos stripslashes para garantir que o código do anúncio não seja corrompido
+            update_option($id, stripslashes($_POST[$id]));
+        }
+        echo '<div class="notice notice-success is-dismissible"><p>Ouro guardado com sucesso! 💰</p></div>';
+    }
+    ?>
+    <div class="wrap" style="background: #fff; padding: 40px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.05); max-width: 800px; margin: 40px auto;">
+        <h1 style="font-weight: 900; font-size: 32px; color: #1e293b; margin-bottom: 10px;">🎮 ADS MASTER</h1>
+        <p style="color: #64748b; margin-bottom: 30px;">Gerencie sua monetização de elite com performance nativa.</p>
+        
+        <form method="post">
+            <?php foreach ($slots as $id => $label) : ?>
+                <div style="margin-bottom: 25px;">
+                    <label style="display: block; font-weight: 800; color: #334155; margin-bottom: 8px; font-size: 14px;"><?php echo $label; ?></label>
+                    <textarea name="<?php echo $id; ?>" style="width: 100%; height: 120px; border-radius: 12px; border: 1px solid #e2e8f0; font-family: monospace; background: #f8fafc; padding: 15px;" placeholder="Cole o código <script>..."><?php echo esc_textarea(get_option($id)); ?></textarea>
+                </div>
+            <?php endforeach; ?>
+            
+            <button type="submit" name="sts_ads_save" class="button button-primary button-large" style="background: #ec5b13; border: none; padding: 10px 40px; height: auto; font-weight: 900; border-radius: 12px; box-shadow: 0 10px 20px rgba(236, 91, 19, 0.2);">SALVAR CONFIGURAÇÕES</button>
+        </form>
+    </div>
+    <?php
+}
+
+/**
+ * Injeta o Script Global do Ad Manager / AdSense no <head>
+ */
+add_action('wp_head', function() {
+    $header_code = get_option('sts_ad_header', '');
+    if (!empty($header_code)) {
+        echo stripslashes($header_code) . "\n";
+    }
+}, 1);
+
+/**
+ * 🕸️ HIPERLINKADOR SEMÂNTICO (GOD MODE)
+ * Transforma termos-chave em links de autoridade automaticamente.
+ * Regra: Apenas 1 link por termo, ignora títulos e links existentes.
+ */
+/**
+ * 🕸️ MOTOR DE AUTORIDADE TÓPICA DINÂMICO (Nível Zeus)
+ * Transforma o site em um grafo de conhecimento interligado.
+ */
+
+// 1. Gera ou recupera o Mapa Semântico Dinâmico (Cacheado por 24h)
+function sts_get_dynamic_semantic_map() {
+    $map = get_transient('sts_dynamic_semantic_map');
+    
+    if (false === $map) {
+        $map = [];
+        $posts = get_posts([
+            'post_type'      => 'post',
+            'post_status'    => 'publish',
+            'numberposts'    => 200, // Limite para não sobrecarregar o grafo
+            'fields'         => 'ids',
+            'orderby'        => 'date',
+            'order'          => 'DESC'
+        ]);
+
+        foreach ($posts as $pid) {
+            $title = get_the_title($pid);
+            // Limpa o título para extrair a entidade principal (ex: "Bolo de Cenoura" -> "Bolo de Cenoura")
+            // Ignora palavras curtas ou termos genéricos
+            if (mb_strlen($title) > 4) {
+                $map[$title] = get_permalink($pid);
+            }
+        }
+        
+        set_transient('sts_dynamic_semantic_map', $map, DAY_IN_SECONDS);
+    }
+    return $map;
+}
+
+// 2. Limpa o cache ao salvar novos posts para manter o grafo atualizado
+add_action('save_post', function() { delete_transient('sts_dynamic_semantic_map'); });
+
+function sts_semantic_hyperlinker($content) {
+    if (!is_single() || !is_main_query()) return $content;
+
+    $post_id      = get_the_ID();
+    $current_url  = get_permalink($post_id);
+    $current_title = get_the_title($post_id);
+
+    // Prioridade 1: Mapa Manual (Controle Humano) — slug => URL completa
+    // Atenção: aqui usamos o permalink completo para evitar get_page_by_path() no loop
+    $manual_map = [
+        'Peras'    => home_url('/peras-assadas-com-gorgonzola-e-mel/'),
+        'Camarão'  => home_url('/camarao-no-abacaxi/'),
+        'Mocotó'   => home_url('/como-fazer-caldo-de-mocoto-mineiro/'),
+        'Empadaó'  => home_url('/empadao-de-frango-com-massa-podre/'),
+        'Panceta'  => home_url('/panceta-oriental-ao-molho-agridoce/'),
+    ];
+
+    // Prioridade 2: Mapa Dinâmico — já contém a URL completa (title => permalink)
+    // Cacheado por 24h em transient, sem queries extras
+    $dynamic_map = sts_get_dynamic_semantic_map();
+
+    // Une os mapas dando prioridade ao manual
+    // O manual tem URLs absolutas, o dinâmico também — sem necessidade de get_page_by_path()
+    $full_map = array_merge($dynamic_map, $manual_map);
+
+    $link_count = 0;
+    $max_links  = 4; // Limite de Lily Ray: Não saturar o post com links (UX First)
+
+    foreach ($full_map as $term => $link) {
+        if ($link_count >= $max_links) break;
+
+        // Validação: pular se não for URL válida ou se apontar para o próprio post
+        if (!filter_var($link, FILTER_VALIDATE_URL)) continue;
+        if (strpos($link, $current_url) !== false) continue;
+        // Não linka para si mesmo pelo título
+        if (stripos($current_title, $term) !== false) continue;
+
+        // Regex Ninja: Casa a palavra mas ignora se estiver dentro de tags HTML ou já for um link
+        $pattern = '/(?!(?:[^<]+>|[^>]+<\/a>))\b(' . preg_quote($term, '/') . ')\b/iu';
+
+        if (preg_match($pattern, $content)) {
+            $safe_link = esc_url($link);
+            $content   = preg_replace(
+                $pattern,
+                '<a href="' . $safe_link . '" class="semantic-link text-primary hover:underline font-medium">$1</a>',
+                $content,
+                1
+            );
+            $link_count++;
+        }
+    }
+
+    return $content;
+}
+add_filter('the_content', 'sts_semantic_hyperlinker', 10);
+
+
+/**
+ * TikTok Pixel
+ * Injetado via wp_head para rastreio de conversões no TikTok Ads.
+ */
+function sts_tiktok_pixel() {
+    ?>
+    <!-- TikTok Pixel Code Start -->
+    <script>
+    !function (w, d, t) {
+      w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(
+    var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script")
+    ;n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
+
+      ttq.load('<?php echo defined('STS_TIKTOK_PIXEL_ID') ? STS_TIKTOK_PIXEL_ID : 'D7O1A03C77U9UIR3GP2G'; ?>');
+      ttq.page();
+    }(window, document, 'ttq');
+    </script>
+    <!-- TikTok Pixel Code End -->
+    <?php
+}
+add_action('wp_head', 'sts_tiktok_pixel', 99);
+
+/**
+ * Zeus Production Shield - Adicionais Não Cobertos pela Limpeza de Head
+ * Apenas o que é específico deste bloco e não já feito em dr_limpeza_head_completa().
+ */
+// Remover versão de scripts e estilos (fingerprinting de versão)
+function sts_remove_wp_version_strings($src) {
+    if (strpos($src, 'ver=') !== false) {
+        $src = remove_query_arg('ver', $src);
+    }
+    return $src;
+}
+
+// Hooks de remoção de versão de scripts e estilos (função definida acima no Zeus Shield)
+add_filter('style_loader_src', 'sts_remove_wp_version_strings', 9999);
+add_filter('script_loader_src', 'sts_remove_wp_version_strings', 9999);
+
+
+// 5. SEO Sênior: Bloqueia a indexação do Header/Footer via cabeçalho HTTP (Opcional para APIs)
+add_action('send_headers', function() {
+    if (is_feed() || is_trackback()) {
+        header('X-Robots-Tag: noindex, follow', true);
+    }
+});
+
+// 6. Nota: O plugin de cookies foi removido manualmente. Se precisar de um,
+// instale e configure um adequado via o painel WordPress (não desative automaticamente via código).
+
+/**
+ * Adiciona a imagem destacada (Featured Image) no Feed RSS do WordPress para o n8n / WhatsApp
+ */
+function add_rss_enclosure_featured_image() {
+    global $post;
+    if (has_post_thumbnail($post->ID)) {
+        $thumbnail_url = wp_get_attachment_image_url(get_post_thumbnail_id($post->ID), 'full');
+        if ($thumbnail_url) {
+            echo '<enclosure url="' . esc_url($thumbnail_url) . '" type="image/jpeg" />' . "\n";
+        }
+    }
+}
+add_action('rss2_item', 'add_rss_enclosure_featured_image');
+
+
+
