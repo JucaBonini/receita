@@ -5,9 +5,7 @@
           </div>
      </div>
 
-     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7381677975479553"
-          crossorigin="anonymous"></script>
-     <!-- [DR] HOME -->
+     <!-- [DR] HOME (script carregado globalmente via ADS MASTER header) -->
      <ins class="adsbygoogle"
           style="display:block"
           data-ad-client="ca-pub-7381677975479553"
