@@ -454,8 +454,31 @@ get_header();
                 ));
 
                 if ($achadinhos_query->have_posts()) : while ($achadinhos_query->have_posts()) : $achadinhos_query->the_post();
-                    $link = get_post_meta(get_the_ID(), '_link_afiliado', true) ?: '#';
-                    $preco = get_post_meta(get_the_ID(), '_preco_atual', true);
+                    $post_id = get_the_ID();
+                    $link = get_post_meta($post_id, '_link_afiliado', true);
+                    $preco = get_post_meta($post_id, '_preco_atual', true);
+                    
+                    // Fallback para dados do Content Egg (Amazon) se campos diretos estiverem vazios
+                    if (empty($link) || empty($preco)) {
+                        $cegg_data = get_post_meta($post_id, '_cegg_data_Amazon', true);
+                        if ($cegg_data) {
+                            $offers = maybe_unserialize($cegg_data);
+                            if (is_array($offers) && !empty($offers)) {
+                                $first_offer = reset($offers);
+                                if (empty($link) && isset($first_offer['url'])) {
+                                    $link = $first_offer['url'];
+                                }
+                                if (empty($preco) && isset($first_offer['price']) && $first_offer['price'] > 0) {
+                                    $preco = number_format($first_offer['price'], 2, ',', '.');
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Fallback de segurança para link
+                    if (empty($link)) {
+                        $link = get_permalink();
+                    }
                 ?>
                 <div class="bg-white dark:bg-slate-800 rounded-[32px] p-4 border border-slate-100 dark:border-slate-700 hover:shadow-2xl transition-all group relative">
                     <!-- Badge de Oferta (Opcional) -->
@@ -477,14 +500,22 @@ get_header();
                         <h3 class="text-lg font-bold mb-3 line-clamp-1 group-hover:text-primary transition-colors"><?php the_title(); ?></h3>
                         <div class="flex items-center justify-between mb-6">
                             <?php if ($preco) : ?>
-                                <span class="text-xl font-black text-slate-900 dark:text-white">R$ <?php echo $preco; ?></span>
+                                <span class="text-xl font-black text-slate-900 dark:text-white">
+                                    <?php 
+                                    if (strpos($preco, 'R$') === false) {
+                                        echo 'R$ ' . esc_html($preco);
+                                    } else {
+                                        echo esc_html($preco);
+                                    }
+                                    ?>
+                                </span>
                             <?php else : ?>
                                 <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Ver Preço Atual</span>
                             <?php endif; ?>
                             <div class="flex text-amber-500">
                                 <span class="material-symbols-outlined text-sm">star</span>
                                 <span class="material-symbols-outlined text-sm">star</span>
-                                <span class="material-symbols-outlined text-sm) font-bold">star</span>
+                                <span class="material-symbols-outlined text-sm">star</span>
                             </div>
                         </div>
 
