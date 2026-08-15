@@ -675,15 +675,91 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 10. Cooking Mode Logic
+    // 9.1 Font Zoom Accessibility System (Seniors 60+)
+    const zoomContainer = document.getElementById('recipe-zoom-container');
+    const zoomLvlLabel = document.getElementById('font-zoom-level');
+    const zoomIncBtn = document.getElementById('font-increase');
+    const zoomDecBtn = document.getElementById('font-decrease');
+    
+    if (zoomContainer && zoomLvlLabel && zoomIncBtn && zoomDecBtn) {
+        const zoomLevels = ['recipe-font-normal', 'recipe-font-large', 'recipe-font-xlarge'];
+        const zoomLabels = ['100%', '125%', '145%'];
+        let currentZoomIdx = 0;
+        
+        const updateZoom = (newIdx) => {
+            zoomLevels.forEach(cls => zoomContainer.classList.remove(cls));
+            zoomContainer.classList.add(zoomLevels[newIdx]);
+            zoomLvlLabel.innerText = zoomLabels[newIdx];
+            currentZoomIdx = newIdx;
+            
+            zoomDecBtn.classList.toggle('opacity-45', currentZoomIdx === 0);
+            zoomDecBtn.classList.toggle('pointer-events-none', currentZoomIdx === 0);
+            zoomIncBtn.classList.toggle('opacity-45', currentZoomIdx === zoomLevels.length - 1);
+            zoomIncBtn.classList.toggle('pointer-events-none', currentZoomIdx === zoomLevels.length - 1);
+        };
+        
+        updateZoom(0);
+        
+        zoomIncBtn.addEventListener('click', () => {
+            if (currentZoomIdx < zoomLevels.length - 1) {
+                updateZoom(currentZoomIdx + 1);
+            }
+        });
+        
+        zoomDecBtn.addEventListener('click', () => {
+            if (currentZoomIdx > 0) {
+                updateZoom(currentZoomIdx - 1);
+            }
+        });
+    }
+
+    // 10. Cooking Mode Logic (Slide-by-Step with Wake Lock)
     const cookingBtn = document.getElementById('start-cooking-mode');
     const cookingOverlay = document.getElementById('cooking-mode-overlay');
     const closeCookingBtn = document.getElementById('close-cooking-mode');
+    const cookingPrevBtn = document.getElementById('cooking-prev');
+    const cookingNextBtn = document.getElementById('cooking-next');
     let wakeLock = null;
+    let currentCookingStep = 0;
 
     if (cookingBtn && cookingOverlay) {
+        
+        const showStep = (index, stepItems) => {
+            stepItems.forEach((step, i) => {
+                if (i === index) {
+                    step.classList.remove('hidden');
+                    step.classList.add('block');
+                } else {
+                    step.classList.remove('block');
+                    step.classList.add('hidden');
+                }
+            });
+
+            currentCookingStep = index;
+
+            // Navegação e botões
+            if (cookingPrevBtn) {
+                if (index === 0) {
+                    cookingPrevBtn.classList.add('hidden');
+                } else {
+                    cookingPrevBtn.classList.remove('hidden');
+                }
+            }
+
+            if (cookingNextBtn) {
+                if (index === stepItems.length - 1) {
+                    cookingNextBtn.innerText = 'Concluir Receita';
+                    cookingNextBtn.classList.remove('bg-primary');
+                    cookingNextBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+                } else {
+                    cookingNextBtn.innerText = 'Próximo Passo';
+                    cookingNextBtn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
+                    cookingNextBtn.classList.add('bg-primary');
+                }
+            }
+        };
+
         cookingBtn.addEventListener('click', async () => {
-            // 1. Preencher Conteúdo
             const titleElement = document.querySelector('h1');
             const title = titleElement ? titleElement.innerText : 'Receita';
             const steps = document.querySelectorAll('#instructions .relative.pl-12');
@@ -694,13 +770,13 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (container) {
                 container.innerHTML = Array.from(steps).map((step, i) => {
-                    const descElement = step.querySelector('.text-slate-600, .dark\\:text-slate-400');
+                    const descElement = step.querySelector('.step-desc');
                     const desc = descElement ? descElement.innerHTML : '';
                     return `
-                        <div class="cooking-step-item bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-8 md:p-12 rounded-[40px] shadow-sm">
+                        <div class="cooking-step-item bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-8 md:p-12 rounded-[40px] shadow-sm hidden">
                             <div class="flex items-center gap-6 mb-8">
-                                <span class="size-16 rounded-full bg-primary text-white flex items-center justify-center font-black text-2xl shadow-lg shadow-primary/20">${i+1}</span>
-                                <h4 class="text-xl font-black text-slate-400 uppercase tracking-widest">PASSO ${i+1}</h4>
+                                <span class="size-16 rounded-full bg-primary text-white flex items-center justify-center font-black text-2xl shadow-lg shadow-primary/20 shrink-0">${i+1}</span>
+                                <h4 class="text-xl font-black text-slate-400 uppercase tracking-widest">PASSO ${i+1} DE ${steps.length}</h4>
                             </div>
                             <div class="text-2xl md:text-3xl font-bold leading-relaxed text-slate-800 dark:text-slate-200">
                                 ${desc}
@@ -710,12 +786,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 }).join('');
             }
 
-            // 2. Mostrar Overlay
+            const stepItems = container.querySelectorAll('.cooking-step-item');
+            showStep(0, stepItems);
+
             cookingOverlay.classList.remove('hidden');
             cookingOverlay.classList.add('flex');
             document.body.style.overflow = 'hidden';
 
-            // 3. Ativar Wake Lock (Impedir tela de apagar)
+            // Wake Lock
             if ('wakeLock' in navigator) {
                 try {
                     wakeLock = await navigator.wakeLock.request('screen');
@@ -731,6 +809,29 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
+        // Clique no botão Próximo
+        if (cookingNextBtn) {
+            cookingNextBtn.addEventListener('click', () => {
+                const stepItems = document.querySelectorAll('#cooking-steps-container .cooking-step-item');
+                if (currentCookingStep < stepItems.length - 1) {
+                    showStep(currentCookingStep + 1, stepItems);
+                } else {
+                    if (closeCookingBtn) closeCookingBtn.click();
+                }
+            });
+        }
+
+        // Clique no botão Anterior
+        if (cookingPrevBtn) {
+            cookingPrevBtn.addEventListener('click', () => {
+                const stepItems = document.querySelectorAll('#cooking-steps-container .cooking-step-item');
+                if (currentCookingStep > 0) {
+                    showStep(currentCookingStep - 1, stepItems);
+                }
+            });
+        }
+
+        // Fechar Modo Cozinha
         if (closeCookingBtn) {
             closeCookingBtn.addEventListener('click', () => {
                 cookingOverlay.classList.remove('flex');
@@ -750,6 +851,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         }
+
+        // Navegação via Teclado
+        document.addEventListener('keydown', (e) => {
+            if (!cookingOverlay.classList.contains('hidden')) {
+                if (e.key === 'ArrowRight') {
+                    if (cookingNextBtn) cookingNextBtn.click();
+                } else if (e.key === 'ArrowLeft') {
+                    if (cookingPrevBtn) cookingPrevBtn.click();
+                } else if (e.key === 'Escape') {
+                    if (closeCookingBtn) closeCookingBtn.click();
+                }
+            }
+        });
+
+        // Auto-resume Wake Lock ao voltar para a aba
+        document.addEventListener('visibilitychange', async () => {
+            if (wakeLock !== null && document.visibilityState === 'visible' && !cookingOverlay.classList.contains('hidden')) {
+                try {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                } catch (err) {
+                    console.error('Falha ao reativar Wake Lock:', err);
+                }
+            }
+        });
     }
 
     // 11. Rastreamento Assíncrono de Views (Performance & Anti-Bounce)

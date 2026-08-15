@@ -48,3 +48,30 @@
 body {
   @apply bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 transition-colors duration-200;
 }
+
+/* Escala de Fontes Dinâmica para Acessibilidade */
+.recipe-font-normal { --recipe-text-scale: 1; }
+.recipe-font-large { --recipe-text-scale: 1.25; }
+.recipe-font-xlarge { --recipe-text-scale: 1.45; }
+
+#recipe-zoom-container.recipe-font-normal label span,
+#recipe-zoom-container.recipe-font-large label span,
+#recipe-zoom-container.recipe-font-xlarge label span {
+  font-size: calc(1rem * var(--recipe-text-scale)) !important;
+  line-height: 1.6 !important;
+}
+
+#recipe-zoom-container.recipe-font-normal .step-desc,
+#recipe-zoom-container.recipe-font-large .step-desc,
+#recipe-zoom-container.recipe-font-xlarge .step-desc {
+  font-size: calc(1.125rem * var(--recipe-text-scale)) !important;
+  line-height: 1.7 !important;
+}
+
+/* Feedback de Ingredientes Marcados */
+.ingredient-row input[type="checkbox"]:checked ~ span {
+  text-decoration: line-through;
+  opacity: 0.5;
+  transition: all 0.2s ease;
+}
+

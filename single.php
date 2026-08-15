@@ -91,15 +91,15 @@ if (have_posts()) : while (have_posts()) : the_post();
                 <div class="flex items-center gap-1.5 px-3 py-1 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 rounded-full">
                     <span class="material-symbols-outlined text-xl">star</span>
                     <span class="font-bold"><?php echo $display_rating_avg; ?></span>
-                    <span class="text-xs opacity-75">(<?php echo $display_rating_count; ?>)</span>
+                    <span class="text-xs opacity-75">(<?php echo $display_rating_count; ?> <?php echo $display_rating_count > 1 ? 'avaliações' : 'avaliação'; ?>)</span>
                 </div>
                 <div class="flex items-center gap-1">
                     <span class="material-symbols-outlined text-slate-400 text-xl">schedule</span>
-                    <span><?php the_modified_date('d/m/Y'); ?></span>
+                    <span>Atualizado em <?php the_modified_date('d/m/Y'); ?></span>
                 </div>
                 <div class="flex items-center gap-1.5 px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-full text-xs font-bold border border-slate-200 dark:border-slate-700">
                     <span class="material-symbols-outlined text-lg">visibility</span>
-                    <span><?php echo get_post_views($post_id); ?></span>
+                    <span><?php echo get_post_views($post_id); ?> visualizações</span>
                 </div>
             </div>
         </div>
@@ -136,37 +136,37 @@ if (have_posts()) : while (have_posts()) : the_post();
         </div>
 
         <!-- Metadata Cards Grid -->
-        <div class="grid grid-cols-2 min-[400px]:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-4 mb-12">
+        <div class="grid grid-cols-3 md:grid-cols-6 gap-2 sm:gap-4 mb-12">
             <div class="bg-white dark:bg-slate-800 p-3 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
                 <span class="material-symbols-outlined text-primary mb-2">timer</span>
-                <span class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Preparo</span>
-                <span class="text-sm sm:text-xl font-bold"><?php echo $tempo_preparo ?: '20'; ?>m</span>
+                <span class="text-[10px] sm:text-[11px] md:text-xs uppercase tracking-wider text-slate-500 font-bold mb-1">Preparo</span>
+                <span class="text-base sm:text-xl font-bold"><?php echo $tempo_preparo ?: '20'; ?>m</span>
             </div>
             <div class="bg-white dark:bg-slate-800 p-3 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
                 <span class="material-symbols-outlined text-primary mb-2">cooking</span>
-                <span class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Cozimento</span>
-                <span class="text-sm sm:text-xl font-bold"><?php echo $tempo_cozimento ?: '30'; ?>m</span>
+                <span class="text-[10px] sm:text-[11px] md:text-xs uppercase tracking-wider text-slate-500 font-bold mb-1">Cozimento</span>
+                <span class="text-base sm:text-xl font-bold"><?php echo $tempo_cozimento ?: '30'; ?>m</span>
             </div>
             <div class="bg-primary/20 border-2 border-primary/40 p-3 sm:p-5 rounded-2xl flex flex-col items-center text-center shadow-lg shadow-primary/10">
                 <span class="material-symbols-outlined text-primary mb-2">schedule</span>
-                <span class="text-[9px] sm:text-[10px] uppercase tracking-wider text-primary font-black mb-1">Total</span>
-                <span class="text-base sm:text-2xl font-black text-primary italic"><?php echo sts_get_recipe_total_time($post_id); ?></span>
+                <span class="text-[10px] sm:text-[11px] md:text-xs uppercase tracking-wider text-primary font-black mb-1">Total</span>
+                <span class="text-lg sm:text-2xl font-black text-primary italic"><?php echo sts_get_recipe_total_time($post_id); ?></span>
             </div>
             <div class="bg-white dark:bg-slate-800 p-3 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
                 <span class="material-symbols-outlined text-primary mb-2">restaurant</span>
-                <span class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Rende</span>
-                <span class="text-sm sm:text-xl font-bold"><?php echo trim($porcoes_meta ?: '4'); ?></span>
+                <span class="text-[10px] sm:text-[11px] md:text-xs uppercase tracking-wider text-slate-500 font-bold mb-1">Rende</span>
+                <span class="text-base sm:text-xl font-bold"><?php echo trim($porcoes_meta ?: '4'); ?></span>
             </div>
             <div class="bg-white dark:bg-slate-800 p-3 sm:p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
                 <span class="material-symbols-outlined text-primary mb-2">bar_chart</span>
-                <span class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Nível</span>
-                <span class="text-sm sm:text-xl font-bold"><?php echo $dificuldade ?: 'Fácil'; ?></span>
+                <span class="text-[10px] sm:text-[11px] md:text-xs uppercase tracking-wider text-slate-500 font-bold mb-1">Nível</span>
+                <span class="text-base sm:text-xl font-bold"><?php echo $dificuldade ?: 'Fácil'; ?></span>
             </div>
             <!-- Botão Salvar em PDF (4º Card) -->
             <button onclick="window.print()" class="bg-slate-50 dark:bg-slate-800/10 hover:bg-primary text-slate-900 dark:text-white hover:text-white p-3 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-col items-center text-center transition-all group">
                 <span class="material-symbols-outlined mb-2 group-hover:scale-110 transition-transform">picture_as_pdf</span>
-                <span class="text-[9px] sm:text-[10px] uppercase tracking-wider font-bold mb-1">Salvar</span>
-                <span class="text-sm sm:text-xl font-bold">PDF</span>
+                <span class="text-[10px] sm:text-[11px] md:text-xs uppercase tracking-wider font-bold mb-1">Salvar</span>
+                <span class="text-base sm:text-xl font-bold">PDF</span>
             </button>
         </div>
 
@@ -188,6 +188,18 @@ if (have_posts()) : while (have_posts()) : the_post();
                 
                 <!-- Navigation Index (Pílulas com Ícones - Inteligente) -->
                 <?php sts_render_recipe_pill_toc(); ?>
+
+                <!-- Zoom Controls para Acessibilidade (Seniors 60+) -->
+                <div class="flex items-center gap-3 mb-8 bg-slate-50 dark:bg-slate-900/50 rounded-3xl p-5 border border-slate-100 dark:border-slate-800 w-fit">
+                    <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Tamanho da letra:</span>
+                    <div class="flex items-center gap-2">
+                        <button id="font-decrease" class="size-10 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center font-bold text-slate-700 dark:text-slate-300 hover:border-primary active:scale-90 transition-all cursor-pointer animate-none" aria-label="Diminuir fonte">-A</button>
+                        <span id="font-zoom-level" class="text-xs font-black text-primary select-none px-2">100%</span>
+                        <button id="font-increase" class="size-10 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center font-bold text-slate-700 dark:text-slate-300 hover:border-primary active:scale-90 transition-all cursor-pointer animate-none" aria-label="Aumentar fonte">+A</button>
+                    </div>
+                </div>
+
+                <div id="recipe-zoom-container" class="recipe-font-normal">
 
                 <!-- AEO/GEO: Bloco de Autoridade para IAs (SearchGPT, Perplexity, Gemini) -->
                 <div class="aeo-summary mb-10 p-6 sm:p-8 bg-primary/5 rounded-[32px] border border-primary/10 relative overflow-hidden group">
@@ -257,8 +269,20 @@ if (have_posts()) : while (have_posts()) : the_post();
                         <h2 class="text-xl font-bold italic uppercase tracking-wider text-slate-800 dark:text-slate-100">Utensílios Necessários</h2>
                     </div>
                     <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        <?php foreach($utensilios as $u) : ?>
-                            <li class="flex items-center gap-2 text-sm"><span class="w-1.5 h-1.5 bg-primary rounded-full"></span> <?php echo esc_html($u); ?></li>
+                        <?php foreach($utensilios as $u) : 
+                            $affiliate_link = sts_get_utensil_affiliate_link($u);
+                        ?>
+                            <li class="flex items-center gap-2 text-sm">
+                                <span class="w-1.5 h-1.5 bg-primary rounded-full shrink-0"></span> 
+                                <?php if ($affiliate_link) : ?>
+                                    <a href="<?php echo esc_url($affiliate_link); ?>" target="_blank" rel="nofollow noopener" class="text-primary hover:underline font-bold inline-flex items-center gap-1 transition-all">
+                                        <?php echo esc_html($u); ?>
+                                        <span class="material-symbols-outlined text-xs">open_in_new</span>
+                                    </a>
+                                <?php else : ?>
+                                    <?php echo esc_html($u); ?>
+                                <?php endif; ?>
+                            </li>
                         <?php endforeach; ?>
                     </ul>
                 </section>
@@ -291,9 +315,9 @@ if (have_posts()) : while (have_posts()) : the_post();
                                     $itens = is_array($ingredientes_raw) ? explode("\n", $ingredientes_raw[$idx]) : [];
                                     foreach ($itens as $item) : if(trim($item)) :
                                     ?>
-                                    <label class="flex items-center p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 cursor-pointer hover:border-primary/50 transition-colors group">
-                                        <input class="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary bg-transparent mr-4 cursor-pointer" type="checkbox"/>
-                                        <span class="text-slate-700 dark:text-slate-300 group-hover:text-primary transition-colors"><?php echo esc_html($item); ?></span>
+                                    <label class="ingredient-row flex items-center p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 cursor-pointer hover:border-primary/50 transition-colors group">
+                                        <input class="w-7 h-7 md:w-8 md:h-8 rounded border-slate-300 text-primary focus:ring-primary bg-transparent mr-4 cursor-pointer shrink-0" type="checkbox"/>
+                                        <span class="text-slate-900 dark:text-slate-100 transition-colors"><?php echo esc_html($item); ?></span>
                                     </label>
                                     <?php endif; endforeach; ?>
                                 </div>
@@ -321,7 +345,7 @@ if (have_posts()) : while (have_posts()) : the_post();
                         <div id="step-<?php echo $i + 1; ?>" class="relative pl-12 group scroll-mt-32">
                             <div class="absolute left-0 top-0 w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform z-10"><?php echo $i + 1; ?></div>
                             <h3 class="text-lg font-bold mb-3 text-slate-800 dark:text-slate-200">Passo <?php echo $i + 1; ?></h3>
-                            <div class="text-slate-600 dark:text-slate-400 leading-relaxed text-lg">
+                             <div class="step-desc text-slate-900 dark:text-slate-100 leading-relaxed text-lg">
                                 <?php echo nl2br(esc_html($passo)); ?>
                             </div>
                         </div>
@@ -347,6 +371,8 @@ if (have_posts()) : while (have_posts()) : the_post();
                         </div>
                     </div>
                     <?php endif; ?>
+
+                </div><!-- /#recipe-zoom-container -->
 
                     <!-- E-E-A-T Mastery: Bloco de Autoridade da Mary Rodrigues -->
                     <div class="author-box-sts p-8 sm:p-10 bg-slate-50 dark:bg-slate-800/20 border border-slate-100 dark:border-slate-800 rounded-[40px] flex flex-col sm:flex-row items-center sm:items-start gap-8 relative overflow-hidden group">
@@ -494,7 +520,7 @@ if (have_posts()) : while (have_posts()) : the_post();
                 </div>
 
                 <!-- Author Box (Ultra-Premium E-E-A-T Card) -->
-                <div class="bg-white dark:bg-slate-800 p-8 rounded-[40px] shadow-sm border border-slate-100 dark:border-slate-700 relative overflow-hidden group">
+                <div class="hidden lg:block bg-white dark:bg-slate-800 p-8 rounded-[40px] shadow-sm border border-slate-100 dark:border-slate-700 relative overflow-hidden group">
                     <!-- Badge de Autoridade (Flutuante) -->
                     <div class="absolute -top-1 -right-1 bg-primary text-white text-[9px] font-black uppercase tracking-widest py-2 px-6 rotate-12 shadow-lg shadow-primary/20">
                         CHEF VERIFICADA

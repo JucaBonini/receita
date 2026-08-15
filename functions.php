@@ -1414,5 +1414,34 @@ function add_rss_enclosure_featured_image() {
 }
 add_action('rss2_item', 'add_rss_enclosure_featured_image');
 
+/**
+ * Busca dinâmica de links de afiliados de utensílios.
+ * Busca primeiro em Indicações da Mary, senão gera busca na Amazon.
+ */
+function sts_get_utensil_affiliate_link($utensil_name) {
+    if (empty($utensil_name)) return '';
+
+    // 1. Busca por título correspondente nas indicações da Mary
+    $args = array(
+        'post_type'      => 'sts_indicacoes',
+        'posts_per_page' => 1,
+        's'              => $utensil_name,
+    );
+    $query = new WP_Query($args);
+    if ($query->have_posts()) {
+        $query->the_post();
+        $link = get_post_meta(get_the_ID(), '_sts_product_url', true);
+        wp_reset_postdata();
+        if ($link) {
+            return $link;
+        }
+    }
+    wp_reset_postdata();
+
+    // 2. Fallback para busca direta na Amazon Brasil
+    return 'https://www.amazon.com.br/s?k=' . urlencode($utensil_name) . '&tag=descomplicando-20';
+}
+
+
 
 
