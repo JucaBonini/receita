@@ -54,6 +54,8 @@ function renderizar_metabox_receita($post) {
     $faq_perguntas          = get_post_meta($post->ID, '_faq_perguntas', true);
     $faq_respostas          = get_post_meta($post->ID, '_faq_respostas', true);
     $conclusao              = get_post_meta($post->ID, '_conclusao', true);
+    $link_interno_url       = get_post_meta($post->ID, '_link_interno_url', true);
+    $link_interno_texto     = get_post_meta($post->ID, '_link_interno_texto', true);
     ?>
     
     <script>
@@ -182,6 +184,22 @@ Obs: deixe no padrão somente para eu copiar e colar, numeração desnecessário
                 <input type="url" name="video_url" value="<?php echo esc_url($video_url); ?>" placeholder="https://..." style="width:100%">
                 <p class="description">Vídeos aumentam as chances de destaque no Google Discover.</p>
             </div>
+        </div>
+
+        <div class="metabox-section">
+            <h3>Linkagem Interna Otimizada (SEO)</h3>
+            <p class="description">Recomende uma receita dentro do artigo para reter o leitor e ganhar autoridade no Google.</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px;">
+                <p style="margin: 0;">
+                    <label><strong>URL da Receita Recomendada:</strong></label>
+                    <input type="url" name="link_interno_url" value="<?php echo esc_url($link_interno_url); ?>" placeholder="https://descomplicandoreceitas.com.br/..." style="width:100%">
+                </p>
+                <p style="margin: 0;">
+                    <label><strong>Texto Âncora Personalizado (Opcional):</strong></label>
+                    <input type="text" name="link_interno_texto" value="<?php echo esc_attr($link_interno_texto); ?>" placeholder="Se vazio, usa o título do post de destino" style="width:100%">
+                </p>
+            </div>
+            <p class="description" style="margin-top: 5px;">* Se ambos os campos ficarem vazios, o tema recomendará automaticamente uma receita aleatória da mesma categoria.</p>
         </div>
 
         <div class="metabox-section">
@@ -325,7 +343,8 @@ function salvar_metabox_receita($post_id) {
     $campos = [
         'tempo_preparo', 'tempo_cozimento', 'total_time', 'porcoes', 'dificuldade', 
         'calorias', 'carboidratos', 'proteinas', 'gorduras', 
-        'nutri_serving', 'nutri_source', 'recipe_cuisine', 'video_url', 'diet_type'
+        'nutri_serving', 'nutri_source', 'recipe_cuisine', 'video_url', 'diet_type',
+        'link_interno_url', 'link_interno_texto'
     ];
 
     foreach ($campos as $campo) {
@@ -379,3 +398,89 @@ function salvar_metabox_receita($post_id) {
     }
 }
 add_action('save_post', 'salvar_metabox_receita');
+
+/**
+ * 4. Linkagem Interna Otimizada para SEO (Injetada automaticamente no conteúdo)
+ */
+function sts_inserir_link_interno_no_conteudo($content) {
+    // Garantir que roda apenas em posts únicos, na query principal e fora do feed/admin
+    if (!is_single() || !is_main_query() || get_post_type() !== 'post') {
+        return $content;
+    }
+    
+    // Evitar loop infinito ou dupla injeção
+    static $injected = false;
+    if ($injected) {
+        return $content;
+    }
+    
+    $post_id = get_the_ID();
+    $custom_url = get_post_meta($post_id, '_link_interno_url', true);
+    $custom_text = get_post_meta($post_id, '_link_interno_texto', true);
+    
+    $link = '';
+    $titulo = '';
+    
+    // Caso 1: Definido manualmente
+    if (!empty($custom_url)) {
+        $link = $custom_url;
+        if (!empty($custom_text)) {
+            $titulo = $custom_text;
+        } else {
+            // Tenta obter o título do post de destino a partir da URL
+            $linked_post_id = url_to_postid($custom_url);
+            if ($linked_post_id) {
+                $titulo = get_the_title($linked_post_id);
+            } else {
+                // Se não for um post interno ou falhar, usa a própria URL limpa como âncora
+                $titulo = preg_replace('/^https?:\/\/(www\.)?/', '', $custom_url);
+            }
+        }
+    } 
+    // Caso 2: Automático (busca receita na mesma categoria)
+    else {
+        $categories = wp_get_post_categories($post_id);
+        if (!empty($categories)) {
+            $related_posts = get_posts(array(
+                'category__in'   => $categories,
+                'post__not_in'   => array($post_id),
+                'posts_per_page' => 1,
+                'orderby'        => 'rand'
+            ));
+            if (!empty($related_posts)) {
+                $link = get_permalink($related_posts[0]->ID);
+                $titulo = get_the_title($related_posts[0]->ID);
+            }
+        }
+    }
+    
+    // Injetar o bloco se tivermos link e título válidos
+    if (!empty($link) && !empty($titulo)) {
+        $injected = true;
+        
+        // Estrutura HTML/CSS premium compatível com Tailwind do tema
+        $box_html = '
+        <div class="inline-callout bg-slate-50 dark:bg-slate-800/40 p-5 my-8 rounded-[24px] border-l-4 border-primary flex items-start gap-4 shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all duration-300">
+            <span class="material-symbols-outlined text-primary text-2xl shrink-0 mt-0.5" style="font-variation-settings: \'FILL\' 0, \'wght\' 400, \'GRAD\' 0, \'opsz\' 24;">link</span>
+            <div>
+                <span class="font-black text-slate-400 uppercase tracking-widest text-[9px] block mb-1">Recomendamos para você</span>
+                <a href="' . esc_url($link) . '" class="text-slate-800 dark:text-white hover:text-primary font-black text-base sm:text-lg transition-colors leading-snug">
+                    Veja essa receita: ' . esc_html($titulo) . '
+                </a>
+            </div>
+        </div>';
+        
+        // Inserir após o segundo parágrafo (padrão ideal para engajamento)
+        $paragraphs = explode('</p>', $content);
+        if (count($paragraphs) > 2) {
+            $paragraphs[1] .= $box_html;
+            $content = implode('</p>', $paragraphs);
+        } else {
+            // Se o post for muito curto, adiciona no início
+            $content = $box_html . $content;
+        }
+    }
+    
+    return $content;
+}
+add_filter('the_content', 'sts_inserir_link_interno_no_conteudo', 15);
