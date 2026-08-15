@@ -454,8 +454,8 @@ get_header();
                 ));
 
                 if ($achadinhos_query->have_posts()) : while ($achadinhos_query->have_posts()) : $achadinhos_query->the_post();
-                    $link = get_post_meta(get_the_ID(), 'link_produto', true) ?: '#';
-                    $preco = get_post_meta(get_the_ID(), 'valor_produto', true);
+                    $link = get_post_meta(get_the_ID(), '_link_afiliado', true) ?: '#';
+                    $preco = get_post_meta(get_the_ID(), '_preco_atual', true);
                 ?>
                 <div class="bg-white dark:bg-slate-800 rounded-[32px] p-4 border border-slate-100 dark:border-slate-700 hover:shadow-2xl transition-all group relative">
                     <!-- Badge de Oferta (Opcional) -->

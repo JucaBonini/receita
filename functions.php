@@ -14,7 +14,7 @@ require_once get_template_directory() . '/includes/theme-updater.php';
 
 define('THEME_PATH',    get_template_directory());
 define('THEME_URI',     get_template_directory_uri());
-define('THEME_VERSION', '2.9.1'); // Sincronizado com style.css
+define('THEME_VERSION', '2.9.2'); // Sincronizado com style.css
 
 // Configurações centralizadas do tema (constantes e valores padrão)
 require_once THEME_PATH . '/includes/theme-config.php';
