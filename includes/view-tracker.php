@@ -6,6 +6,12 @@
 
 // 1. AJAX Handler para contar visualizações (Assíncrono para Performance)
 function sts_ajax_track_view() {
+    // Ignorar robôs e crawlers de buscadores para evitar sobrecarga no banco de dados
+    $ua = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+    if (empty($ua) || preg_match('/bot|crawl|spider|slurp|tracker|google|bing|yandex|yahoo|baidu/i', $ua)) {
+        wp_send_json_success('Bot ignored');
+    }
+
     $post_id = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
     
     if (!$post_id) wp_send_json_error('Invalid ID');

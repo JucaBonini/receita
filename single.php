@@ -6,7 +6,6 @@ get_header();
 
 if (have_posts()) : while (have_posts()) : the_post();
     $post_id = get_the_ID();
-    sts_set_post_views($post_id); // Contabilizar visualização
 
     // 1. Coleta de Dados (Independência do ACF - Sincronização 2026)
     $tempo_preparo    = get_post_meta($post_id, '_tempo_preparo', true) ?: get_post_meta($post_id, 'tempo', true); 
