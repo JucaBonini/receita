@@ -16,8 +16,10 @@ if (isset($_COOKIE[$cookie_name])) return;
     <input type="hidden" id="float_rating_post_id" value="<?php echo $post_id; ?>">
     
     <!-- Botão de Fechar -->
-    <button id="close-floating-rating" class="absolute -top-2 -right-2 size-8 bg-white dark:bg-slate-700 rounded-full shadow-lg border border-slate-100 dark:border-slate-600 flex items-center justify-center text-slate-400 hover:text-red-500 transition-colors pointer-events-auto" aria-label="Fechar">
-        <span class="material-symbols-outlined text-base">close</span>
+    <button id="close-floating-rating" class="absolute -top-2 -right-2 size-8 bg-white dark:bg-slate-700 rounded-full shadow-lg border border-slate-100 dark:border-slate-600 flex items-center justify-center text-slate-500 hover:text-red-600 dark:text-slate-300 transition-colors pointer-events-auto z-20" aria-label="Fechar">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
     </button>
 
     <div class="mb-3">
