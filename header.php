@@ -164,134 +164,139 @@
 
     <div id="global-overlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[20000] hidden opacity-0 transition-opacity duration-300"></div>
 
-    <header class="sticky top-0 z-[100] w-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-100 dark:border-slate-800 transition-all duration-300">
-        <div class="max-w-6xl mx-auto flex items-center justify-between gap-4 px-4 h-16 md:h-20">
-            
-            <!-- Logo Section -->
-            <div class="flex items-center gap-2 shrink-0">
-                <?php if (has_custom_logo()) : ?>
-                    <div class="custom-logo-wrapper h-10 md:h-12 w-auto flex items-center shrink-0">
-                        <?php 
-                        $custom_logo_id = get_theme_mod('custom_logo');
-                        $logo = wp_get_attachment_image_src($custom_logo_id , 'full');
-                        if ($logo) : ?>
-                            <a href="<?php echo esc_url(home_url('/')); ?>" rel="home" aria-label="Ir para a página inicial" class="block max-w-[120px] md:max-w-none">
-                                <img src="<?php echo esc_url($logo[0]); ?>" class="h-8 md:h-12 w-auto object-contain" alt="<?php bloginfo('name'); ?>" fetchpriority="high" decoding="sync">
-                            </a>
-                        <?php endif; ?>
-                    </div>
-                <?php else : ?>
-                    <a href="<?php echo esc_url(home_url('/')); ?>" class="flex items-center gap-2 group" aria-label="Ir para a página inicial">
-                        <div class="bg-primary text-white p-1.5 rounded-xl">
-                            <span class="material-symbols-outlined block text-2xl" aria-hidden="true">restaurant_menu</span>
-                        </div>
-                        <span class="text-xl md:text-2xl font-black text-slate-800 dark:text-white uppercase tracking-tighter"><?php bloginfo('name'); ?></span>
-                    </a>
-                <?php endif; ?>
-            </div>
-
-            <!-- Main Navigation -->
-            <nav class="hidden lg:flex items-center gap-4" aria-label="Menu principal">
-                <?php
-                wp_nav_menu(array(
-                    'theme_location' => 'main-menu',
-                    'container' => false,
-                    'menu_class' => 'flex items-center gap-4 xl:gap-6',
-                    'fallback_cb' => false,
-                    'items_wrap' => '<ul class="%2$s">%3$s</ul>',
-                    'add_li_class'  => 'px-3 xl:px-5 py-2.5 text-[12px] font-bold text-slate-600 dark:text-slate-400 hover:text-primary transition-all uppercase tracking-[0.15em] rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 border border-transparent hover:border-slate-100 dark:hover:border-slate-700'
-                ));
-                ?>
-            </nav>
-
-            <!-- Actions -->
-            <div class="flex items-center gap-2 md:gap-3">
+    <header class="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 sm:h-20">
                 
-                <!-- Live Search -->
-                <div class="relative group hidden md:block">
-                    <div class="flex items-center bg-slate-100 dark:bg-slate-800 rounded-2xl px-4 py-2 border border-transparent focus-within:border-primary/20 w-48 xl:w-64 transition-all" role="search">
-                        <span class="material-symbols-outlined text-slate-400 text-xl mr-2" aria-hidden="true">search</span>
-                        <input type="text" id="sts-live-search" placeholder="Buscar..." aria-label="Buscar receitas"
-                               aria-haspopup="listbox" aria-expanded="false" aria-controls="sts-live-results"
-                               class="bg-transparent border-none p-0 text-xs font-black text-slate-800 dark:text-white placeholder:text-slate-400 focus:ring-0 w-full uppercase tracking-widest">
-                    </div>
-                    <div id="sts-live-results" 
-                         role="listbox" aria-live="polite"
-                         class="absolute top-full right-0 mt-3 w-80 bg-white dark:bg-slate-900 rounded-[32px] shadow-2xl border border-slate-100 dark:border-slate-800 hidden overflow-hidden z-[110]"></div>
-                </div>
-
-                <!-- Theme Toggle -->
-                <button id="theme-toggle" type="button" aria-label="Alternar modo de cor"
-                        class="size-11 hidden md:flex items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-primary transition-all">
-                    <span class="material-symbols-outlined text-xl dark:hidden" aria-hidden="true">dark_mode</span>
-                    <span class="material-symbols-outlined text-xl hidden dark:block" aria-hidden="true">light_mode</span>
-                </button>
-
-                <!-- Favorites -->
-                <div class="relative group">
-                    <button id="favorites-trigger" type="button" aria-label="Minhas favoritas"
-                            class="size-11 flex items-center justify-center rounded-2xl bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all">
-                        <span class="material-symbols-outlined text-xl" aria-hidden="true">favorite</span>
-                        <span id="fav-count" class="absolute -top-1 -right-1 size-4 bg-primary text-white text-[9px] font-bold rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center hidden">0</span>
-                    </button>
-                    <div class="absolute top-full right-0 mt-4 w-72 bg-white dark:bg-slate-900 rounded-[32px] shadow-2xl border border-slate-100 dark:border-slate-800 invisible opacity-0 translate-y-4 group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 z-[110] p-6">
-                        <h4 class="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest mb-4">Minhas Salvas</h4>
-                        <div id="fav-items-list" class="max-h-80 overflow-y-auto"></div>
-                    </div>
-                </div>
-
-                <!-- User Profile -->
-                <div class="relative group hidden md:block">
-                    <button id="user-profile-trigger" type="button" aria-label="Perfil do usuário"
-                            class="size-11 flex items-center justify-center rounded-2xl bg-slate-900 dark:bg-slate-800 text-white overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-lg shadow-slate-900/10">
-                        <?php if (is_user_logged_in()) : 
-                            echo get_avatar(get_current_user_id(), 44, '', '', ['class' => 'w-full h-full object-cover']);
-                        else : ?>
-                            <span class="material-symbols-outlined text-xl" aria-hidden="true">person</span>
-                        <?php endif; ?>
-                    </button>
-                    
-                    <!-- Dropdown Menu -->
-                    <div class="absolute top-full right-0 mt-4 w-56 bg-white dark:bg-slate-900 rounded-[28px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-slate-100 dark:border-slate-800 invisible opacity-0 translate-y-4 group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 z-[110] p-2 overflow-hidden">
-                        <?php if (is_user_logged_in()) : ?>
-                            <div class="px-4 py-3 mb-2 border-b border-slate-50 dark:border-slate-800">
-                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Bem-vindo</p>
-                                <p class="text-xs font-black text-slate-900 dark:text-white truncate"><?php echo wp_get_current_user()->display_name; ?></p>
+                <!-- Logo & Menu Principal -->
+                <div class="flex items-center gap-8">
+                    <!-- Logo Section -->
+                    <div class="flex items-center gap-2 shrink-0">
+                        <?php if (has_custom_logo()) : ?>
+                            <div class="custom-logo-wrapper h-10 md:h-12 w-auto flex items-center shrink-0">
+                                <?php 
+                                $custom_logo_id = get_theme_mod('custom_logo');
+                                $logo = wp_get_attachment_image_src($custom_logo_id , 'full');
+                                if ($logo) : ?>
+                                    <a href="<?php echo esc_url(home_url('/')); ?>" rel="home" aria-label="Ir para a página inicial" class="block">
+                                        <img src="<?php echo esc_url($logo[0]); ?>" class="h-8 md:h-12 w-auto object-contain" alt="<?php bloginfo('name'); ?>" fetchpriority="high" decoding="sync">
+                                    </a>
+                                <?php endif; ?>
                             </div>
-                            <a href="<?php echo home_url('/perfil'); ?>" class="flex items-center gap-3 p-3 text-[10px] font-black text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-all uppercase tracking-widest leading-none group/item">
-                                <span class="material-symbols-outlined text-lg group-hover/item:text-primary" aria-hidden="true">account_circle</span> Perfil
-                            </a>
-                            <a href="<?php echo wp_logout_url(home_url()); ?>" class="flex items-center gap-3 p-3 text-[10px] font-black text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-2xl transition-all uppercase tracking-widest leading-none">
-                                <span class="material-symbols-outlined text-lg" aria-hidden="true">logout</span> Sair
-                            </a>
                         <?php else : ?>
-                            <div class="p-4 text-center">
-                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Acesse sua conta</p>
-                                <button type="button" onclick="document.getElementById('auth-modal').classList.remove('hidden')" 
-                                        class="w-full py-3.5 bg-primary text-white text-[11px] font-black rounded-xl uppercase tracking-widest shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all">ENTRAR</button>
-                            </div>
+                            <a href="<?php echo esc_url(home_url('/')); ?>" class="flex items-center gap-2 group" aria-label="Ir para a página inicial">
+                                <div class="bg-primary text-white p-1.5 rounded-lg">
+                                    <span class="material-symbols-outlined block text-2xl" aria-hidden="true">restaurant_menu</span>
+                                </div>
+                                <span class="text-xl font-black tracking-tight text-slate-900 dark:text-white"><?php bloginfo('name'); ?></span>
+                            </a>
                         <?php endif; ?>
                     </div>
+
+                    <!-- Main Navigation (Menu WordPress) -->
+                    <nav class="hidden md:flex items-center gap-6" aria-label="Menu principal">
+                        <?php
+                        wp_nav_menu(array(
+                            'theme_location' => 'main-menu',
+                            'container'      => false,
+                            'menu_class'     => 'flex items-center gap-6',
+                            'fallback_cb'    => false,
+                            'items_wrap'     => '<ul class="%2$s">%3$s</ul>',
+                            'add_li_class'   => 'text-sm font-semibold hover:text-primary transition-colors text-slate-700 dark:text-slate-300'
+                        ));
+                        ?>
+                    </nav>
                 </div>
 
-                <!-- Toggle Mobile -->
-                <button id="mobileMenuBtn" type="button" aria-label="Abrir menu" aria-expanded="false"
-                        class="lg:hidden size-11 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-400">
-                    <span class="material-symbols-outlined text-2xl" aria-hidden="true">menu</span>
-                </button>
+                <!-- Ações e Perfil -->
+                <div class="flex items-center gap-4">
+                    
+                    <!-- Live Search (Input Estilizado) -->
+                    <div class="hidden lg:flex items-center bg-slate-100 dark:bg-slate-800 rounded-xl px-3 py-1.5 border border-transparent focus-within:border-primary/50 transition-all relative" role="search">
+                        <span class="material-symbols-outlined text-slate-400 text-xl mr-2" aria-hidden="true">search</span>
+                        <input type="text" id="sts-live-search" placeholder="Buscar receitas..." aria-label="Buscar receitas"
+                               aria-haspopup="listbox" aria-expanded="false" aria-controls="sts-live-results"
+                               class="bg-transparent border-none p-0 text-sm w-48 placeholder:text-slate-400 focus:ring-0 text-slate-800 dark:text-white">
+                        
+                        <!-- Box absoluto de Resultados AJAX -->
+                        <div id="sts-live-results" role="listbox" aria-live="polite"
+                             class="absolute top-full right-0 mt-3 w-80 bg-white dark:bg-slate-900 rounded-[24px] shadow-2xl border border-slate-100 dark:border-slate-800 hidden overflow-hidden z-[110]"></div>
+                    </div>
 
+                    <!-- Alternador de Tema -->
+                    <button id="theme-toggle" type="button" aria-label="Alternar modo de cor"
+                            class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-600 dark:text-slate-400 hover:text-primary">
+                        <span class="material-symbols-outlined text-2xl dark:hidden" aria-hidden="true">dark_mode</span>
+                        <span class="material-symbols-outlined text-2xl hidden dark:block" aria-hidden="true">light_mode</span>
+                    </button>
+
+                    <!-- Favoritos (Com contador sobreposto) -->
+                    <div class="relative group">
+                        <button id="favorites-trigger" type="button" aria-label="Minhas favoritas"
+                                class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors relative text-slate-600 dark:text-slate-400 hover:text-primary">
+                            <span class="material-symbols-outlined">favorite</span>
+                            <span id="fav-count" class="absolute top-0 right-0 size-4 bg-primary text-white text-[9px] font-bold rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center hidden">0</span>
+                        </button>
+                        
+                        <!-- Dropdown de Favoritos -->
+                        <div class="absolute top-full right-0 mt-4 w-72 bg-white dark:bg-slate-900 rounded-[24px] shadow-2xl border border-slate-100 dark:border-slate-800 invisible opacity-0 translate-y-4 group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 z-[110] p-6">
+                            <h4 class="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest mb-4">Minhas Salvas</h4>
+                            <div id="fav-items-list" class="max-h-80 overflow-y-auto"></div>
+                        </div>
+                    </div>
+
+                    <!-- Perfil do Usuário / Login -->
+                    <div class="relative group">
+                        <button id="user-profile-trigger" type="button" aria-label="Perfil do usuário"
+                                class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors overflow-hidden text-slate-600 dark:text-slate-400 hover:text-primary">
+                            <?php if (is_user_logged_in()) : 
+                                echo get_avatar(get_current_user_id(), 32, '', '', ['class' => 'size-6 rounded-full object-cover']);
+                            else : ?>
+                                <span class="material-symbols-outlined">person</span>
+                            <?php endif; ?>
+                        </button>
+                        
+                        <!-- Dropdown de Login / Perfil -->
+                        <div class="absolute top-full right-0 mt-4 w-56 bg-white dark:bg-slate-900 rounded-[24px] shadow-2xl border border-slate-100 dark:border-slate-800 invisible opacity-0 translate-y-4 group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 z-[110] p-2 overflow-hidden">
+                            <?php if (is_user_logged_in()) : ?>
+                                <div class="px-4 py-3 mb-2 border-b border-slate-50 dark:border-slate-800">
+                                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Bem-vindo</p>
+                                    <p class="text-xs font-black text-slate-900 dark:text-white truncate"><?php echo wp_get_current_user()->display_name; ?></p>
+                                </div>
+                                <a href="<?php echo home_url('/perfil'); ?>" class="flex items-center gap-3 p-3 text-[10px] font-black text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-all uppercase tracking-widest leading-none group/item">
+                                    <span class="material-symbols-outlined text-lg group-hover/item:text-primary" aria-hidden="true">account_circle</span> Perfil
+                                </a>
+                                <a href="<?php echo wp_logout_url(home_url()); ?>" class="flex items-center gap-3 p-3 text-[10px] font-black text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-2xl transition-all uppercase tracking-widest leading-none">
+                                    <span class="material-symbols-outlined text-lg" aria-hidden="true">logout</span> Sair
+                                </a>
+                            <?php else : ?>
+                                <div class="p-4 text-center">
+                                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Acesse sua conta</p>
+                                    <button type="button" onclick="document.getElementById('auth-modal').classList.remove('hidden')" 
+                                            class="w-full py-3.5 bg-primary text-white text-[11px] font-black rounded-xl uppercase tracking-widest shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all">ENTRAR</button>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <!-- Botão Toggle Menu Mobile -->
+                    <button id="mobileMenuBtn" type="button" aria-label="Abrir menu" aria-expanded="false"
+                            class="md:hidden p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-600 dark:text-slate-400">
+                        <span class="material-symbols-outlined text-2xl" aria-hidden="true">menu</span>
+                    </button>
+
+                </div>
             </div>
         </div>
 
-        <!-- Mobile Menu (Movido para dentro da header para posicionamento correto) -->
+        <!-- Menu Mobile -->
         <div id="mobileMenu" class="hidden absolute top-full left-0 w-full bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shadow-xl z-[150]">
             <nav class="p-6">
-                <?php wp_nav_menu(array('theme_location' => 'main-menu', 'container' => false, 'menu_class' => 'flex flex-col gap-4 text-sm font-black uppercase tracking-widest')); ?>
+                <?php wp_nav_menu(array('theme_location' => 'main-menu', 'container' => false, 'menu_class' => 'flex flex-col gap-4 text-sm font-semibold')); ?>
                 
-                <!-- Links Úteis para Mobile (Perfil & Tema) -->
                 <div class="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-4">
                     <!-- Tema Mobile -->
-                    <button type="button" id="mobile-theme-toggle" class="flex items-center justify-between w-full text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">
+                    <button type="button" id="mobile-theme-toggle" class="flex items-center justify-between w-full text-xs font-semibold text-slate-700 dark:text-slate-300">
                         <span class="flex items-center gap-3">
                             <span class="material-symbols-outlined text-xl">dark_mode</span> Alternar Tema (Claro/Escuro)
                         </span>
@@ -299,10 +304,10 @@
                     
                     <!-- Perfil Mobile -->
                     <?php if (is_user_logged_in()) : ?>
-                        <a href="<?php echo home_url('/perfil'); ?>" class="flex items-center gap-3 text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">
+                        <a href="<?php echo home_url('/perfil'); ?>" class="flex items-center gap-3 text-xs font-semibold text-slate-700 dark:text-slate-300">
                             <span class="material-symbols-outlined text-xl">account_circle</span> Meu Perfil
                         </a>
-                        <a href="<?php echo wp_logout_url(home_url()); ?>" class="flex items-center gap-3 text-xs font-black uppercase tracking-widest text-red-500">
+                        <a href="<?php echo wp_logout_url(home_url()); ?>" class="flex items-center gap-3 text-xs font-semibold text-red-500">
                             <span class="material-symbols-outlined text-xl">logout</span> Sair da Conta
                         </a>
                     <?php else : ?>
