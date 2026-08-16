@@ -1443,6 +1443,39 @@ function sts_get_utensil_affiliate_link($utensil_name) {
     return 'https://www.amazon.com.br/s?k=' . urlencode($utensil_name) . '&tag=descomplicando-20';
 }
 
+/**
+ * Forçar a imagem de avatar local da Mary Rodrigues
+ */
+add_filter('get_avatar_url', function($url, $id_or_email, $args) {
+    $user_id = 0;
+    if (is_numeric($id_or_email)) {
+        $user_id = (int)$id_or_email;
+    } elseif ($id_or_email instanceof WP_User) {
+        $user_id = (int)$id_or_email->ID;
+    } elseif ($id_or_email instanceof WP_Comment) {
+        $user_id = (int)$id_or_email->user_id;
+    } elseif (is_string($id_or_email) && is_email($id_or_email)) {
+        $user = get_user_by('email', $id_or_email);
+        if ($user) $user_id = $user->ID;
+    }
+
+    if ($user_id > 0) {
+        $user_data = get_userdata($user_id);
+        if ($user_data && (in_array('administrator', $user_data->roles) || in_array('author', $user_data->roles) || $user_id === 1)) {
+            return get_template_directory_uri() . '/assets/images/mary_rodrigues.webp';
+        }
+    } else {
+        if (is_string($id_or_email) && is_email($id_or_email)) {
+            $email = strtolower($id_or_email);
+            if (strpos($email, 'descomplicandoreceitas') !== false || strpos($email, 'juca') !== false || strpos($email, 'mary') !== false || strpos($email, 'admin') !== false) {
+                return get_template_directory_uri() . '/assets/images/mary_rodrigues.webp';
+            }
+        }
+    }
+
+    return $url;
+}, 10, 3);
+
 
 
 

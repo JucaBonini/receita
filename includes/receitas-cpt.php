@@ -139,6 +139,13 @@ Com base no prato "[TITULO]" e nas seguintes notas: "[PALAVRA_CHAVE]", gere as i
 10. METADADOS DE SEO:
    - Título SEO (máximo 60 caracteres com palavra-chave):
    - Meta Descrição (máximo 150 caracteres instigantes):
+11. INFORMAÇÕES NUTRICIONAIS (Estimativa média baseada nos ingredientes e rendimento):
+   - Calorias (somente número):
+   - Carbs (somente número em gramas):
+   - Proteínas (somente número em gramas):
+   - Gorduras (somente número em gramas):
+   - Porção (ex: 1 fatia, 1 copo, 1 porção):
+   - Fonte dos Dados (ex: USDA, Estimativa IA, etc.):
 
 Obs: deixe no padrão somente para eu copiar e colar, numeração desnecessário pode retirar.</textarea>
         </div>
