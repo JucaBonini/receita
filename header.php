@@ -222,7 +222,7 @@
 
                 <!-- Theme Toggle -->
                 <button id="theme-toggle" type="button" aria-label="Alternar modo de cor"
-                        class="size-11 flex items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-primary transition-all">
+                        class="size-11 hidden md:flex items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-primary transition-all">
                     <span class="material-symbols-outlined text-xl dark:hidden" aria-hidden="true">dark_mode</span>
                     <span class="material-symbols-outlined text-xl hidden dark:block" aria-hidden="true">light_mode</span>
                 </button>
@@ -241,7 +241,7 @@
                 </div>
 
                 <!-- User Profile -->
-                <div class="relative group">
+                <div class="relative group hidden md:block">
                     <button id="user-profile-trigger" type="button" aria-label="Perfil do usuário"
                             class="size-11 flex items-center justify-center rounded-2xl bg-slate-900 dark:bg-slate-800 text-white overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-lg shadow-slate-900/10">
                         <?php if (is_user_logged_in()) : 
@@ -287,6 +287,43 @@
         <div id="mobileMenu" class="hidden absolute top-full left-0 w-full bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shadow-xl z-[150]">
             <nav class="p-6">
                 <?php wp_nav_menu(array('theme_location' => 'main-menu', 'container' => false, 'menu_class' => 'flex flex-col gap-4 text-sm font-black uppercase tracking-widest')); ?>
+                
+                <!-- Links Úteis para Mobile (Perfil & Tema) -->
+                <div class="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-4">
+                    <!-- Tema Mobile -->
+                    <button type="button" id="mobile-theme-toggle" class="flex items-center justify-between w-full text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">
+                        <span class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-xl">dark_mode</span> Alternar Tema (Claro/Escuro)
+                        </span>
+                    </button>
+                    
+                    <!-- Perfil Mobile -->
+                    <?php if (is_user_logged_in()) : ?>
+                        <a href="<?php echo home_url('/perfil'); ?>" class="flex items-center gap-3 text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">
+                            <span class="material-symbols-outlined text-xl">account_circle</span> Meu Perfil
+                        </a>
+                        <a href="<?php echo wp_logout_url(home_url()); ?>" class="flex items-center gap-3 text-xs font-black uppercase tracking-widest text-red-500">
+                            <span class="material-symbols-outlined text-xl">logout</span> Sair da Conta
+                        </a>
+                    <?php else : ?>
+                        <button type="button" onclick="document.getElementById('auth-modal').classList.remove('hidden'); document.getElementById('mobileMenu').classList.add('hidden');" 
+                                class="w-full py-4 bg-primary text-white text-[10px] font-black rounded-2xl uppercase tracking-widest shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all">
+                            Entrar / Cadastrar
+                        </button>
+                    <?php endif; ?>
+                </div>
             </nav>
         </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const mobileThemeToggle = document.getElementById('mobile-theme-toggle');
+                if (mobileThemeToggle) {
+                    mobileThemeToggle.addEventListener('click', function() {
+                        const desktopToggle = document.getElementById('theme-toggle');
+                        if (desktopToggle) desktopToggle.click();
+                    });
+                }
+            });
+        </script>
     </header>
