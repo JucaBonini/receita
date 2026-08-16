@@ -14,7 +14,7 @@ function sts_render_pwa_smart_banner() {
         $logo = wp_get_attachment_image_src($custom_logo_id, 'thumbnail');
         $logo_url = $logo[0];
     } else {
-        $logo_url = THEME_URI . '/assets/images/logotipo-descomplicando_receitas300x300.png';
+        $logo_url = THEME_URI . '/assets/images/logo-descomplicenado-receitas-2026.png';
     }
     ?>
     <!-- Smart PWA Banner -->

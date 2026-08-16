@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dr-pwa-v2.1'; // Atualizado para forçar atualização das correções de UI e Schema
+const CACHE_NAME = 'dr-pwa-v2.2'; // Atualizado para forçar atualização das correções de UI e Schema
 const OFFLINE_URL = 'offline.html';
 
 const ASSETS_TO_PRECACHE = [
@@ -6,7 +6,7 @@ const ASSETS_TO_PRECACHE = [
   './offline.html',
   './assets/css/main.min.css',
   './assets/js/main.js',
-  './assets/images/logotipo-descomplicando_receitas300x300.png'
+  './assets/images/logo-descomplicenado-receitas-2026.png'
 ];
 
 // Instalação: Cacheia arquivos críticos

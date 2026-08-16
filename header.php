@@ -67,7 +67,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="D. Receitas">
-    <link rel="apple-touch-icon" href="<?php echo THEME_URI; ?>/assets/images/logotipo-descomplicando_receitas300x300.png">
+    <link rel="apple-touch-icon" href="<?php echo THEME_URI; ?>/assets/images/logo-descomplicenado-receitas-2026.png">
 
     <script>
         if ('serviceWorker' in navigator) {

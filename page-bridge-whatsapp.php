@@ -177,7 +177,7 @@
     <div class="main-content">
         
         <div class="avatar-container">
-            <img src="<?php echo get_template_directory_uri(); ?>/assets/images/logotipo-descomplicando_receitas300x300.png" alt="Descomplicando Receitas" class="avatar-img">
+            <img src="<?php echo get_template_directory_uri(); ?>/assets/images/logo-descomplicenado-receitas-2026.png" alt="Descomplicando Receitas" class="avatar-img">
         </div>
 
         <h1 class="headline">Descubra as Melhores Receitas e Economize de Verdade</h1>

@@ -42,7 +42,7 @@ $author_url = get_author_posts_url($author_id);
 $author_avatar = get_avatar_url($author_id);
 $site_name = get_bloginfo('name');
 $site_url = home_url('/');
-$logo_url = get_template_directory_uri() . '/assets/images/logotipo-descomplicando_receitas300x300.png';
+$logo_url = get_template_directory_uri() . '/assets/images/logo-descomplicenado-receitas-2026.png';
 
 // Utilitário de Tempo ISO
 if (!function_exists('dr_format_iso_duration')) {

@@ -31,7 +31,7 @@ $author_url = get_author_posts_url($author_id);
 $author_avatar = get_avatar_url($author_id);
 $site_name = get_bloginfo('name');
 $site_url = home_url('/');
-$logo_url = get_template_directory_uri() . '/assets/images/logotipo-descomplicando_receitas300x300.png';
+$logo_url = get_template_directory_uri() . '/assets/images/logo-descomplicenado-receitas-2026.png';
 $main_image = get_the_post_thumbnail_url($post_id, 'full') ?: get_template_directory_uri() . '/assets/images/default-image.webp';
 
 $graph = [];

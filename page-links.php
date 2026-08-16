@@ -360,7 +360,7 @@
     <div class="linktree-container">
         <!-- Profile Section -->
         <section class="profile-section">
-            <img src="<?php bloginfo('template_url'); ?>/assets/images/logotipo-descomplicando_receitas300x300.png" alt="Descomplicando receitas" class="profile-image">
+            <img src="<?php bloginfo('template_url'); ?>/assets/images/logo-descomplicenado-receitas-2026.png" alt="Descomplicando receitas" class="profile-image">
             <h1 class="profile-title">Descomplicando receitas</h1>
             <p class="profile-description">Encontre inspiração culinária, receitas testadas e saboreie momentos deliciosos todos os dias.</p>
         </section>

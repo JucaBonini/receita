@@ -11,7 +11,7 @@
         <div class="flex items-start gap-4">
             <!-- Icone do App com Efeito de Glow -->
             <div class="relative size-14 rounded-2xl overflow-hidden shadow-md flex-shrink-0 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
-                <img src="<?php echo THEME_URI; ?>/assets/images/logotipo-descomplicando_receitas300x300.png" alt="App Icon" class="w-full h-full object-cover">
+                <img src="<?php echo THEME_URI; ?>/assets/images/logo-descomplicenado-receitas-2026.png" alt="App Icon" class="w-full h-full object-cover">
             </div>
             
             <!-- Conteúdo de Texto Premium -->
