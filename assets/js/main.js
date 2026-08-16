@@ -483,22 +483,28 @@ document.addEventListener('DOMContentLoaded', function() {
         const wppIsHidden = localStorage.getItem(WPP_KEY);
 
         if (!wppIsHidden) {
+            let isTicking = false;
             window.addEventListener('scroll', function() {
-                const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-                const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-                const scrolled = (winScroll / height) * 100;
+                if (!isTicking) {
+                    window.requestAnimationFrame(function() {
+                        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+                        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                        const scrolled = (winScroll / height) * 100;
 
-                if (!wppHasShown && scrolled >= 65) {
-                    wppHasShown = true;
-                    wppBanner.classList.remove('invisible', 'pointer-events-none');
-                    wppBanner.classList.add('show');
-                } else if (wppHasShown && scrolled < 15) {
-                    // Esconde se voltar pro topo para não cobrir o LCP/Título
-                    wppBanner.classList.add('invisible', 'pointer-events-none');
-                    wppBanner.classList.remove('show');
-                    wppHasShown = false; // Permite mostrar de novo se descer
+                        if (!wppHasShown && scrolled >= 65) {
+                            wppHasShown = true;
+                            wppBanner.classList.remove('invisible', 'pointer-events-none');
+                            wppBanner.classList.add('show');
+                        } else if (wppHasShown && scrolled < 15) {
+                            wppBanner.classList.add('invisible', 'pointer-events-none');
+                            wppBanner.classList.remove('show');
+                            wppHasShown = false;
+                        }
+                        isTicking = false;
+                    });
+                    isTicking = true;
                 }
-            });
+            }, { passive: true });
         }
 
         const closeWpp = document.getElementById('close-whatsapp-banner');
@@ -532,15 +538,21 @@ document.addEventListener('DOMContentLoaded', function() {
             const isHidden = localStorage.getItem(RATING_STORAGE_KEY + '_' + postId);
 
             if (!isHidden) {
+                let isTicking = false;
                 window.addEventListener('scroll', function() {
-                    // Maneira ultra-estável de detectar scroll (em pixels em vez de %)
-                    if (!hasShown && window.scrollY > 600) {
-                        hasShown = true;
-                        console.log('✅ Barra de Avaliação Flutuante Ativada'); 
-                        floatingBar.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-[200%]');
-                        floatingBar.classList.add('active', 'opacity-100', 'translate-y-0');
+                    if (!isTicking) {
+                        window.requestAnimationFrame(function() {
+                            if (!hasShown && window.scrollY > 600) {
+                                hasShown = true;
+                                console.log('✅ Barra de Avaliação Flutuante Ativada'); 
+                                floatingBar.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-[200%]');
+                                floatingBar.classList.add('active', 'opacity-100', 'translate-y-0');
+                            }
+                            isTicking = false;
+                        });
+                        isTicking = true;
                     }
-                });
+                }, { passive: true });
             }
 
             // Fechar manualmente

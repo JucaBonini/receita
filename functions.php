@@ -14,7 +14,7 @@ require_once get_template_directory() . '/includes/theme-updater.php';
 
 define('THEME_PATH',    get_template_directory());
 define('THEME_URI',     get_template_directory_uri());
-define('THEME_VERSION', '2.9.6'); // Sincronizado com style.css
+define('THEME_VERSION', '2.9.7'); // Sincronizado com style.css
 
 // Configurações centralizadas do tema (constantes e valores padrão)
 require_once THEME_PATH . '/includes/theme-config.php';
@@ -216,7 +216,8 @@ function descomplicando_receitas_scripts() {
     
     // JS - Carregamento com defer (true no último parâmetro)
     wp_enqueue_script('jquery'); // Garantir que jQuery está carregado
-    wp_enqueue_script('main-js', THEME_URI . '/assets/js/main.js', array('jquery'), THEME_VERSION, true);
+    wp_enqueue_script('main-js', THEME_URI . '/assets/js/main.js', array(), THEME_VERSION, true);
+    wp_enqueue_script('lazy-ads-js', THEME_URI . '/assets/js/lazy-ads.js', array(), THEME_VERSION, true);
     
     if (is_singular('post')) {
         wp_enqueue_script('sts-smart-rec', THEME_URI . '/assets/js/smart-recommendations.js', array(), THEME_VERSION, true);
@@ -242,8 +243,8 @@ add_action('wp_enqueue_scripts', 'descomplicando_receitas_scripts');
  * 2. Adiciona width/height se faltarem para evitar saltos (CLS)
  */
 add_filter('wp_get_loading_optimization_attributes', function($attrs, $tag_name, $context) {
-    if (isset($attrs['loading']) && ($attrs['loading'] === 'eager' || is_singular())) {
-        // Se for a imagem de destaque ou no topo, removemos o lazy para velocidade máxima
+    // Apenas desativa lazy-load para imagens marcadas explicitamente como eager (imagem de destaque/LCP)
+    if (isset($attrs['loading']) && $attrs['loading'] === 'eager') {
         unset($attrs['loading']); 
     }
     return $attrs;

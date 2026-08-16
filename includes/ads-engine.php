@@ -77,12 +77,15 @@ function sts_render_ad($slot_name, $classes = '') {
                     </div>
                 </div>
 
-                <!-- Container do AdSense (Block + Center para compatibilidade total) -->
+                <!-- Container do AdSense (Block + Center para compatibilidade total - Lazy Loaded) -->
                 <div class="sts-ad-content" style="width: 100%; text-align: center; min-height: 50px;">
                     <?php 
-                    // Limpeza automática de aspas e injeção do código
-                    echo str_replace('\&quot;', '"', $ad_code); 
+                    $clean_ad_code = str_replace('\&quot;', '"', $ad_code); 
+                    $base64_ad_code = base64_encode($clean_ad_code);
                     ?>
+                    <div class="lazy-ad-loader" data-code="<?php echo esc_attr($base64_ad_code); ?>">
+                        <div style="font-family: sans-serif; font-size: 11px; color: #94a3b8; padding: 10px 0;">Carregando anúncio...</div>
+                    </div>
                 </div>
 
                 <!-- Bottom Wrapper -->

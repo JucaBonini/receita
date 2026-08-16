@@ -33,9 +33,19 @@
      * Preload da imagem de destaque para LCP Instantâneo (Estratégia Jeff Dean)
      */
     if (is_singular('post') && has_post_thumbnail()) {
-        $lcp_img_url = get_the_post_thumbnail_url(get_the_ID(), 'full');
-        if ($lcp_img_url) {
-            echo '<link rel="preload" as="image" href="' . esc_url($lcp_img_url) . '" fetchpriority="high">' . "\n";
+        $lcp_img_id = get_post_thumbnail_id(get_the_ID());
+        $img_srcset = wp_get_attachment_image_srcset($lcp_img_id, 'full');
+        $img_sizes = wp_get_attachment_image_sizes($lcp_img_id, 'full');
+        $img_src = wp_get_attachment_image_url($lcp_img_id, 'full');
+        if ($img_src) {
+            echo '<link rel="preload" as="image" href="' . esc_url($img_src) . '"';
+            if ($img_srcset) {
+                echo ' imagesrcset="' . esc_attr($img_srcset) . '"';
+            }
+            if ($img_sizes) {
+                echo ' imagesizes="' . esc_attr($img_sizes) . '"';
+            }
+            echo ' fetchpriority="high">' . "\n";
         }
     }
     ?>
