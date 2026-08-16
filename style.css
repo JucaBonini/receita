@@ -161,3 +161,21 @@ nav a {
 nav a:active {
     transform: scale(0.95);
 }
+
+/* Espaçamento de segurança e suporte a Safe Area para o Dock Móvel */
+@media (max-width: 1023px) {
+    body {
+        padding-bottom: 76px !important;
+    }
+}
+
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+    @media (max-width: 1023px) {
+        body {
+            padding-bottom: calc(76px + env(safe-area-inset-bottom)) !important;
+        }
+        .pb-safe {
+            padding-bottom: env(safe-area-inset-bottom) !important;
+        }
+    }
+}

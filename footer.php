@@ -112,6 +112,8 @@
 </div>
 <?php get_template_part('template-parts/pwa-install-banner'); ?>
 
+<?php get_template_part('template-parts/floating-dock'); ?>
+
 <?php wp_footer(); ?>
 </body>
 </html>

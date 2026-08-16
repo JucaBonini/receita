@@ -911,4 +911,64 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     trackView();
+
+    // 12. Barra de Navegação Inferior Móvel (Floating Dock)
+    const initMobileDock = () => {
+        // Buscar
+        const searchBtn = document.getElementById('dock-search-btn');
+        const searchOverlay = document.getElementById('mobile-search-overlay');
+        const closeSearchBtn = document.getElementById('close-mobile-search');
+        
+        if (searchBtn && searchOverlay) {
+            searchBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                searchOverlay.classList.remove('hidden');
+                const inp = searchOverlay.querySelector('input[type="text"]');
+                if (inp) setTimeout(() => inp.focus(), 100);
+            });
+        }
+        if (closeSearchBtn && searchOverlay) {
+            closeSearchBtn.addEventListener('click', () => {
+                searchOverlay.classList.add('hidden');
+            });
+        }
+
+        // Cozinhar (Inicia Modo Cozinha)
+        const cookBtn = document.getElementById('dock-start-cooking');
+        if (cookBtn) {
+            cookBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const mainCookBtn = document.getElementById('start-cooking-mode');
+                if (mainCookBtn) {
+                    mainCookBtn.click();
+                }
+            });
+        }
+
+        // Salvas (Favoritos)
+        const favsBtn = document.getElementById('dock-favorites');
+        if (favsBtn) {
+            favsBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const mainFavsBtn = document.getElementById('favorites-trigger');
+                if (mainFavsBtn) {
+                    mainFavsBtn.click();
+                }
+            });
+        }
+
+        // Menu Toggle
+        const menuBtn = document.getElementById('dock-menu-btn');
+        if (menuBtn) {
+            menuBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const mainMenuBtn = document.getElementById('mobileMenuBtn');
+                if (mainMenuBtn) {
+                    mainMenuBtn.click();
+                }
+            });
+        }
+    };
+
+    initMobileDock();
 });
