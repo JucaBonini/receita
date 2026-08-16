@@ -262,7 +262,7 @@ if (have_posts()) : while (have_posts()) : the_post();
                 </div>
 
                 <!-- Utensílios (Destaque) -->
-                <?php if (!empty($utensilios)) : ?>
+                <?php if (is_array($utensilios) && !empty($utensilios)) : ?>
                 <section class="mb-12 bg-slate-100 dark:bg-slate-800/50 p-6 rounded-2xl border-l-4 border-primary">
                     <div class="flex items-center gap-2 mb-4">
                         <span class="material-symbols-outlined text-primary">skillet</span>
@@ -270,6 +270,7 @@ if (have_posts()) : while (have_posts()) : the_post();
                     </div>
                     <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         <?php foreach($utensilios as $u) : 
+                            if (!is_string($u) || empty(trim($u))) continue;
                             $affiliate_link = sts_get_utensil_affiliate_link($u);
                         ?>
                             <li class="flex items-center gap-2 text-sm">
@@ -312,8 +313,8 @@ if (have_posts()) : while (have_posts()) : the_post();
                                 
                                 <div class="space-y-3">
                                     <?php 
-                                    $itens = is_array($ingredientes_raw) ? explode("\n", $ingredientes_raw[$idx]) : [];
-                                    foreach ($itens as $item) : if(trim($item)) :
+                                    $itens = (is_array($ingredientes_raw) && isset($ingredientes_raw[$idx]) && is_string($ingredientes_raw[$idx])) ? explode("\n", $ingredientes_raw[$idx]) : [];
+                                    foreach ($itens as $item) : if(is_string($item) && trim($item)) :
                                     ?>
                                     <label class="ingredient-row flex items-center p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 cursor-pointer hover:border-primary/50 transition-colors group">
                                         <input class="w-7 h-7 md:w-8 md:h-8 rounded border-slate-300 text-primary focus:ring-primary bg-transparent mr-4 cursor-pointer shrink-0" type="checkbox"/>
@@ -340,7 +341,7 @@ if (have_posts()) : while (have_posts()) : the_post();
                     </div>
                     <div class="space-y-10 relative before:absolute before:left-5 before:top-2 before:bottom-2 before:w-0.5 before:bg-primary/10 mb-16">
                         <?php 
-                        if (is_array($instrucoes_raw)) : foreach($instrucoes_raw as $i => $passo) : if(trim($passo)) :
+                        if (is_array($instrucoes_raw)) : foreach($instrucoes_raw as $i => $passo) : if(is_string($passo) && trim($passo)) :
                         ?>
                         <div id="step-<?php echo $i + 1; ?>" class="relative pl-12 group scroll-mt-32">
                             <div class="absolute left-0 top-0 w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform z-10"><?php echo $i + 1; ?></div>
@@ -402,7 +403,7 @@ if (have_posts()) : while (have_posts()) : the_post();
                 </section>
 
                 <!-- FAQ Section (SEO God Mode Display) -->
-                <?php if (!empty($faq_perguntas) && array_filter($faq_perguntas)) : ?>
+                <?php if (is_array($faq_perguntas) && !empty($faq_perguntas) && array_filter($faq_perguntas)) : ?>
                 <section class="mb-12 scroll-mt-32" id="faq">
                     <div class="flex items-center gap-3 mb-8">
                         <span class="material-symbols-outlined text-primary text-3xl">quiz</span>
@@ -410,8 +411,9 @@ if (have_posts()) : while (have_posts()) : the_post();
                     </div>
                     <div class="space-y-4">
                         <?php foreach ($faq_perguntas as $idx => $pergunta) : 
+                            if (!is_array($faq_respostas)) $faq_respostas = [];
                             $resposta = $faq_respostas[$idx] ?? '';
-                            if (empty($pergunta) || empty($resposta)) continue;
+                            if (empty($pergunta) || empty($resposta) || !is_string($pergunta) || !is_string($resposta)) continue;
                         ?>
                         <div class="faq-card bg-white dark:bg-slate-800/50 p-6 rounded-[24px] border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
                             <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3 flex items-start gap-3">

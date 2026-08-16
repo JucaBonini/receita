@@ -921,38 +921,7 @@ require_once get_template_directory() . '/includes/cpt/cardapios.php';
 
 // Sistema Surgical Ad Engine REMOVIDO
 
-/**
- * AJAX: Compilar Lista de Compras do Cardápio
- * Protegido com nonce para evitar acesso externo não autorizado.
- */
-function sts_get_cardapio_ingredients() {
-    check_ajax_referer('theme_nonce', 'nonce');
-
-    $ids_str = isset($_GET['ids']) ? sanitize_text_field($_GET['ids']) : '';
-    $ids = !empty($ids_str) ? array_map('intval', explode(',', $ids_str)) : array();
-    $compiled = array();
-
-    if (!empty($ids)) {
-        foreach ($ids as $id) {
-            $ing_raw = get_post_meta($id, '_ingredientes_raw', true);
-            if (is_array($ing_raw)) {
-                foreach ($ing_raw as $grupo) {
-                    if (empty($grupo)) continue;
-                    $itens = explode("\n", $grupo);
-                    foreach ($itens as $item) {
-                        $item = trim($item);
-                        if (!empty($item)) $compiled[] = sanitize_text_field($item);
-                    }
-                }
-            }
-        }
-    }
-
-    $compiled = array_unique($compiled);
-    wp_send_json_success(array_values($compiled));
-}
-add_action('wp_ajax_get_cardapio_ingredients', 'sts_get_cardapio_ingredients');
-add_action('wp_ajax_nopriv_get_cardapio_ingredients', 'sts_get_cardapio_ingredients');
+// AJAX Compilar Lista de Compras do Cardápio movido para /includes/cpt/cardapios.php (sts_ajax_get_cardapio_ingredients)
 /**
  * Paginação Premium com Tailwind CSS
  */

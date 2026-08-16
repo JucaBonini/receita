@@ -165,6 +165,7 @@ function sts_ajax_get_cardapio_ingredients() {
         if (!$ing) continue;
         $lines = is_array($ing) ? $ing : explode("\n", $ing);
         foreach ($lines as $line) {
+            if (!is_string($line)) continue;
             $sub_lines = explode("\n", $line);
             foreach ($sub_lines as $s) {
                 $clean = trim(strip_tags($s));
@@ -192,6 +193,7 @@ function sts_get_cardapio_shopping_list($cardapio_id) {
             if (!$ing) continue;
             $lines = is_array($ing) ? $ing : explode("\n", $ing);
             foreach ($lines as $line) {
+                if (!is_string($line)) continue;
                 $sub_lines = explode("\n", $line);
                 foreach ($sub_lines as $s) {
                     $clean = trim(strip_tags($s));

@@ -303,9 +303,12 @@ $itens_ing = [];
 if (!empty($ingredientes_raw)) {
     $raw_list = is_array($ingredientes_raw) ? $ingredientes_raw : explode("\n", $ingredientes_raw);
     foreach ($raw_list as $line_block) {
+        if (!is_string($line_block)) continue;
         $lines = explode("\n", $line_block);
         foreach ($lines as $item) {
-            if (trim($item)) $itens_ing[] = esc_html(trim($item));
+            if (is_string($item) && trim($item)) {
+                $itens_ing[] = esc_html(trim($item));
+            }
         }
     }
 }
@@ -317,9 +320,10 @@ if (!empty($instrucoes_raw)) {
     $step_count = 0;
     $steps = is_array($instrucoes_raw) ? $instrucoes_raw : explode("\n", $instrucoes_raw);
     foreach ($steps as $step_block) {
+        if (!is_string($step_block)) continue;
         $lines = explode("\n", $step_block);
         foreach ($lines as $step) {
-            if (trim($step)) {
+            if (is_string($step) && trim($step)) {
                 $itens_inst[] = [
                     "@type" => "HowToStep",
                     "name" => "Passo " . ($step_count + 1),
@@ -347,11 +351,12 @@ $recipe["recipeInstructions"] = $itens_inst;
 $graph[] = $recipe;
 
 // 7. FAQPage (Nível God Mode)
-if (!empty($faq_perguntas)) {
+if (is_array($faq_perguntas) && !empty($faq_perguntas)) {
     $questions = [];
     foreach ($faq_perguntas as $index => $pergunta) {
+        if (!is_array($faq_respostas)) $faq_respostas = [];
         $resposta = $faq_respostas[$index] ?? '';
-        if (!empty($pergunta) && !empty($resposta)) {
+        if (!empty($pergunta) && !empty($resposta) && is_string($pergunta) && is_string($resposta)) {
             $questions[] = [
                 "@type" => "Question",
                 "name" => esc_html($pergunta),
