@@ -168,9 +168,9 @@
         <div class="max-w-6xl mx-auto flex items-center justify-between gap-4 px-4 h-16 md:h-20">
             
             <!-- Logo Section -->
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 shrink-0">
                 <?php if (has_custom_logo()) : ?>
-                    <div class="custom-logo-wrapper h-10 md:h-12 w-auto flex items-center">
+                    <div class="custom-logo-wrapper h-10 md:h-12 w-auto flex items-center shrink-0">
                         <?php 
                         $custom_logo_id = get_theme_mod('custom_logo');
                         $logo = wp_get_attachment_image_src($custom_logo_id , 'full');
@@ -199,7 +199,7 @@
                     'menu_class' => 'flex items-center gap-4 xl:gap-6',
                     'fallback_cb' => false,
                     'items_wrap' => '<ul class="%2$s">%3$s</ul>',
-                    'add_li_class'  => 'px-5 py-2.5 text-[12px] font-bold text-slate-600 dark:text-slate-400 hover:text-primary transition-all uppercase tracking-[0.15em] rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 border border-transparent hover:border-slate-100 dark:hover:border-slate-700'
+                    'add_li_class'  => 'px-3 xl:px-5 py-2.5 text-[12px] font-bold text-slate-600 dark:text-slate-400 hover:text-primary transition-all uppercase tracking-[0.15em] rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 border border-transparent hover:border-slate-100 dark:hover:border-slate-700'
                 ));
                 ?>
             </nav>
