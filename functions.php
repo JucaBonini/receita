@@ -23,6 +23,9 @@ require_once THEME_PATH . '/includes/theme-config.php';
 require_once THEME_PATH . '/includes/sitemaps-engine.php';
 require_once THEME_PATH . '/includes/seo-engine.php';
 require_once THEME_PATH . '/includes/ads-engine.php';
+require_once THEME_PATH . '/includes/db-setup.php';
+require_once THEME_PATH . '/includes/admin-ingredientes.php';
+require_once THEME_PATH . '/includes/admin-migrador.php';
 
 function sts_flush_sitemaps_once() {
     if (get_option('sts_sitemaps_flushed') !== 'yes') {

@@ -261,31 +261,70 @@ if (have_posts()) : while (have_posts()) : the_post();
                     <?php the_content(); ?>
                 </div>
 
-                <!-- Utensílios (Destaque) -->
-                <?php if (is_array($utensilios) && !empty($utensilios)) : ?>
+                <!-- Utensílios (Destaque & Afiliados) -->
+                <?php 
+                $utensilios_afiliados_ids = get_post_meta($post_id, '_receita_utensilios_afiliados', true);
+                $has_utensilios_afiliados = is_array($utensilios_afiliados_ids) && !empty($utensilios_afiliados_ids);
+                $has_utensilios_classicos = is_array($utensilios) && !empty($utensilios);
+                
+                if ($has_utensilios_afiliados || $has_utensilios_classicos) : 
+                ?>
                 <section class="mb-12 bg-slate-100 dark:bg-slate-800/50 p-6 rounded-2xl border-l-4 border-primary">
                     <div class="flex items-center gap-2 mb-4">
                         <span class="material-symbols-outlined text-primary">skillet</span>
-                        <h2 class="text-xl font-bold italic uppercase tracking-wider text-slate-800 dark:text-slate-100">Utensílios Necessários</h2>
+                        <h2 class="text-xl font-bold italic uppercase tracking-wider text-slate-800 dark:text-slate-100">Utensílios Recomendados</h2>
                     </div>
-                    <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        <?php foreach($utensilios as $u) : 
-                            if (!is_string($u) || empty(trim($u))) continue;
-                            $affiliate_link = sts_get_utensil_affiliate_link($u);
-                        ?>
-                            <li class="flex items-center gap-2 text-sm">
-                                <span class="w-1.5 h-1.5 bg-primary rounded-full shrink-0"></span> 
-                                <?php if ($affiliate_link) : ?>
-                                    <a href="<?php echo esc_url($affiliate_link); ?>" target="_blank" rel="nofollow noopener" class="text-primary hover:underline font-bold inline-flex items-center gap-1 transition-all">
+                    
+                    <?php if ($has_utensilios_afiliados) : ?>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                            <?php foreach ($utensilios_afiliados_ids as $utensilio_post_id) : 
+                                $title = get_the_title($utensilio_post_id);
+                                $url = get_post_meta($utensilio_post_id, '_sts_product_url', true) ?: '#';
+                                $price = get_post_meta($utensilio_post_id, '_sts_product_price', true);
+                                $mkt = get_post_meta($utensilio_post_id, '_sts_marketplace', true) ?: 'Amazon';
+                                $thumb = get_the_post_thumbnail_url($utensilio_post_id, 'thumbnail') ?: get_template_directory_uri() . '/assets/img/default-product.png';
+                            ?>
+                            <div class="flex items-center gap-4 bg-white dark:bg-slate-900/60 p-4 rounded-2xl border border-slate-200/50 dark:border-slate-800 shadow-sm hover:shadow-md transition-all">
+                                <div class="w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-slate-50 border border-slate-100 dark:border-slate-800">
+                                    <img src="<?php echo esc_url($thumb); ?>" alt="<?php echo esc_attr($title); ?>" class="w-full h-full object-cover" loading="lazy">
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="font-bold text-slate-800 dark:text-slate-200 text-sm truncate mb-0.5"><?php echo esc_html($title); ?></h4>
+                                    <p class="text-xs text-slate-400 mb-1.5">Comprar na: <strong class="text-primary capitalize"><?php echo esc_html($mkt); ?></strong></p>
+                                    <div class="flex items-center justify-between">
+                                        <?php if ($price) : ?>
+                                            <span class="text-sm font-black text-slate-900 dark:text-white"><?php echo esc_html($price); ?></span>
+                                        <?php endif; ?>
+                                        <a href="<?php echo esc_url($url); ?>" target="_blank" rel="nofollow noopener" class="inline-flex items-center gap-0.5 text-[10px] font-black uppercase text-primary hover:underline ml-auto">
+                                            VER OFERTA <span class="material-symbols-outlined text-xs">open_in_new</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if ($has_utensilios_classicos) : ?>
+                        <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 <?php echo $has_utensilios_afiliados ? 'pt-4 border-t border-slate-200/60 dark:border-slate-700/60' : ''; ?>">
+                            <?php foreach($utensilios as $u) : 
+                                if (!is_string($u) || empty(trim($u))) continue;
+                                $affiliate_link = sts_get_utensil_affiliate_link($u);
+                            ?>
+                                <li class="flex items-center gap-2 text-sm">
+                                    <span class="w-1.5 h-1.5 bg-primary rounded-full shrink-0"></span> 
+                                    <?php if ($affiliate_link) : ?>
+                                        <a href="<?php echo esc_url($affiliate_link); ?>" target="_blank" rel="nofollow noopener" class="text-primary hover:underline font-bold inline-flex items-center gap-1 transition-all">
+                                            <?php echo esc_html($u); ?>
+                                            <span class="material-symbols-outlined text-xs">open_in_new</span>
+                                        </a>
+                                    <?php else : ?>
                                         <?php echo esc_html($u); ?>
-                                        <span class="material-symbols-outlined text-xs">open_in_new</span>
-                                    </a>
-                                <?php else : ?>
-                                    <?php echo esc_html($u); ?>
-                                <?php endif; ?>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
+                                    <?php endif; ?>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
                 </section>
                 <?php endif; ?>
 
@@ -304,27 +343,153 @@ if (have_posts()) : while (have_posts()) : the_post();
                         </button>
                     </div>
 
-                    <div class="space-y-6">
-                        <?php if (is_array($ingredientes_grp)) : foreach ($ingredientes_grp as $idx => $grupo_nome) : ?>
-                            <div class="ingredient-group">
-                                <?php if (!empty($grupo_nome)) : ?>
-                                    <h3 class="text-lg font-bold text-slate-800 dark:text-slate-200 mb-3 ml-1"><?php echo esc_html($grupo_nome); ?></h3>
-                                <?php endif; ?>
-                                
-                                <div class="space-y-3">
-                                    <?php 
-                                    $itens = (is_array($ingredientes_raw) && isset($ingredientes_raw[$idx]) && is_string($ingredientes_raw[$idx])) ? explode("\n", $ingredientes_raw[$idx]) : [];
-                                    foreach ($itens as $item) : if(is_string($item) && trim($item)) :
-                                    ?>
-                                    <label class="ingredient-row flex items-center p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 cursor-pointer hover:border-primary/50 transition-colors group">
-                                        <input class="w-7 h-7 md:w-8 md:h-8 rounded border-slate-300 text-primary focus:ring-primary bg-transparent mr-4 cursor-pointer shrink-0" type="checkbox"/>
-                                        <span class="text-slate-900 dark:text-slate-100 transition-colors"><?php echo esc_html($item); ?></span>
-                                    </label>
-                                    <?php endif; endforeach; ?>
-                                </div>
+                    <?php
+                    // CARREGAR INGREDIENTES ESTRUTURADOS DO BANCO CUSTOMIZADO
+                    global $wpdb;
+                    $table_rel = $wpdb->prefix . 'receita_ingredientes_rel';
+                    $table_ing = $wpdb->prefix . 'receita_ingredientes_mestre';
+                    $ingredientes_estruturados = $wpdb->get_results($wpdb->prepare(
+                        "SELECT r.*, i.name as ingrediente_nome, i.is_allergen, i.allergen_type 
+                         FROM $table_rel r 
+                         JOIN $table_ing i ON r.ingredient_id = i.id 
+                         WHERE r.recipe_id = %d 
+                         ORDER BY r.sort_order ASC",
+                        $post_id
+                    ));
+
+                    if (!empty($ingredientes_estruturados)) {
+                        // Agrupar por nome de grupo
+                        $grupos_estruturados = [];
+                        foreach ($ingredientes_estruturados as $ing) {
+                            $grupos_estruturados[$ing->group_name][] = $ing;
+                        }
+                        
+                        $porcoes_base_texto = get_post_meta($post_id, '_porcoes', true) ?: get_post_meta($post_id, 'rendimento', true);
+                        $porcoes_base_num = 4; // fallback
+                        if (preg_match('/\d+/', $porcoes_base_texto, $matches)) {
+                            $porcoes_base_num = intval($matches[0]) ?: 4;
+                        }
+                        
+                        $unidades_nomes = array(
+                            'g'           => 'g',
+                            'kg'          => 'kg',
+                            'ml'          => 'ml',
+                            'l'           => 'l',
+                            'xicara_cha'  => 'xícara (chá)',
+                            'colher_sopa' => 'colher (sopa)',
+                            'colher_cha'  => 'colher (chá)',
+                            'colher_cafe' => 'colher (café)',
+                            'unidade'     => 'unidade',
+                            'pitada'      => 'pitada',
+                            'a_gosto'     => 'a gosto',
+                            'fatia'       => 'fatia',
+                            'dente'       => 'dente',
+                            'ramo'        => 'ramo'
+                        );
+                        
+                        $unidades_plurais = array(
+                            'xicara_cha'  => 'xícaras (chá)',
+                            'colher_sopa' => 'colheres (sopa)',
+                            'colher_cha'  => 'colheres (chá)',
+                            'colher_cafe' => 'colheres (café)',
+                            'unidade'     => 'unidades',
+                            'pitada'      => 'pitadas',
+                            'fatia'       => 'fatias',
+                            'dente'       => 'dentes',
+                            'ramo'        => 'ramos'
+                        );
+                        ?>
+                        
+                        <!-- 🎛️ CALCULADORA DINÂMICA DE PORÇÕES -->
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-5 mb-8 bg-slate-50 dark:bg-slate-800/40 rounded-3xl border border-slate-200/50 dark:border-slate-700/50 shadow-sm select-none">
+                            <div>
+                                <span class="text-sm font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">Ajustar Quantidades</span>
+                                <p class="text-xs text-slate-400">Mude o número de porções para recalcular a receita</p>
                             </div>
-                        <?php endforeach; endif; ?>
-                    </div>
+                            <div class="flex items-center gap-4 w-fit bg-white dark:bg-slate-900 px-3 py-2 rounded-2xl border border-slate-200/40 dark:border-slate-800 shadow-inner">
+                                <button id="btn-porcoes-sub" class="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 flex items-center justify-center font-bold text-lg text-slate-700 dark:text-white hover:bg-primary hover:text-white hover:border-primary transition-all shadow-sm">-</button>
+                                <div class="text-center min-w-[70px]">
+                                    <span id="label-porcoes-val" class="font-black text-slate-900 dark:text-white text-xl block" data-base="<?php echo esc_attr($porcoes_base_num); ?>"><?php echo esc_html($porcoes_base_num); ?></span>
+                                    <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none">porções</span>
+                                </div>
+                                <button id="btn-porcoes-add" class="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 flex items-center justify-center font-bold text-lg text-slate-700 dark:text-white hover:bg-primary hover:text-white hover:border-primary transition-all shadow-sm">+</button>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6">
+                            <?php foreach ($grupos_estruturados as $grupo_nome => $items) : ?>
+                                <div class="ingredient-group">
+                                    <?php if (!empty($grupo_nome)) : ?>
+                                        <h3 class="text-lg font-bold text-slate-800 dark:text-slate-200 mb-3 ml-1"><?php echo esc_html($grupo_nome); ?></h3>
+                                    <?php endif; ?>
+                                    
+                                    <div class="space-y-3">
+                                        <?php foreach ($items as $item) : 
+                                            $raw_unit = $item->unit;
+                                            $amount = floatval($item->amount);
+                                            $unit_display = $unidades_nomes[$raw_unit] ?? $raw_unit;
+                                            if ($amount > 1 && isset($unidades_plurais[$raw_unit])) {
+                                                $unit_display = $unidades_plurais[$raw_unit];
+                                            }
+                                        ?>
+                                        <label class="ingredient-row flex items-center p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 cursor-pointer hover:border-primary/50 transition-colors group">
+                                            <input class="w-7 h-7 md:w-8 md:h-8 rounded border-slate-300 text-primary focus:ring-primary bg-transparent mr-4 cursor-pointer shrink-0" type="checkbox"/>
+                                            <div class="text-slate-900 dark:text-slate-100 transition-colors text-base flex-1">
+                                                <?php if ($amount > 0 && $raw_unit !== 'a_gosto' && $raw_unit !== 'pitada') : ?>
+                                                    <span class="ingrediente-qtd-wrapper">
+                                                        <span class="ingrediente-qtd font-bold text-primary" data-base-amount="<?php echo esc_attr($amount); ?>"><?php echo esc_html($amount); ?></span> 
+                                                        <span class="ingrediente-unit text-slate-500 font-medium" data-unit-singular="<?php echo esc_attr($unidades_nomes[$raw_unit] ?? $raw_unit); ?>" data-unit-plural="<?php echo esc_attr($unidades_plurais[$raw_unit] ?? ($unidades_nomes[$raw_unit] ?? $raw_unit)); ?>"><?php echo esc_html($unit_display); ?></span>
+                                                    </span>
+                                                    de 
+                                                <?php endif; ?>
+
+                                                <span class="font-bold text-slate-800 dark:text-slate-200"><?php echo esc_html($item->ingrediente_nome); ?></span>
+                                                
+                                                <?php if (!empty($item->display_text)) : ?>
+                                                    <span class="text-slate-500 text-sm font-normal">(<?php echo esc_html($item->display_text); ?>)</span>
+                                                <?php endif; ?>
+
+                                                <?php if ($raw_unit === 'a_gosto' || $raw_unit === 'pitada') : ?>
+                                                    <span class="text-slate-500 text-sm font-medium ml-1"><?php echo esc_html($unit_display); ?></span>
+                                                <?php endif; ?>
+                                                
+                                                <?php if ($item->is_allergen) : ?>
+                                                    <span class="text-[9px] text-red-500 font-bold ml-2 bg-red-50 dark:bg-red-950/40 px-2 py-0.5 rounded-full border border-red-200/50" title="Alergênico contendo: <?php echo esc_attr($item->allergen_type); ?>">Contém <?php echo esc_html($item->allergen_type); ?></span>
+                                                <?php endif; ?>
+                                            </div>
+                                        </label>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        
+                    <?php } else { ?>
+                        
+                        <!-- RENDERIZAÇÃO CLÁSSICA (FALLBACK) -->
+                        <div class="space-y-6">
+                            <?php if (is_array($ingredientes_grp)) : foreach ($ingredientes_grp as $idx => $grupo_nome) : ?>
+                                <div class="ingredient-group">
+                                    <?php if (!empty($grupo_nome)) : ?>
+                                        <h3 class="text-lg font-bold text-slate-800 dark:text-slate-200 mb-3 ml-1"><?php echo esc_html($grupo_nome); ?></h3>
+                                    <?php endif; ?>
+                                    
+                                    <div class="space-y-3">
+                                        <?php 
+                                        $itens = (is_array($ingredientes_raw) && isset($ingredientes_raw[$idx]) && is_string($ingredientes_raw[$idx])) ? explode("\n", $ingredientes_raw[$idx]) : [];
+                                        foreach ($itens as $item) : if(is_string($item) && trim($item)) :
+                                        ?>
+                                        <label class="ingredient-row flex items-center p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 cursor-pointer hover:border-primary/50 transition-colors group">
+                                            <input class="w-7 h-7 md:w-8 md:h-8 rounded border-slate-300 text-primary focus:ring-primary bg-transparent mr-4 cursor-pointer shrink-0" type="checkbox"/>
+                                            <span class="text-slate-900 dark:text-slate-100 transition-colors"><?php echo esc_html($item); ?></span>
+                                        </label>
+                                        <?php endif; endforeach; ?>
+                                    </div>
+                                </div>
+                            <?php endforeach; endif; ?>
+                        </div>
+                        
+                    <?php } ?>
                 </section>
 
                 <!-- Instructions Section -->
@@ -702,6 +867,60 @@ if (have_posts()) : while (have_posts()) : the_post();
     <?php 
     // Floating Rating Bar (Scroll Triggered)
     get_template_part('template-parts/floating-rating');
+    ?>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var btnAdd = document.getElementById('btn-porcoes-add');
+        var btnSub = document.getElementById('btn-porcoes-sub');
+        var labelVal = document.getElementById('label-porcoes-val');
+        
+        if (btnAdd && btnSub && labelVal) {
+            var basePortions = parseInt(labelVal.getAttribute('data-base')) || 4;
+            var currentPortions = basePortions;
+            
+            function updatePortions(newPortions) {
+                if (newPortions < 1) return;
+                currentPortions = newPortions;
+                labelVal.textContent = currentPortions;
+                
+                var factor = currentPortions / basePortions;
+                
+                // Recalcular ingredientes estruturados com quantidade numérica
+                var ingredienteQtds = document.querySelectorAll('.ingrediente-qtd');
+                ingredienteQtds.forEach(function(el) {
+                    var baseAmount = parseFloat(el.getAttribute('data-base-amount'));
+                    if (!isNaN(baseAmount)) {
+                        var newAmount = baseAmount * factor;
+                        // Formatar número de forma limpa
+                        var formattedAmount = (newAmount % 1 === 0) ? newAmount.toFixed(0) : Number(newAmount.toFixed(2)).toString();
+                        el.textContent = formattedAmount;
+                        
+                        // Alternar dinamicamente entre unidade no plural e singular
+                        var row = el.closest('.ingredient-row');
+                        if (row) {
+                            var unitSpan = row.querySelector('.ingrediente-unit');
+                            if (unitSpan) {
+                                var singular = unitSpan.getAttribute('data-unit-singular');
+                                var plural = unitSpan.getAttribute('data-unit-plural');
+                                unitSpan.textContent = (newAmount > 1) ? plural : singular;
+                            }
+                        }
+                    }
+                });
+            }
+            
+            btnAdd.addEventListener('click', function() {
+                updatePortions(currentPortions + 1);
+            });
+            
+            btnSub.addEventListener('click', function() {
+                updatePortions(currentPortions - 1);
+            });
+        }
+    });
+    </script>
+<?php
 endwhile; endif;
 get_footer(); 
 ?>
